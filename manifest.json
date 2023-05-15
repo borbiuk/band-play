@@ -1,0 +1,23 @@
+{
+	"manifest_version": 3,
+	"name": "Band Play",
+	"version": "1.0",
+	"description": "Add the reading time to Chrome Extension documentation articles",
+	"icons": {
+		"16": "assets/band.png",
+		"32": "assets/band.png",
+		"48": "assets/band.png",
+		"128": "assets/band.png"
+	},
+	"content_scripts": [
+		{
+			"js": [
+				"scripts/content.js"
+			],
+			"matches": [
+				"https://bandcamp.com/*"
+			],
+			"run_at": "document_end"
+		}
+	]
+}
