@@ -5,3 +5,11 @@
 <br/>
 
 ### band-play is a Google Chrome extension that provide autoplay on [bandcamp](bandcamp.com)
+
+### TODO:
+
+| Type                          | Description                      | Priority                |
+|:------------------------------|----------------------------------|-------------------------|
+| :wrench: &nbsp; **BUG FIX**   | playlist track playing fix       | :sound: &nbsp; High     |
+| :joystick: &nbsp; **FEATURE** | auto-scroll on last track        | :speaker: &nbsp; Medium |
+| :joystick: &nbsp; **FEATURE** | link to bandcamp in context menu | :mute: &nbsp; Low       |
