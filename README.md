@@ -10,6 +10,6 @@
 
 | Type                          | Description                      | Priority                |
 |:------------------------------|----------------------------------|-------------------------|
-| :wrench: &nbsp; **BUG FIX**   | playlist track playing fix       | :sound: &nbsp; High     |
-| :joystick: &nbsp; **FEATURE** | auto-scroll on last track        | :speaker: &nbsp; Medium |
-| :joystick: &nbsp; **FEATURE** | link to bandcamp in context menu | :mute: &nbsp; Low       |
+| :joystick: &nbsp; **FEATURE** | add UI                           | :speaker: &nbsp; Medium |
+| :joystick: &nbsp; **FEATURE** | enable autoscroll to be disabled | :speaker: &nbsp; Medium |
+| :joystick: &nbsp; **FEATURE** | creating playlists               | :mute: &nbsp; Low       |

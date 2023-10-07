@@ -1,86 +1,114 @@
+let tracks = [];
+
 const run = () => {
-	log("[Start]");
-	let i = 0;
+	console.log("[Start]: Band Play");
+
+	clickShowNextButton();
+
 	setInterval(function () {
-		log('[INFO]:\t\t\t- execute cycle [' + i++ + ']');
 		try {
-			tryPlayNextTrack();
+			initTracks();
+			playNextTrack();
 		} catch (e) {
-			log(e);
+			console.error(e);
 		}
-	}, 2000);
+	}, 500);
 }
 
-const tryPlayNextTrack = () => {
-	if (getPlayingTrackProgress() < 98) {
+const playNextTrack = () => {
+	// check progress
+	const progress = getPlayingTrackProgress();
+	if (isNullOrUndefined(progress) || progress < 98) {
 		return;
 	}
 
-	getNextTrackToPlayElement()?.click();
+	// play next track
+	const nextTrackToPlay = getNextTrackToPlay();
+	if (!isNullOrUndefined(nextTrackToPlay)) {
+		nextTrackToPlay.querySelector('a')?.click();
+		nextTrackToPlay.scrollIntoView({
+			block: 'center',
+			behavior: 'smooth'
+		});
+	}
 }
 
 const getPlayingTrackProgress = () => {
 	const divToWatch = document.querySelector('div.seek-control');
 	const left = divToWatch?.style?.left;
 
-	if (left === undefined || left === null) {
-		log('[NOT FOUND]:\t- player');
-		return null;
-	}
-
-	const leftValue = parseFloat(left);
-
-	log('[INFO]:\t\t\t- track progress(' + leftValue + ')');
-
-	return leftValue;
+	return isNullOrUndefined(left)
+		? null
+		: parseFloat(left);
 }
 
-const getNextTrackToPlayElement = () => {
+const getNextTrackToPlay = () => {
 	const nowPlayingId = getNowPlayingTrackId();
 	if (nowPlayingId === null) {
 		return null;
 	}
 
-	const allTracks = document.querySelectorAll('a[data-trackid]');
-
-	for (let i = 0; i < allTracks.length; i++) {
-		const id = allTracks[i].getAttribute('data-trackid');
-		if (id === nowPlayingId && i !== allTracks.length - 1) {
-			log('[INFO]:\t\t\t- Next track index [' + i + ']');
-			return allTracks[i + 1];
-		}
+	// track from document
+	const nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+	if (nowPlayingIndex !== -1 && nowPlayingIndex !== tracks.length - 1) {
+		return tracks[nowPlayingIndex + 1].element;
 	}
 
-	const randomTrackIndex = parseInt(Math.random() * (allTracks.length - 1));
-	const randomTrack = allTracks[randomTrackIndex];
-	if (randomTrack) {
-		log('[INFO]:\t\t\t- Next track index [' + randomTrackIndex + ']');
-		return randomTrack;
-	}
-
-	log('[NOT FOUND]:\t- next track to play');
-
-	return null;
+	// random track
+	return getRandomTrack();
 }
 
 const getNowPlayingTrackId = () => {
-	const nowPlaying = document.querySelectorAll('div[data-collect-item]');
-	if (nowPlaying.length === 0) {
-		log('[NOT FOUND]:\t- now playing')
+	const nowPlaying = document.querySelector('div[data-collect-item]');
+	if (isNullOrUndefined(nowPlaying)) {
 		return null;
 	}
 
-	const nowPlayingId = nowPlaying[0]
+	return nowPlaying
 		.getAttribute('data-collect-item')
 		.substring(1);
-
-	log('[INFO]:\t\t\t- Now playing Id = ' + nowPlayingId);
-
-	return nowPlayingId;
 }
 
-const log = (message) => {
-	console.log('%cAUTOPLAY log: %c' + message, 'background: #202124; color: #1BA0C3', 'background: #202124; color: white');
+const getRandomTrack = () => {
+	const randomTrackIndex = parseInt(Math.random() * (tracks.length - 1));
+	return tracks[randomTrackIndex].element;
 }
+
+const initTracks = () => {
+	const nowPlayingId = getNowPlayingTrackId();
+	if (!isNullOrUndefined(nowPlayingId)) {
+		const nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+		if (nowPlayingIndex !== tracks.length - 1) {
+			return;
+		}
+	}
+
+	let allTracksOnPage = document.querySelectorAll('li[data-tralbumid]');
+	if (tracks.length === allTracksOnPage.length) {
+		return;
+	}
+
+	const newTracks = Array.from(allTracksOnPage)
+		.map(x => ({
+			id: x.getAttribute('data-tralbumid'),
+			element: x,
+			played: false
+		}))
+		.filter(({id}) => tracks.findIndex(x => x.id === id) === -1);
+
+	tracks = [...tracks, ...newTracks];
+}
+
+const clickShowNextButton = () => {
+	const showNextButton = document.querySelectorAll('.show-more');
+	if (!isNullOrUndefined(showNextButton)) {
+		showNextButton.forEach(x => x.click());
+		return true;
+	}
+
+	return false;
+}
+
+const isNullOrUndefined = (value) => value === null || value === undefined;
 
 run();
