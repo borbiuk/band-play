@@ -1,15 +1,17 @@
-# <img src="./assets/band.png" alt="Google Chrome logo" style="height: 100px; margin-bottom: -40px;"/> band-play
-# <img src="./assets/chrome.png" alt="Google Chrome logo" style="height: 85px; margin-left: 8px; margin-right:5px; margin-bottom: -32px;"/> extension
-# <img src="./assets/bandcamp.png" alt="Google Chrome logo" style="height: 85px; margin-left: 10px; margin-right:5px; margin-bottom: -32px;"/> autoplay
-
 <br/>
+<img src="./assets/band.png" alt="band-play logo" style="height: 140px; margin-bottom: -40px;"/>
 
-### band-play is a Google Chrome extension that provide autoplay on [bandcamp](bandcamp.com)
+# band play
+
+band-play is a **Google Chrome extension** that provide autoplay on [bandcamp](bandcamp.com)
+
+Check [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh)
 
 ### TODO:
 
 | Type                          | Description                      | Priority                |
 |:------------------------------|----------------------------------|-------------------------|
+| :joystick: &nbsp; **FEATURE** | add play next track button       | :sound: &nbsp; High     |
 | :joystick: &nbsp; **FEATURE** | add UI                           | :speaker: &nbsp; Medium |
 | :joystick: &nbsp; **FEATURE** | enable autoscroll to be disabled | :speaker: &nbsp; Medium |
 | :joystick: &nbsp; **FEATURE** | creating playlists               | :mute: &nbsp; Low       |
