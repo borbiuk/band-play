@@ -23,7 +23,7 @@ const playNextTrack = () => {
 	}
 
 	// play next track
-	const nextTrackToPlay = getNextTrackToPlay();
+	const nextTrackToPlay = getTrackToPlay();
 	if (!isNullOrUndefined(nextTrackToPlay)) {
 		nextTrackToPlay.querySelector('a')?.click();
 		nextTrackToPlay.scrollIntoView({
@@ -42,20 +42,34 @@ const getPlayingTrackProgress = () => {
 		: parseFloat(left);
 }
 
-const getNextTrackToPlay = () => {
+const getTrackToPlay = () => {
 	const nowPlayingId = getNowPlayingTrackId();
 	if (nowPlayingId === null) {
 		return null;
 	}
 
 	// track from document
-	const nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
-	if (nowPlayingIndex !== -1 && nowPlayingIndex !== tracks.length - 1) {
-		return tracks[nowPlayingIndex + 1].element;
+	const nextTrack = getNextTrack(nowPlayingId);
+	if (!isNullOrUndefined(nextTrack)) {
+		return nextTrack;
 	}
 
 	// random track
 	return getRandomTrack();
+}
+
+const getNextTrack = (nowPlayingId) => {
+	let nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+	if (nowPlayingIndex === -1) {
+		initTracks();
+		nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+	}
+
+	if (nowPlayingIndex === -1 || nowPlayingIndex === tracks.length - 1) {
+		return null;
+	}
+
+	return tracks[nowPlayingIndex + 1].element;
 }
 
 const getNowPlayingTrackId = () => {
@@ -92,8 +106,10 @@ const initTracks = () => {
 		.map(x => ({
 			id: x.getAttribute('data-tralbumid'),
 			element: x,
+			canBePlayed: x.getAttribute('data-trackid') !== '',
 			played: false
 		}))
+		.filter(({canBePlayed}) => canBePlayed)
 		.filter(({id}) => tracks.findIndex(x => x.id === id) === -1);
 
 	tracks = [...tracks, ...newTracks];
