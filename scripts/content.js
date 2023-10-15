@@ -1,4 +1,5 @@
 let tracks = [];
+let nextButtonAdded = false;
 
 const run = () => {
 	console.log("[Start]: Band Play");
@@ -8,23 +9,27 @@ const run = () => {
 	setInterval(function () {
 		try {
 			initTracks();
-			playNextTrack();
+			tryPlayNextTrack();
+			addPlayNextTrackButtonToPlayer();
 		} catch (e) {
 			console.error(e);
 		}
 	}, 500);
 }
 
-const playNextTrack = () => {
+const tryPlayNextTrack = () => {
 	// check progress
 	const progress = getPlayingTrackProgress();
-	if (isNullOrUndefined(progress) || progress < 98) {
+	if (notExist(progress) || progress < 99) {
 		return;
 	}
 
-	// play next track
+	playNextTrack();
+}
+
+const playNextTrack = () => {
 	const nextTrackToPlay = getTrackToPlay();
-	if (!isNullOrUndefined(nextTrackToPlay)) {
+	if (!notExist(nextTrackToPlay)) {
 		nextTrackToPlay?.element.querySelector('a')?.click();
 		nextTrackToPlay?.element.scrollIntoView({
 			block: 'center',
@@ -38,7 +43,7 @@ const getPlayingTrackProgress = () => {
 	const divToWatch = document.querySelector('div.seek-control');
 	const left = divToWatch?.style?.left;
 
-	return isNullOrUndefined(left)
+	return notExist(left)
 		? null
 		: parseFloat(left);
 }
@@ -51,7 +56,7 @@ const getTrackToPlay = () => {
 
 	// track from document
 	const nextTrack = getNextTrack(nowPlayingId);
-	if (!isNullOrUndefined(nextTrack)) {
+	if (!notExist(nextTrack)) {
 		return nextTrack;
 	}
 
@@ -75,7 +80,7 @@ const getNextTrack = (nowPlayingId) => {
 
 const getNowPlayingTrackId = () => {
 	const nowPlaying = document.querySelector('div[data-collect-item]');
-	if (isNullOrUndefined(nowPlaying)) {
+	if (notExist(nowPlaying)) {
 		return null;
 	}
 
@@ -99,7 +104,7 @@ const getRandomTrack = () => {
 
 const initTracks = () => {
 	const nowPlayingId = getNowPlayingTrackId();
-	if (!isNullOrUndefined(nowPlayingId)) {
+	if (!notExist(nowPlayingId)) {
 		const nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
 		if (nowPlayingIndex !== tracks.length - 1) {
 			return;
@@ -115,7 +120,7 @@ const initTracks = () => {
 		.map(x => ({
 			id: x.getAttribute('data-tralbumid'),
 			element: x,
-			canBePlayed: x.getAttribute('data-trackid') !== '',
+			canBePlayed: !notExist(x.getAttribute('data-trackid')),
 			played: false
 		}))
 		.filter(({canBePlayed}) => canBePlayed)
@@ -126,7 +131,7 @@ const initTracks = () => {
 
 const clickShowNextButton = () => {
 	const showNextButton = document.querySelectorAll('.show-more');
-	if (!isNullOrUndefined(showNextButton)) {
+	if (!notExist(showNextButton)) {
 		showNextButton.forEach(x => x.click());
 		return true;
 	}
@@ -134,6 +139,72 @@ const clickShowNextButton = () => {
 	return false;
 }
 
-const isNullOrUndefined = (value) => value === null || value === undefined;
+const addPlayNextTrackButtonToPlayer = () => {
+	if (nextButtonAdded) {
+		return;
+	}
+
+	const existedNewButton = document.querySelector('.band-play-next-button');
+	if (!notExist(existedNewButton)) {
+		return;
+	}
+
+	const player = document.querySelector('.transport');
+	if (notExist(player)) {
+		return;
+	}
+
+	const button = getPlayNextTrackButton(() => {
+		playNextTrack();
+	});
+
+	player.style.width = '105px';
+	player.appendChild(button);
+
+	nextButtonAdded = true;
+}
+
+const getPlayNextTrackButton = (onClick) => {
+	const button = document.createElement('button');
+	button.className = 'band-play-next-button';
+	button.style.cssText = `
+        height: 26px;
+        margin-top: -8px;
+        border: none;
+        background: none;
+    `;
+
+	const image = document.createElement('img');
+	image.src = chrome.runtime.getURL('assets/next-track-button.png');
+	image.style.cssText = `
+	    height: 100%;
+	    margin-bottom: -5px;
+	`;
+
+	button.appendChild(image);
+
+	// on hover
+	button.addEventListener('mouseenter', () => {
+		button.style.transform = 'scale(1.07)';
+	});
+	button.addEventListener('mouseleave', () => {
+		button.style.transform = 'scale(1)';
+	});
+
+	// on click
+	button.addEventListener('click', () => {
+		onClick();
+
+		// animation
+		button.style.transform = 'scale(1.2)';
+		setTimeout(() => {
+			button.style.transform = 'scale(1)';
+		}, 200);
+	});
+
+	return button;
+}
+
+const notExist = (value) => value === null || value === undefined || value === '';
 
 run();
