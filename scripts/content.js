@@ -25,11 +25,12 @@ const playNextTrack = () => {
 	// play next track
 	const nextTrackToPlay = getTrackToPlay();
 	if (!isNullOrUndefined(nextTrackToPlay)) {
-		nextTrackToPlay.querySelector('a')?.click();
-		nextTrackToPlay.scrollIntoView({
+		nextTrackToPlay?.element.querySelector('a')?.click();
+		nextTrackToPlay?.element.scrollIntoView({
 			block: 'center',
 			behavior: 'smooth'
 		});
+		nextTrackToPlay.played = true;
 	}
 }
 
@@ -69,7 +70,7 @@ const getNextTrack = (nowPlayingId) => {
 		return null;
 	}
 
-	return tracks[nowPlayingIndex + 1].element;
+	return tracks[nowPlayingIndex + 1];
 }
 
 const getNowPlayingTrackId = () => {
@@ -84,8 +85,16 @@ const getNowPlayingTrackId = () => {
 }
 
 const getRandomTrack = () => {
-	const randomTrackIndex = parseInt(Math.random() * (tracks.length - 1));
-	return tracks[randomTrackIndex].element;
+	let notPlayed = tracks.filter(x => !x.played);
+	if (notPlayed.length === 0) {
+		tracks.forEach(x => {
+			x.played = false;
+		});
+		notPlayed = tracks;
+	}
+
+	const randomTrackIndex = parseInt(Math.random() * (notPlayed.length - 1));
+	return notPlayed[randomTrackIndex];
 }
 
 const initTracks = () => {
