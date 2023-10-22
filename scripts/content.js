@@ -29,28 +29,26 @@ const tryPlayNextTrack = () => {
 
 const playNextTrack = () => {
 	const nextTrackToPlay = getTrackToPlay();
-	if (!notExist(nextTrackToPlay)) {
-		nextTrackToPlay?.element.querySelector('a')?.click();
-		nextTrackToPlay?.element.scrollIntoView({
-			block: 'center',
-			behavior: 'smooth'
-		});
-		nextTrackToPlay.played = true;
+	if (notExist(nextTrackToPlay)) {
+		return;
 	}
+
+	nextTrackToPlay.element.querySelector('a')?.click();
+	nextTrackToPlay.element.scrollIntoView({
+		block: 'center', behavior: 'smooth'
+	});
+	nextTrackToPlay.played = true;
 }
 
 const getPlayingTrackProgress = () => {
-	const divToWatch = document.querySelector('div.seek-control');
-	const left = divToWatch?.style?.left;
+	const left = document.querySelector('div.seek-control')?.style?.left;
 
-	return notExist(left)
-		? null
-		: parseFloat(left);
+	return notExist(left) ? null : parseFloat(left);
 }
 
 const getTrackToPlay = () => {
 	const nowPlayingId = getNowPlayingTrackId();
-	if (nowPlayingId === null) {
+	if (notExist(nowPlayingId)) {
 		return null;
 	}
 
@@ -65,12 +63,15 @@ const getTrackToPlay = () => {
 }
 
 const getNextTrack = (nowPlayingId) => {
-	let nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+	let nowPlayingIndex = getTrackIndex(nowPlayingId);
+
+	// try reload tracks
 	if (nowPlayingIndex === -1) {
 		initTracks();
-		nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+		nowPlayingIndex = getTrackIndex(nowPlayingId);
 	}
 
+	// not founded OR last
 	if (nowPlayingIndex === -1 || nowPlayingIndex === tracks.length - 1) {
 		return null;
 	}
@@ -78,16 +79,6 @@ const getNextTrack = (nowPlayingId) => {
 	return tracks[nowPlayingIndex + 1];
 }
 
-const getNowPlayingTrackId = () => {
-	const nowPlaying = document.querySelector('div[data-collect-item]');
-	if (notExist(nowPlaying)) {
-		return null;
-	}
-
-	return nowPlaying
-		.getAttribute('data-collect-item')
-		.substring(1);
-}
 
 const getRandomTrack = () => {
 	let notPlayed = tracks.filter(x => !x.played);
@@ -105,13 +96,13 @@ const getRandomTrack = () => {
 const initTracks = () => {
 	const nowPlayingId = getNowPlayingTrackId();
 	if (!notExist(nowPlayingId)) {
-		const nowPlayingIndex = tracks.findIndex(({id}) => id === nowPlayingId);
+		const nowPlayingIndex = getTrackIndex(nowPlayingId);
 		if (nowPlayingIndex !== tracks.length - 1) {
 			return;
 		}
 	}
 
-	let allTracksOnPage = document.querySelectorAll('li[data-tralbumid]');
+	const allTracksOnPage = document.querySelectorAll('li[data-tralbumid]');
 	if (tracks.length === allTracksOnPage.length) {
 		return;
 	}
@@ -124,7 +115,7 @@ const initTracks = () => {
 			played: false
 		}))
 		.filter(({canBePlayed}) => canBePlayed)
-		.filter(({id}) => tracks.findIndex(x => x.id === id) === -1);
+		.filter(({id}) => getTrackIndex(id) === -1);
 
 	tracks = [...tracks, ...newTracks];
 }
@@ -175,7 +166,7 @@ const getPlayNextTrackButton = (onClick) => {
     `;
 
 	const image = document.createElement('img');
-	image.src = chrome.runtime.getURL('assets/next-track-button.png');
+	image.src = chrome.runtime.getURL('assets/button.png');
 	image.style.cssText = `
 	    height: 100%;
 	    margin-bottom: -5px;
@@ -205,6 +196,12 @@ const getPlayNextTrackButton = (onClick) => {
 	return button;
 }
 
+const getTrackIndex = (searchId) => tracks.findIndex(x => x.id === searchId);
+
 const notExist = (value) => value === null || value === undefined || value === '';
+
+const getNowPlayingTrackId = () => document.querySelector('div[data-collect-item]')
+	?.getAttribute('data-collect-item')
+	?.substring(1);
 
 run();

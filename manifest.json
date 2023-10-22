@@ -1,29 +1,33 @@
 {
-	"manifest_version": 3,
-	"name": "Band Play",
-	"version": "1.2.2",
-	"description": "Add play next button to player",
-	"icons": {
-		"16": "assets/band.png",
-		"32": "assets/band.png",
-		"48": "assets/band.png",
-		"128": "assets/band.png"
-	},
-	"content_scripts": [
-		{
-			"js": [
-				"scripts/content.js"
-			],
-			"matches": [
-				"https://bandcamp.com/*"
-			],
-			"run_at": "document_end"
-		}
-	],
-	"web_accessible_resources": [
-		{
-			"resources": ["assets/next-track-button.png"],
-			"matches": ["https://bandcamp.com/*"]
-		}
-	]
+  "manifest_version": 3,
+  "name": "Band Play",
+  "version": "2.0.0",
+  "description": "Automation of work with Bandcamp",
+  "icons": {
+    "16": "assets/logo-48.png",
+    "32": "assets/logo-48.png",
+    "48": "assets/logo-48.png",
+    "128": "assets/logo-128.png"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "scripts/content.js"
+      ],
+      "matches": [
+        "https://bandcamp.com/*"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/button.png"
+      ],
+      "matches": [
+        "https://bandcamp.com/*"
+      ]
+    }
+  ]
 }
