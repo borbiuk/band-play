@@ -205,3 +205,22 @@ const getNowPlayingTrackId = () => document.querySelector('div[data-collect-item
 	?.substring(1);
 
 run();
+
+
+// Add Play/Pause on 'Space' keydown
+document.addEventListener('keydown', function (event) {
+	if (event.code !== 'Space') {
+		return;
+	}
+
+	event.preventDefault();
+
+	// TODO: add matches to manifest
+	// const {href} = window.location;
+	// if (href.includes('/track/') || href.includes('/album/')) {
+	// 	document.querySelector('a[role="button"]')?.click();
+	// 	return;
+	// }
+
+	document.querySelector('.playpause')?.click();
+}, false);

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Band Play",
+  "name": "Band Play - automation for Bandcamp",
   "version": "2.0.0",
-  "description": "Automation of work with Bandcamp",
+  "description": "Automation of work with Bandcamp: collection and wishlist tracks autoplay, play/pause on Space",
   "icons": {
     "16": "assets/logo-48.png",
     "32": "assets/logo-48.png",
