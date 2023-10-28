@@ -1,33 +1,38 @@
 {
-  "manifest_version": 3,
-  "name": "Band Play - automation for Bandcamp",
-  "version": "2.0.0",
-  "description": "Automation of work with Bandcamp: collection and wishlist tracks autoplay, play/pause on Space",
-  "icons": {
-    "16": "assets/logo-48.png",
-    "32": "assets/logo-48.png",
-    "48": "assets/logo-48.png",
-    "128": "assets/logo-128.png"
-  },
-  "content_scripts": [
-    {
-      "js": [
-        "scripts/content.js"
-      ],
-      "matches": [
-        "https://bandcamp.com/*"
-      ],
-      "run_at": "document_end"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "assets/button.png"
-      ],
-      "matches": [
-        "https://bandcamp.com/*"
-      ]
-    }
-  ]
+	"manifest_version": 3,
+	"name": "Band Play - automation for bandcamp.com",
+	"version": "2.0.0",
+	"description": "Automation of work with Bandcamp: autoplay on collection and wishlist, play/pause on Space and etc.",
+	"host_permissions": [
+		"https://bandcamp.com/*"
+	],
+	"background": {
+		"service_worker": "scripts/background.js"
+	},
+	"content_scripts": [
+		{
+			"js": [
+				"scripts/content.js"
+			],
+			"matches": [
+				"https://bandcamp.com/*"
+			]
+		}
+	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"assets/button.png"
+			],
+			"matches": [
+				"https://bandcamp.com/*"
+			]
+		}
+	],
+	"icons": {
+		"16": "assets/logo-48.png",
+		"32": "assets/logo-48.png",
+		"48": "assets/logo-48.png",
+		"128": "assets/logo-128.png"
+	}
 }

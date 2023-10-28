@@ -58,8 +58,7 @@ const getTrackToPlay = () => {
 		return nextTrack;
 	}
 
-	// random track
-	return getRandomTrack();
+	return getFirsNotPlayedTrack();
 }
 
 const getNextTrack = (nowPlayingId) => {
@@ -80,17 +79,17 @@ const getNextTrack = (nowPlayingId) => {
 }
 
 
-const getRandomTrack = () => {
-	let notPlayed = tracks.filter(x => !x.played);
-	if (notPlayed.length === 0) {
-		tracks.forEach(x => {
-			x.played = false;
-		});
-		notPlayed = tracks;
+const getFirsNotPlayedTrack = () => {
+	const firstNotPlayed = tracks.find(x => !x.played);
+	if (!notExist(firstNotPlayed)) {
+		return firstNotPlayed;
 	}
 
-	const randomTrackIndex = parseInt(Math.random() * (notPlayed.length - 1));
-	return notPlayed[randomTrackIndex];
+	tracks.forEach(x => {
+		x.played = false;
+	});
+	
+	return tracks[0];
 }
 
 const initTracks = () => {
@@ -102,7 +101,11 @@ const initTracks = () => {
 		}
 	}
 
-	const allTracksOnPage = document.querySelectorAll('li[data-tralbumid]');
+	const collectionsId = window.location.href.includes('/wishlist')
+		? 'wishlist-grid'
+		: 'collection-grid';
+	const allTracksOnPage = document.getElementById(collectionsId)
+		?.querySelectorAll('li[data-tralbumid]');
 	if (tracks.length === allTracksOnPage.length) {
 		return;
 	}
@@ -215,7 +218,7 @@ document.addEventListener('keydown', function (event) {
 
 	event.preventDefault();
 
-	// TODO: add matches to manifest
+	// TODO: add handling of play/pause on track and album pages
 	// const {href} = window.location;
 	// if (href.includes('/track/') || href.includes('/album/')) {
 	// 	document.querySelector('a[role="button"]')?.click();
@@ -224,3 +227,14 @@ document.addEventListener('keydown', function (event) {
 
 	document.querySelector('.playpause')?.click();
 }, false);
+
+// clear data on URL change message
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (message?.code !== 'URL_CHANGED') {
+		return;
+	}
+
+	tracks = [];
+	clickShowNextButton();
+	initTracks();
+});
