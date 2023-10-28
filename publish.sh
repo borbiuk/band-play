@@ -4,7 +4,8 @@
 # Create an .zip file of Google Chrome extension package #
 ##########################################################
 
-zip_filename="band-play-build.zip"
+current_date_time=$(date +'%Y-%m-%d_%H-%M-%S')
+zip_filename="band-play-build${current_date_time}.zip"
 temp_dir="band-play-build"
 
 include_dirs=("assets" "scripts")

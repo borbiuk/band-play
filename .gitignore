@@ -2,3 +2,6 @@
 
 # JetBrains IDE
 .idea
+
+# builds
+*.zip
