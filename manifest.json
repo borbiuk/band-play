@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
-	"name": "Band Play - automation for bandcamp.com",
-	"version": "2.0.0",
+	"name": "Bandcamp Play",
+	"version": "2.0.1",
 	"description": "Automation of work with Bandcamp: autoplay on collection and wishlist, play/pause on Space and etc.",
 	"host_permissions": [
 		"https://bandcamp.com/*"
