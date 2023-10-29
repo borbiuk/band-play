@@ -8,19 +8,29 @@ current_date_time=$(date +'%Y-%m-%d_%H-%M-%S')
 zip_filename="band-play-build${current_date_time}.zip"
 temp_dir="band-play-build"
 
-include_dirs=("assets" "scripts")
-include_files=("manifest.json")
+include_files=(
+	"manifest.json"
+	"assets/button.png"
+	"assets/logo-48.png"
+	"assets/logo-128.png"
+	"scripts/background.js"
+	"scripts/content.js"
+)
 
 # Create a temporary directory
 mkdir "$temp_dir"
 
 # Copy to the temporary directory
-for dir in "${include_dirs[@]}"; do
-    cp -r "$dir" "$temp_dir"
-done
-
 for file in "${include_files[@]}"; do
-    cp "$file" "$temp_dir"
+	IFS='/' read -ra file_parts <<<"$file"
+	destination_dir="$temp_dir"
+	for part in "${file_parts[@]::${#file_parts[@]}-1}"; do
+		destination_dir="$destination_dir/$part"
+		if [ ! -d "$destination_dir" ]; then
+			mkdir "$destination_dir"
+		fi
+	done
+	cp "$file" "$temp_dir/$file"
 done
 
 # Create a .zip file
