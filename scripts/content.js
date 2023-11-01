@@ -88,7 +88,7 @@ const getFirsNotPlayedTrack = () => {
 	tracks.forEach(x => {
 		x.played = false;
 	});
-	
+
 	return tracks[0];
 }
 
@@ -106,7 +106,7 @@ const initTracks = () => {
 		: 'collection-grid';
 	const allTracksOnPage = document.getElementById(collectionsId)
 		?.querySelectorAll('li[data-tralbumid]');
-	if (tracks.length === allTracksOnPage.length) {
+	if (tracks.length === allTracksOnPage?.length) {
 		return;
 	}
 
@@ -125,12 +125,12 @@ const initTracks = () => {
 
 const clickShowNextButton = () => {
 	const showNextButton = document.querySelectorAll('.show-more');
-	if (!notExist(showNextButton)) {
-		showNextButton.forEach(x => x.click());
-		return true;
+	if (notExist(showNextButton)) {
+		return false;
 	}
 
-	return false;
+	showNextButton.forEach(x => x.click());
+	return true;
 }
 
 const addPlayNextTrackButtonToPlayer = () => {
@@ -212,6 +212,10 @@ run();
 
 // Add Play/Pause on 'Space' keydown
 document.addEventListener('keydown', function (event) {
+	if (event.target?.localName === 'input') {
+		return;
+	}
+
 	if (event.code !== 'Space') {
 		return;
 	}
