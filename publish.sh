@@ -11,6 +11,8 @@ temp_dir="band-play-build"
 include_files=(
 	"manifest.json"
 	"assets/button.png"
+	"assets/logo-16.png"
+	"assets/logo-32.png"
 	"assets/logo-48.png"
 	"assets/logo-128.png"
 	"scripts/background.js"
