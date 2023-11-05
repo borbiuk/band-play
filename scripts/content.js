@@ -7,6 +7,11 @@ const run = () => {
 	clickShowNextButton();
 
 	setInterval(function () {
+		const url = window.location.pathname;
+		if (url.includes('/album/') || url.includes('/track/')) {
+			return;
+		}
+
 		try {
 			initTracks();
 			tryPlayNextTrack();
@@ -229,7 +234,13 @@ document.addEventListener('keydown', function (event) {
 	// 	return;
 	// }
 
-	document.querySelector('.playpause')?.click();
+	const url = window.location.pathname;
+	if (url.includes('/album/') || url.includes('/track/')) {
+		document.querySelector('.playbutton')?.click();
+	} else {
+		document.querySelector('.playpause')?.click();
+	}
+
 }, false);
 
 // clear data on URL change message

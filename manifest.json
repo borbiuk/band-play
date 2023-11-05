@@ -4,7 +4,8 @@
 	"version": "2.0.2",
 	"description": "Automation of work with Bandcamp: autoplay on collections, play/pause on Space, 'next track' button and etc.",
 	"host_permissions": [
-		"https://bandcamp.com/*"
+		"https://bandcamp.com/*",
+		"https://*.bandcamp.com/*"
 	],
 	"background": {
 		"service_worker": "scripts/background.js"
@@ -15,7 +16,8 @@
 				"scripts/content.js"
 			],
 			"matches": [
-				"https://bandcamp.com/*"
+				"https://bandcamp.com/*",
+				"https://*.bandcamp.com/*"
 			]
 		}
 	],
