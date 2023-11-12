@@ -50,7 +50,3 @@ We welcome contributions! If you would like to contribute to this project, pleas
 3. Commit your changes.
 4. Push the branch to your fork.
 5. Submit a pull request to the original repository.
-
-## License
-
-This project is
