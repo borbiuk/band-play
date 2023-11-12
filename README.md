@@ -41,14 +41,6 @@ This extension supports keyboard shortcuts (hotkeys) for quick and easy control 
 - `manifest.json`: The Chrome extension manifest file.
 - `publish.sh`: A script for building and packaging the extension for distribution.
 
-### Building the Extension
-
-To make changes to the extension:
-
-1. Edit the files within the `scripts/` directory to modify the extension's behavior.
-2. Update the `manifest.json` file if you add new files or change permissions.
-3. Reload the extension through `chrome://extensions/` by clicking on the `Reload` link on your extension's card.
-
 ## Contributing
 
 We welcome contributions! If you would like to contribute to this project, please:
