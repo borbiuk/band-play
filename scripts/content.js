@@ -35,7 +35,7 @@ const tryPlayNextTrack = () => {
 const playNextTrack = () => {
 	const nextTrackToPlay = getTrackToPlay();
 	if (notExist(nextTrackToPlay)) {
-		return;
+		return false;
 	}
 
 	nextTrackToPlay.element.querySelector('a')?.click();
@@ -43,6 +43,7 @@ const playNextTrack = () => {
 		block: 'center', behavior: 'smooth'
 	});
 	nextTrackToPlay.played = true;
+	return true
 }
 
 const getPlayingTrackProgress = () => {
@@ -204,6 +205,60 @@ const getPlayNextTrackButton = (onClick) => {
 	return button;
 }
 
+const clickAtPercentageWithinSeekControl = (percentage) => {
+	// Get the seek control outer element
+	const seekControlOuter = document.querySelector('.seek-control-outer');
+
+	if (seekControlOuter) {
+		// Calculate the x-coordinate for the click event based on the percentage
+		const rect = seekControlOuter.getBoundingClientRect();
+		const x = rect.left + (rect.width * (percentage / 100));
+
+		// Create a new click event
+		const clickEvent = new MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+			clientX: x,
+			clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+		});
+
+		// Dispatch the event to the seek control outer element
+		seekControlOuter.dispatchEvent(clickEvent);
+	}
+}
+
+const calculateTimePercentage = () => {
+	function convertTimeToSeconds(timeStr) {
+		const parts = timeStr.split(':');
+		const minutes = parseInt(parts[0], 10);
+		const seconds = parseInt(parts[1], 10);
+		return (minutes * 60) + seconds;
+	}
+
+	// Retrieve the time strings
+	const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
+	const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]').textContent;
+
+	// Convert time strings to seconds
+	const positionInSeconds = convertTimeToSeconds(positionStr);
+	const durationInSeconds = convertTimeToSeconds(durationStr);
+
+	// Calculate the percentage
+	return (positionInSeconds / durationInSeconds) * 100;
+}
+
+const playNextTrackWithSavedPercentage = () => {
+	let percentage = calculateTimePercentage()
+	if (playNextTrack()) {
+		console.log("Next button clicked.");
+
+		setTimeout(function () {
+			clickAtPercentageWithinSeekControl(percentage)
+		}, 500)
+	}
+}
+
 const getTrackIndex = (searchId) => tracks.findIndex(x => x.id === searchId);
 
 const notExist = (value) => value === null || value === undefined || value === '';
@@ -220,27 +275,34 @@ document.addEventListener('keydown', function (event) {
 	if (event.target?.localName === 'input') {
 		return;
 	}
+	switch (event.code) {
+		case 'Space':
+			event.preventDefault();
 
-	if (event.code !== 'Space') {
-		return;
+			// TODO: add handling of play/pause on track and album pages
+			// const {href} = window.location;
+			// if (href.includes('/track/') || href.includes('/album/')) {
+			// 	document.querySelector('a[role="button"]')?.click();
+			// 	return;
+			// }
+
+			const url = window.location.pathname;
+			if (url.includes('/album/') || url.includes('/track/')) {
+				document.querySelector('.playbutton')?.click();
+			} else {
+				document.querySelector('.playpause')?.click();
+			}
+			break
 	}
 
-	event.preventDefault();
-
-	// TODO: add handling of play/pause on track and album pages
-	// const {href} = window.location;
-	// if (href.includes('/track/') || href.includes('/album/')) {
-	// 	document.querySelector('a[role="button"]')?.click();
-	// 	return;
-	// }
-
-	const url = window.location.pathname;
-	if (url.includes('/album/') || url.includes('/track/')) {
-		document.querySelector('.playbutton')?.click();
-	} else {
-		document.querySelector('.playpause')?.click();
+	switch (event.key) {
+		case 'n':
+			playNextTrack()
+			break
+		case 'm':
+			playNextTrackWithSavedPercentage()
+			break
 	}
-
 }, false);
 
 // clear data on URL change message
