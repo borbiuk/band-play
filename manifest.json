@@ -7,6 +7,9 @@
 		"https://bandcamp.com/*",
 		"https://*.bandcamp.com/*"
 	],
+	"permissions": [
+		"storage"
+	],
 	"background": {
 		"service_worker": "scripts/background.js"
 	},
