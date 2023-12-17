@@ -62,11 +62,9 @@ const initTracks = () => {
 	let collectionsId;
 	if (window.location.href.includes('/wishlist')) {
 		collectionsId = 'wishlist-grid';
-	}
-	else if (window.location.href.includes('/feed')) {
+	} else if (window.location.href.includes('/feed')) {
 		collectionsId = 'story-list'
-	}
-	else {
+	} else {
 		collectionsId = 'collection-grid';
 	}
 
@@ -258,6 +256,32 @@ const tryPlayNextFeedTrack = () => {
 	});
 }
 
+const playNextFeedTrack = () => {
+	const nowPlaying = document.querySelector('[data-tralbumid].playing');
+	if (notExist(nowPlaying)) {
+		const firstFeedTrackButton = tracks[0].element.querySelector('.play-button')
+		firstFeedTrackButton.click();
+		firstFeedTrackButton.scrollIntoView({
+			block: 'center', behavior: 'smooth'
+		});
+		firstFeedTrackButton.onclick = () => {
+			feedPauseTrackId = tracks[0].id;
+			lastFeedPlayingTrackId = null;
+		}
+		return;
+	}
+
+	const nextFeedTrackButton = tracks[getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].element.querySelector('.play-button');
+	nextFeedTrackButton.click();
+	nextFeedTrackButton.scrollIntoView({
+		block: 'center', behavior: 'smooth'
+	});
+	nextFeedTrackButton.onclick = () => {
+		feedPauseTrackId = tracks[getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].id;
+		lastFeedPlayingTrackId = null;
+	}
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Utils
@@ -288,8 +312,7 @@ const main = () => {
 			const url = window.location.pathname;
 			if (url.includes('/feed')) {
 				tryPlayNextFeedTrack();
-			}
-			else {
+			} else {
 				tryPlayNextTrack();
 			}
 		} catch (e) {
@@ -328,8 +351,7 @@ document.addEventListener('keydown', function (event) {
 			if (!notExist(playingFeed)) {
 				playingFeed.querySelector('.play-button').click();
 				feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
-			}
-			else if (!notExist(feedPauseTrackId)) {
+			} else if (!notExist(feedPauseTrackId)) {
 				tracks[getTrackIndex(feedPauseTrackId)].element.querySelector('.play-button').click();
 				feedPauseTrackId = null;
 			}
@@ -337,9 +359,16 @@ document.addEventListener('keydown', function (event) {
 			document.querySelector('.playpause')?.click();
 		}
 	} else if (event.key === 'n') {
-		playNextTrack()
+		const url = window.location.pathname;
+		if (url.includes('/album/') || url.includes('/track/')) {
+			document.querySelector('.nextbutton').click();
+		} else if (url.includes('/feed')) {
+			playNextFeedTrack();
+		} else {
+			playNextTrack();
+		}
 	} else if (event.key === 'm') {
-		playNextTrackWithSavedPercentage()
+		playNextTrackWithSavedPercentage();
 	}
 
 	return true;
