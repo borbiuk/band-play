@@ -2,6 +2,7 @@
 
 # JetBrains IDE
 .idea
+*.DotSettings.user
 
 # builds
 *.zip

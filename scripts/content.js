@@ -1,26 +1,11 @@
 let tracks = [];
 let nextButtonAdded = false;
+let feedPauseTrackId = null;
+let lastFeedPlayingTrackId = null;
 
-const run = () => {
-	console.log("[Start]: Band Play");
-
-	clickShowNextButton();
-
-	setInterval(function () {
-		const url = window.location.pathname;
-		if (url.includes('/album/') || url.includes('/track/')) {
-			return;
-		}
-
-		try {
-			initTracks();
-			tryPlayNextTrack();
-			addPlayNextTrackButtonToPlayer();
-		} catch (e) {
-			console.error(e);
-		}
-	}, 500);
-}
+// ------------------------------------------------------------------------------------------------
+// Collection & Wishlist
+// ------------------------------------------------------------------------------------------------
 
 const tryPlayNextTrack = () => {
 	// check progress
@@ -33,7 +18,7 @@ const tryPlayNextTrack = () => {
 }
 
 const playNextTrack = () => {
-	const nextTrackToPlay = getTrackToPlay();
+	const nextTrackToPlay = getNextTrack();
 	if (notExist(nextTrackToPlay)) {
 		return false;
 	}
@@ -42,7 +27,6 @@ const playNextTrack = () => {
 	nextTrackToPlay.element.scrollIntoView({
 		block: 'center', behavior: 'smooth'
 	});
-	nextTrackToPlay.played = true;
 	return true
 }
 
@@ -52,22 +36,12 @@ const getPlayingTrackProgress = () => {
 	return notExist(left) ? null : parseFloat(left);
 }
 
-const getTrackToPlay = () => {
+const getNextTrack = () => {
 	const nowPlayingId = getNowPlayingTrackId();
 	if (notExist(nowPlayingId)) {
-		return null;
+		return tracks.length > 0 ? tracks[0] : null;
 	}
 
-	// track from document
-	const nextTrack = getNextTrack(nowPlayingId);
-	if (!notExist(nextTrack)) {
-		return nextTrack;
-	}
-
-	return getFirsNotPlayedTrack();
-}
-
-const getNextTrack = (nowPlayingId) => {
 	let nowPlayingIndex = getTrackIndex(nowPlayingId);
 
 	// try reload tracks
@@ -78,56 +52,46 @@ const getNextTrack = (nowPlayingId) => {
 
 	// not founded OR last
 	if (nowPlayingIndex === -1 || nowPlayingIndex === tracks.length - 1) {
-		return null;
+		return tracks.length > 0 ? tracks[0] : null;
 	}
 
 	return tracks[nowPlayingIndex + 1];
 }
 
-
-const getFirsNotPlayedTrack = () => {
-	const firstNotPlayed = tracks.find(x => !x.played);
-	if (!notExist(firstNotPlayed)) {
-		return firstNotPlayed;
-	}
-
-	tracks.forEach(x => {
-		x.played = false;
-	});
-
-	return tracks[0];
-}
-
 const initTracks = () => {
-	const nowPlayingId = getNowPlayingTrackId();
-	if (!notExist(nowPlayingId)) {
-		const nowPlayingIndex = getTrackIndex(nowPlayingId);
-		if (nowPlayingIndex !== tracks.length - 1) {
-			return;
-		}
+	let collectionsId;
+	if (window.location.href.includes('/wishlist')) {
+		collectionsId = 'wishlist-grid';
+	}
+	else if (window.location.href.includes('/feed')) {
+		collectionsId = 'story-list'
+	}
+	else {
+		collectionsId = 'collection-grid';
 	}
 
-	const collectionsId = window.location.href.includes('/wishlist')
-		? 'wishlist-grid'
-		: 'collection-grid';
 	const allTracksOnPage = document.getElementById(collectionsId)
-		?.querySelectorAll('li[data-tralbumid]');
-	if (tracks.length === allTracksOnPage?.length) {
+		?.querySelectorAll('[data-tralbumid]');
+	if (notExist(allTracksOnPage) || tracks.length === allTracksOnPage?.length) {
 		return;
 	}
 
-	const newTracks = Array.from(allTracksOnPage)
+	console.log(allTracksOnPage.length)
+
+	tracks = Array.from(allTracksOnPage)
+		.filter(x => !notExist(x.getAttribute('data-trackid'))) // not released tracks
 		.map(x => ({
 			id: x.getAttribute('data-tralbumid'),
-			element: x,
-			canBePlayed: !notExist(x.getAttribute('data-trackid')),
-			played: false
-		}))
-		.filter(({canBePlayed}) => canBePlayed)
-		.filter(({id}) => getTrackIndex(id) === -1);
+			element: x
+		}));
 
-	tracks = [...tracks, ...newTracks];
+	console.log(tracks.length);
 }
+
+
+// ------------------------------------------------------------------------------------------------
+// Next Track button
+// ------------------------------------------------------------------------------------------------
 
 const clickShowNextButton = () => {
 	const showNextButton = document.querySelectorAll('.show-more');
@@ -205,26 +169,19 @@ const getPlayNextTrackButton = (onClick) => {
 	return button;
 }
 
-const clickAtPercentageWithinSeekControl = (percentage) => {
-	// Get the seek control outer element
-	const seekControlOuter = document.querySelector('.seek-control-outer');
 
-	if (seekControlOuter) {
-		// Calculate the x-coordinate for the click event based on the percentage
-		const rect = seekControlOuter.getBoundingClientRect();
-		const x = rect.left + (rect.width * (percentage / 100));
+// ------------------------------------------------------------------------------------------------
+// Next track with Percentage
+// ------------------------------------------------------------------------------------------------
 
-		// Create a new click event
-		const clickEvent = new MouseEvent('click', {
-			bubbles: true,
-			cancelable: true,
-			view: window,
-			clientX: x,
-			clientY: rect.top + (rect.height / 2) // Middle of the element vertically
-		});
+const playNextTrackWithSavedPercentage = () => {
+	let percentage = calculateTimePercentage()
+	if (playNextTrack()) {
+		console.log("Next button clicked.");
 
-		// Dispatch the event to the seek control outer element
-		seekControlOuter.dispatchEvent(clickEvent);
+		setTimeout(function () {
+			clickAtPercentageWithinSeekControl(percentage)
+		}, 500)
 	}
 }
 
@@ -248,18 +205,65 @@ const calculateTimePercentage = () => {
 	return (positionInSeconds / durationInSeconds) * 100;
 }
 
-const playNextTrackWithSavedPercentage = () => {
-	let percentage = calculateTimePercentage()
-	if (playNextTrack()) {
-		console.log("Next button clicked.");
+const clickAtPercentageWithinSeekControl = (percentage) => {
+	// Get the seek control outer element
+	const seekControlOuter = document.querySelector('.seek-control-outer');
 
-		setTimeout(function () {
-			clickAtPercentageWithinSeekControl(percentage)
-		}, 500)
+	if (seekControlOuter) {
+		// Calculate the x-coordinate for the click event based on the percentage
+		const rect = seekControlOuter.getBoundingClientRect();
+		const x = rect.left + (rect.width * (percentage / 100));
+
+		// Create a new click event
+		const clickEvent = new MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+			clientX: x,
+			clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+		});
+
+		// Dispatch the event to the seek control outer element
+		seekControlOuter.dispatchEvent(clickEvent);
 	}
 }
 
-const getTrackIndex = (searchId) => tracks.findIndex(x => x.id === searchId);
+
+// ------------------------------------------------------------------------------------------------
+// Feed
+// ------------------------------------------------------------------------------------------------
+
+const tryPlayNextFeedTrack = () => {
+	const nowPlaying = document.querySelector('[data-tralbumid].playing');
+	if (!notExist(nowPlaying)) {
+		lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
+		return;
+	}
+
+	if (notExist(lastFeedPlayingTrackId)) {
+		return;
+	}
+
+	if (!notExist(feedPauseTrackId)) {
+		return;
+	}
+
+	feedPauseTrackId = null;
+
+	lastFeedPlayingTrackId = tracks[getTrackIndex(lastFeedPlayingTrackId) + 1].id;
+	const nextFeedTrackButton = tracks[getTrackIndex(lastFeedPlayingTrackId)].element.querySelector('.play-button');
+	nextFeedTrackButton.click();
+	nextFeedTrackButton.scrollIntoView({
+		block: 'center', behavior: 'smooth'
+	});
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Utils
+// ------------------------------------------------------------------------------------------------
+
+const getTrackIndex = (trackId) => tracks.findIndex(x => x.id === trackId);
 
 const notExist = (value) => value === null || value === undefined || value === '';
 
@@ -267,42 +271,78 @@ const getNowPlayingTrackId = () => document.querySelector('div[data-collect-item
 	?.getAttribute('data-collect-item')
 	?.substring(1);
 
-run();
 
+// ------------------------------------------------------------------------------------------------
+// Run
+// ------------------------------------------------------------------------------------------------
+
+const main = () => {
+	console.log("[Start]: Band Play");
+
+	clickShowNextButton();
+
+	setInterval(() => {
+		try {
+			addPlayNextTrackButtonToPlayer();
+
+			const url = window.location.pathname;
+			if (url.includes('/feed')) {
+				tryPlayNextFeedTrack();
+			}
+			else {
+				tryPlayNextTrack();
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	}, 500);
+
+	initTracks();
+	setInterval(() => {
+		try {
+			initTracks();
+		} catch (e) {
+			console.log(e);
+		}
+	}, 2_000);
+}
+main();
+
+// ------------------------------------------------------------------------------------------------
+// Hotkeys & Events
+// ------------------------------------------------------------------------------------------------
 
 // Add Play/Pause on 'Space' keydown
 document.addEventListener('keydown', function (event) {
 	if (event.target?.localName === 'input') {
 		return;
 	}
-	switch (event.code) {
-		case 'Space':
-			event.preventDefault();
 
-			// TODO: add handling of play/pause on track and album pages
-			// const {href} = window.location;
-			// if (href.includes('/track/') || href.includes('/album/')) {
-			// 	document.querySelector('a[role="button"]')?.click();
-			// 	return;
-			// }
-
-			const url = window.location.pathname;
-			if (url.includes('/album/') || url.includes('/track/')) {
-				document.querySelector('.playbutton')?.click();
-			} else {
-				document.querySelector('.playpause')?.click();
+	if (event.code === 'Space') {
+		event.preventDefault();
+		const url = window.location.pathname;
+		if (url.includes('/album/') || url.includes('/track/')) {
+			document.querySelector('.playbutton')?.click();
+		} else if (url.includes('/feed')) {
+			const playingFeed = document.querySelector('[data-tralbumid].playing');
+			if (!notExist(playingFeed)) {
+				playingFeed.querySelector('.play-button').click();
+				feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
 			}
-			break
+			else if (!notExist(feedPauseTrackId)) {
+				tracks[getTrackIndex(feedPauseTrackId)].element.querySelector('.play-button').click();
+				feedPauseTrackId = null;
+			}
+		} else {
+			document.querySelector('.playpause')?.click();
+		}
+	} else if (event.key === 'n') {
+		playNextTrack()
+	} else if (event.key === 'm') {
+		playNextTrackWithSavedPercentage()
 	}
 
-	switch (event.key) {
-		case 'n':
-			playNextTrack()
-			break
-		case 'm':
-			playNextTrackWithSavedPercentage()
-			break
-	}
+	return true;
 }, false);
 
 // clear data on URL change message
