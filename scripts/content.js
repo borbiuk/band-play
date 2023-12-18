@@ -1,7 +1,12 @@
 let tracks = [];
+
 let nextButtonAdded = false;
+
 let feedPauseTrackId = null;
 let lastFeedPlayingTrackId = null;
+
+let autoscroll = true;
+let playFirst = true;
 
 // ------------------------------------------------------------------------------------------------
 // Collection & Wishlist
@@ -24,9 +29,13 @@ const playNextTrack = () => {
 	}
 
 	nextTrackToPlay.element.querySelector('a')?.click();
-	nextTrackToPlay.element.scrollIntoView({
-		block: 'center', behavior: 'smooth'
-	});
+
+	if (autoscroll) {
+		nextTrackToPlay.element.scrollIntoView({
+			block: 'center', behavior: 'smooth'
+		});
+	}
+
 	return true
 }
 
@@ -39,7 +48,7 @@ const getPlayingTrackProgress = () => {
 const getNextTrack = () => {
 	const nowPlayingId = getNowPlayingTrackId();
 	if (notExist(nowPlayingId)) {
-		return tracks.length > 0 ? tracks[0] : null;
+		return playFirst && tracks.length > 0 ? tracks[0] : null;
 	}
 
 	let nowPlayingIndex = getTrackIndex(nowPlayingId);
@@ -52,7 +61,7 @@ const getNextTrack = () => {
 
 	// not founded OR last
 	if (nowPlayingIndex === -1 || nowPlayingIndex === tracks.length - 1) {
-		return tracks.length > 0 ? tracks[0] : null;
+		return playFirst && tracks.length > 0 ? tracks[0] : null;
 	}
 
 	return tracks[nowPlayingIndex + 1];
@@ -74,16 +83,12 @@ const initTracks = () => {
 		return;
 	}
 
-	console.log(allTracksOnPage.length)
-
 	tracks = Array.from(allTracksOnPage)
 		.filter(x => !notExist(x.getAttribute('data-trackid'))) // not released tracks
 		.map(x => ({
 			id: x.getAttribute('data-tralbumid'),
 			element: x
 		}));
-
-	console.log(tracks.length);
 }
 
 
@@ -175,8 +180,6 @@ const getPlayNextTrackButton = (onClick) => {
 const playNextTrackWithSavedPercentage = () => {
 	let percentage = calculateTimePercentage()
 	if (playNextTrack()) {
-		console.log("Next button clicked.");
-
 		setTimeout(function () {
 			clickAtPercentageWithinSeekControl(percentage)
 		}, 500)
@@ -251,9 +254,12 @@ const tryPlayNextFeedTrack = () => {
 	lastFeedPlayingTrackId = tracks[getTrackIndex(lastFeedPlayingTrackId) + 1].id;
 	const nextFeedTrackButton = tracks[getTrackIndex(lastFeedPlayingTrackId)].element.querySelector('.play-button');
 	nextFeedTrackButton.click();
-	nextFeedTrackButton.scrollIntoView({
-		block: 'center', behavior: 'smooth'
-	});
+
+	if (autoscroll) {
+		nextFeedTrackButton.scrollIntoView({
+			block: 'center', behavior: 'smooth'
+		});
+	}
 }
 
 const playNextFeedTrack = () => {
@@ -261,11 +267,13 @@ const playNextFeedTrack = () => {
 	if (notExist(nowPlaying)) {
 		const firstFeedTrackButton = tracks[0].element.querySelector('.play-button')
 		firstFeedTrackButton.click();
-		firstFeedTrackButton.scrollIntoView({
-			block: 'center', behavior: 'smooth'
-		});
+		if (autoscroll) {
+			firstFeedTrackButton.scrollIntoView({
+				block: 'center', behavior: 'smooth'
+			});
+		}
 		firstFeedTrackButton.onclick = () => {
-			feedPauseTrackId = tracks[0].id;
+			feedPauseTrackId = playFirst ? tracks[0].id: null;
 			lastFeedPlayingTrackId = null;
 		}
 		return;
@@ -273,9 +281,11 @@ const playNextFeedTrack = () => {
 
 	const nextFeedTrackButton = tracks[getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].element.querySelector('.play-button');
 	nextFeedTrackButton.click();
-	nextFeedTrackButton.scrollIntoView({
-		block: 'center', behavior: 'smooth'
-	});
+	if (autoscroll) {
+		nextFeedTrackButton.scrollIntoView({
+			block: 'center', behavior: 'smooth'
+		});
+	}
 	nextFeedTrackButton.onclick = () => {
 		feedPauseTrackId = tracks[getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].id;
 		lastFeedPlayingTrackId = null;
@@ -336,7 +346,7 @@ main();
 // ------------------------------------------------------------------------------------------------
 
 // Add Play/Pause on 'Space' keydown
-document.addEventListener('keydown', function (event) {
+document.addEventListener('keydown', (event) => {
 	if (event.target?.localName === 'input') {
 		return;
 	}
@@ -374,13 +384,26 @@ document.addEventListener('keydown', function (event) {
 	return true;
 }, false);
 
-// clear data on URL change message
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	if (message?.code !== 'URL_CHANGED') {
+
+	// clear data on URL change message
+	if (message?.code === 'URL_CHANGED') {
+		tracks = [];
+		clickShowNextButton();
+		initTracks();
+
 		return;
 	}
 
-	tracks = [];
-	clickShowNextButton();
-	initTracks();
+	if (message?.code === 'AUTOSCROLL_CHANGED' || message?.code === 'PLAYFIRST_CHANGED') {
+		chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
+			autoscroll = result.autoscroll;
+			playFirst = result.playFirst;
+		});
+	}
+});
+
+chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
+	autoscroll = result.autoscroll;
+	playFirst = result.playFirst;
 });
