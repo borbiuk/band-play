@@ -368,7 +368,7 @@ document.addEventListener('keydown', (event) => {
 		} else {
 			document.querySelector('.playpause')?.click();
 		}
-	} else if (event.key === 'n') {
+	} else if (event.code === 'KeyN') {
 		const url = window.location.pathname;
 		if (url.includes('/album/') || url.includes('/track/')) {
 			document.querySelector('.nextbutton').click();
@@ -377,7 +377,7 @@ document.addEventListener('keydown', (event) => {
 		} else {
 			playNextTrack();
 		}
-	} else if (event.key === 'm') {
+	} else if (event.code === 'KeyM') {
 		playNextTrackWithSavedPercentage();
 	}
 
