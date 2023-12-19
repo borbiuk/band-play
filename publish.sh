@@ -9,12 +9,16 @@ zip_filename="band-play-build${current_date_time}.zip"
 temp_dir="band-play-build"
 
 include_files=(
-	"manifest.json"
 	"assets/button.png"
+	"assets/buymeacoffee.png"
+	"assets/github.png"
 	"assets/logo-16.png"
 	"assets/logo-32.png"
 	"assets/logo-48.png"
 	"assets/logo-128.png"
+	"manifest.json"
+	"popup/popup.html"
+	"popup/popup.js"
 	"scripts/background.js"
 	"scripts/content.js"
 )
