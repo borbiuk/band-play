@@ -35,6 +35,7 @@ Please note that customization of hotkeys is not available in the current versio
 ### File Structure
 
 - `assets/`: Contains images and icons used by the extension.
+- `popup/`: Contains HTML and JavaScript files used for popup of extension.
 - `scripts/`: Contains the JavaScript files for background and content scripts.
 - `LICENSE`: The license under which this extension is released.
 - `manifest.json`: The Chrome extension manifest file.
