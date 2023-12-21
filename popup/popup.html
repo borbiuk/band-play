@@ -36,7 +36,7 @@
         }
 
         .header img:hover {
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
 
         .header span {
@@ -72,7 +72,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80px;
             flex-direction: column;
         }
 
@@ -142,17 +141,17 @@
 <body>
 
 <div class="container"
-	 style="width: 190px; height: 290px; padding: 10px 10px 20px 10px; display: flex; justify-content: space-between; align-items: center; flex-direction: column;">
+	 style="width: 180px; height: 320px; padding: 10px 8px 20px; display: flex; justify-content: start; align-items: center; flex-direction: column;">
 
 	<!-- Header -->
-	<div class="header" id="logo">
+	<div class="header" id="logo" style="margin-bottom: 10px">
 		<!-- Logo -->
 		<img src="./../assets/logo-128.png" alt="Bandplay logo">
 		<span>Bandplay</span>
 	</div>
 
 	<!-- Menu -->
-	<div class="menu">
+	<div class="menu" style="margin-bottom: 20px">
 		<!-- Autoscroll -->
 		<div class="menu-item" style="margin-bottom: 6px;">
 			<input type="checkbox" id="autoscroll">
@@ -175,9 +174,15 @@
 		</button>
 
 		<!-- Buy me a Coffee -->
-		<button id="buymeacoffe" class="button buymeacoffe">
+		<button id="buymeacoffe" class="button buymeacoffe" style="margin-bottom: 10px;">
 			<img src="./../assets/buymeacoffee.png" alt="buymeacoffee logo">
 			<span>Buy me a coffee</span>
+		</button>
+
+		<!-- Rate -->
+		<button id="rate" class="button buymeacoffe">
+			<img src="./../assets/rate.png" alt="rate logo" style="margin-left: -4px">
+			<span style="margin-left: 24px">Rate</span>
 		</button>
 
 	</div>
