@@ -1,4 +1,4 @@
-const isNotExist = (value) =>
+const notExist = (value) =>
 	value === undefined
 	|| value === null
 	|| value === '';
@@ -6,7 +6,7 @@ const isNotExist = (value) =>
 // send URL change message
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	// url not changed
-	if (isNotExist(changeInfo.url)) {
+	if (notExist(changeInfo.url)) {
 		return;
 	}
 
