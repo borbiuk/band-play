@@ -79,17 +79,6 @@ const collection = {
 	// Object to handle the next track button functionalities
 	nextTrackButton: {
 
-		// Click the next track button.
-		click: () => {
-			const showNextButton = document.querySelectorAll('.show-more');
-			if (utils.notExist(showNextButton)) {
-				return false;
-			}
-
-			showNextButton.forEach(x => x.click());
-			return true;
-		},
-
 		// Add the next track button to the player.
 		addToPlayer: () => {
 			if (nextButtonAdded) {
@@ -157,7 +146,22 @@ const collection = {
 
 			return button;
 		}
-	}
+	},
+
+	// Object to handle the 'View all items' button functionalities
+	showMoreButton: {
+
+		// Click the 'View all items' button.
+		click: () => {
+			const showNextButton = document.querySelectorAll('.show-more');
+			if (utils.notExist(showNextButton)) {
+				return false;
+			}
+
+			showNextButton.forEach(x => x.click());
+			return true;
+		},
+	},
 };
 
 // Function to initialize tracks based on the current page.
@@ -312,10 +316,10 @@ const utils = {
 	// Get the index of a track by its ID in the tracks array.
 	getTrackIndex: (trackId) => tracks.findIndex(x => x.id === trackId),
 
-	// Check if a value does not exist (null, undefined, or empty string).
-	notExist: (value) => value === null || value === undefined || value === '',
+	// Check if a value does not exist (null, undefined, or empty string, or empty array).
+	notExist: (value) => value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0),
 
-	// Check if a value exists (not null, undefined, or empty string).
+	// Check if a value exists (not null, undefined, or empty string, or empty array).
 	exist: (value) => !utils.notExist(value),
 };
 
@@ -323,7 +327,6 @@ const utils = {
 const main = () => {
 	console.log("[Start]: Band Play");
 
-	collection.nextTrackButton.click();
 
 	// Main execution loop for track playback and initialization
 	setInterval(() => {
@@ -346,6 +349,7 @@ const main = () => {
 	setInterval(() => {
 		try {
 			initTracks();
+			collection.showMoreButton.click();
 		} catch (e) {
 			console.log(e);
 		}
@@ -395,15 +399,6 @@ document.addEventListener('keydown', (event) => {
 
 // Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-
-	// clear data on URL change message
-	if (message?.code === 'URL_CHANGED') {
-		tracks = [];
-		collection.nextTrackButton.click();
-		initTracks();
-
-		return;
-	}
 
 	if (message?.code === 'AUTOSCROLL_CHANGED' || message?.code === 'PLAYFIRST_CHANGED') {
 		chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {

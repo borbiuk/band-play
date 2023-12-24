@@ -19,7 +19,6 @@ include_files=(
 	"manifest.json"
 	"popup/popup.html"
 	"popup/popup.js"
-	"scripts/background.js"
 	"scripts/content.js"
 )
 
@@ -39,8 +38,14 @@ for file in "${include_files[@]}"; do
 	cp "$file" "$temp_dir/$file"
 done
 
+# Enter directory containing the built extension source.
+cd "$temp_dir"
+
 # Create a .zip file
-zip -r "$zip_filename" "$temp_dir"
+zip -r "../$zip_filename" .
+
+# Return to where we came from.
+cd ..
 
 # Clean up the temporary directory
 rm -r "$temp_dir"
