@@ -1,19 +1,26 @@
+// Stored tracks on current page.
 let tracks = [];
 
+// Flag to track whether the next button has been added to the player.
 let nextButtonAdded = false;
 
+
+// Track ID on the feed page that was paused.
 let feedPauseTrackId = null;
+
+// The ID of latest played track on the feed page.
 let lastFeedPlayingTrackId = null;
 
+// Enable autoscroll to track that was start playing.
 let autoscroll = true;
+
+// Play first track on the page when error occurred.
 let playFirst = true;
 
-// ------------------------------------------------------------------------------------------------
-// Collection & Wishlist
-// ------------------------------------------------------------------------------------------------
-
-
+// Object to handle 'collection' and 'wishlist' pages.
 const collection = {
+
+	// Check if the current track has played more than 99% and play the next track if so.
 	tryPlayNextTrack: () => {
 		const progress = collection.getPlayingTrackProgress();
 		if (utils.exist(progress) && progress >= 99) {
@@ -21,6 +28,7 @@ const collection = {
 		}
 	},
 
+	// Play the next track in the collection.
 	playNextTrack: () => {
 		const nextTrackToPlay = collection.getNextTrack();
 		if (utils.notExist(nextTrackToPlay)) {
@@ -36,11 +44,13 @@ const collection = {
 		return true;
 	},
 
+	// Get the progress of the currently playing track.
 	getPlayingTrackProgress: () => {
 		const left = document.querySelector('div.seek-control')?.style?.left;
 		return utils.notExist(left) ? null : parseFloat(left);
 	},
 
+	// Get the next track to be played in the collection.
 	getNextTrack: () => {
 		const nowPlayingId = collection.getNowPlayingTrackId();
 		if (utils.notExist(nowPlayingId)) {
@@ -61,11 +71,15 @@ const collection = {
 		return tracks[nowPlayingIndex + 1];
 	},
 
+	// Get the ID of the currently playing track.
 	getNowPlayingTrackId: () => document.querySelector('div[data-collect-item]')
 		?.getAttribute('data-collect-item')
 		?.substring(1),
 
+	// Object to handle the next track button functionalities
 	nextTrackButton: {
+
+		// Click the next track button.
 		click: () => {
 			const showNextButton = document.querySelectorAll('.show-more');
 			if (utils.notExist(showNextButton)) {
@@ -76,6 +90,7 @@ const collection = {
 			return true;
 		},
 
+		// Add the next track button to the player.
 		addToPlayer: () => {
 			if (nextButtonAdded) {
 				return;
@@ -101,6 +116,7 @@ const collection = {
 			nextButtonAdded = true;
 		},
 
+		// Add click listener to the next track button.
 		addClickListener: (onClick) => {
 			const button = document.createElement('button');
 			button.className = 'band-play-next-button';
@@ -144,7 +160,7 @@ const collection = {
 	}
 };
 
-
+// Function to initialize tracks based on the current page.
 const initTracks = () => {
 	let collectionsId;
 	if (window.location.href.includes('/wishlist')) {
@@ -169,11 +185,7 @@ const initTracks = () => {
 		}));
 }
 
-
-// ------------------------------------------------------------------------------------------------
-// Next track with Percentage
-// ------------------------------------------------------------------------------------------------
-
+// Function to play the next track considering the saved playback percentage
 const playNextTrackWithSavedPercentage = () => {
 	let percentage = calculateTimePercentage()
 	if (collection.playNextTrack()) {
@@ -183,6 +195,7 @@ const playNextTrackWithSavedPercentage = () => {
 	}
 }
 
+// Function to calculate the playback percentage of the current track
 const calculateTimePercentage = () => {
 	function convertTimeToSeconds(timeStr) {
 		const parts = timeStr.split(':');
@@ -203,6 +216,7 @@ const calculateTimePercentage = () => {
 	return (positionInSeconds / durationInSeconds) * 100;
 }
 
+// Function to simulate a click at a specific percentage within the seek control
 const clickAtPercentageWithinSeekControl = (percentage) => {
 	// Get the seek control outer element
 	const seekControlOuter = document.querySelector('.seek-control-outer');
@@ -226,12 +240,10 @@ const clickAtPercentageWithinSeekControl = (percentage) => {
 	}
 }
 
-
-// ------------------------------------------------------------------------------------------------
-// Feed
-// ------------------------------------------------------------------------------------------------
-
+// Object to handle 'feed' page.
 const feed = {
+
+	// Try to play the next track in the feed.
 	tryPlayNextTrack: () => {
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.exist(nowPlaying)) {
@@ -260,6 +272,7 @@ const feed = {
 		}
 	},
 
+	// Play the next track in the feed.
 	playNextTrack: () => {
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.notExist(nowPlaying)) {
@@ -293,27 +306,26 @@ const feed = {
 	}
 };
 
-// ------------------------------------------------------------------------------------------------
-// Utils
-// ------------------------------------------------------------------------------------------------
-
+// Utility functions used across the codebase.
 const utils = {
+
+	// Get the index of a track by its ID in the tracks array.
 	getTrackIndex: (trackId) => tracks.findIndex(x => x.id === trackId),
 
+	// Check if a value does not exist (null, undefined, or empty string).
 	notExist: (value) => value === null || value === undefined || value === '',
+
+	// Check if a value exists (not null, undefined, or empty string).
 	exist: (value) => !utils.notExist(value),
 };
 
-
-// ------------------------------------------------------------------------------------------------
-// Run
-// ------------------------------------------------------------------------------------------------
-
+// Main function to start the application.
 const main = () => {
 	console.log("[Start]: Band Play");
 
 	collection.nextTrackButton.click();
 
+	// Main execution loop for track playback and initialization
 	setInterval(() => {
 		try {
 			collection.nextTrackButton.addToPlayer();
@@ -327,8 +339,9 @@ const main = () => {
 		} catch (e) {
 			console.log(e);
 		}
-	}, 500);
+	}, 300);
 
+	// Initialization loop to refresh tracks periodically
 	initTracks();
 	setInterval(() => {
 		try {
@@ -336,22 +349,19 @@ const main = () => {
 		} catch (e) {
 			console.log(e);
 		}
-	}, 2_000);
+	}, 1_000);
 }
 main();
 
-// ------------------------------------------------------------------------------------------------
-// Hotkeys & Events
-// ------------------------------------------------------------------------------------------------
-
-// Add Play/Pause on 'Space' keydown
+// Event listeners for keyboard shortcuts.
 document.addEventListener('keydown', (event) => {
 	if (event.target?.localName === 'input') {
 		return;
 	}
 
-	if (event.code === 'Space') {
+	if (event.code === 'Space') { // Play/Pause current track on the 'Space' keydown
 		event.preventDefault();
+
 		const url = window.location.pathname;
 		if (url.includes('/album/') || url.includes('/track/')) {
 			document.querySelector('.playbutton')?.click();
@@ -367,24 +377,23 @@ document.addEventListener('keydown', (event) => {
 		} else {
 			document.querySelector('.playpause')?.click();
 		}
-	} else if (event.code === 'KeyN') {
+	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
 		const url = window.location.pathname;
 		if (url.includes('/album/') || url.includes('/track/')) {
 			document.querySelector('.nextbutton').click();
 		} else if (url.includes('/feed')) {
 			feed.playNextTrack();
-		} else {
-			if (!collection.playNextTrack()) {
-				document.querySelector()
-			}
+		} else if (!collection.playNextTrack()) {
+			tracks[0].element.click();
 		}
-	} else if (event.code === 'KeyM') {
+	} else if (event.code === 'KeyM') { // Play the next track with currently played percentage on the 'M' keydown
 		playNextTrackWithSavedPercentage();
 	}
 
 	return true;
 }, false);
 
+// Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 	// clear data on URL change message
@@ -404,6 +413,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 });
 
+// Init configuration form local storage.
 chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
 	autoscroll = result.autoscroll;
 	playFirst = result.playFirst;

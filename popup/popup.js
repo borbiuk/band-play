@@ -32,14 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	});
 
+	const githubButton = document.getElementById('github');
+	githubButton.addEventListener('click', () => {
+		window.open('https://github.com/borbiuk/band-play', '_blank');
+	});
+
 	const buymeacoffeButton = document.getElementById('buymeacoffe');
 	buymeacoffeButton.addEventListener('click', () => {
 		window.open('https://www.buymeacoffee.com/borbiuk', '_blank');
 	});
 
-	const githubButton = document.getElementById('github');
-	githubButton.addEventListener('click', () => {
-		window.open('https://github.com/borbiuk/band-play', '_blank');
+	const rateButton = document.getElementById('rate');
+	rateButton.addEventListener('click', () => {
+		window.open('https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews', '_blank');
 	});
 
 });
