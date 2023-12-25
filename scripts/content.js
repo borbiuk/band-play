@@ -71,6 +71,11 @@ const collection = {
 		return tracks[nowPlayingIndex + 1];
 	},
 
+	// Play or Pause current track in the collection.
+	playPause: () => {
+		document.querySelector('.playpause')?.click();
+	},
+
 	// Get the ID of the currently playing track.
 	getNowPlayingTrackId: () => document.querySelector('div[data-collect-item]')
 		?.getAttribute('data-collect-item')
@@ -183,6 +188,17 @@ const initTracks = () => {
 			id: x.getAttribute('data-tralbumid'),
 			element: x
 		}));
+
+	if (window.location.href.includes('/feed')) {
+		tracks.forEach(x => {
+			x.element.querySelector('.play-button').onclick = () => {
+				lastFeedPlayingTrackId = null;
+				if (!x.element.classList.contains('playing')) {
+					feedPauseTrackId = x.id;
+				}
+			}
+		});
+	}
 }
 
 // Function to play the next track considering the saved playback percentage
@@ -278,7 +294,7 @@ const feed = {
 		if (utils.notExist(nowPlaying)) {
 			const playPauseButton = utils.exist(feedPauseTrackId)
 				? tracks[utils.getTrackIndex(feedPauseTrackId) + 1].element.querySelector('.play-button')
-				: tracks[0].element.querySelector('.play-button')
+				: tracks[0].element.querySelector('.play-button');
 			playPauseButton.click();
 			if (autoscroll) {
 				playPauseButton.scrollIntoView({
@@ -302,6 +318,18 @@ const feed = {
 		nextPlayPauseButton.onclick = () => {
 			feedPauseTrackId = tracks[utils.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].id;
 			lastFeedPlayingTrackId = null;
+		}
+	},
+
+	// Play or Pause current track in the feed.
+	playPause: () => {
+		const playingFeed = document.querySelector('[data-tralbumid].playing');
+		if (utils.exist(playingFeed)) {
+			playingFeed.querySelector('.play-button').click();
+			feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
+		} else if (utils.exist(feedPauseTrackId)) {
+			tracks[utils.getTrackIndex(feedPauseTrackId)].element.querySelector('.play-button').click();
+			feedPauseTrackId = null;
 		}
 	}
 };
@@ -366,16 +394,9 @@ document.addEventListener('keydown', (event) => {
 		if (url.includes('/album/') || url.includes('/track/')) {
 			document.querySelector('.playbutton')?.click();
 		} else if (url.includes('/feed')) {
-			const playingFeed = document.querySelector('[data-tralbumid].playing');
-			if (utils.exist(playingFeed)) {
-				playingFeed.querySelector('.play-button').click();
-				feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
-			} else if (utils.exist(feedPauseTrackId)) {
-				tracks[utils.getTrackIndex(feedPauseTrackId)].element.querySelector('.play-button').click();
-				feedPauseTrackId = null;
-			}
+			feed.playPause();
 		} else {
-			document.querySelector('.playpause')?.click();
+			collection.playPause();
 		}
 	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
 		const url = window.location.pathname;
