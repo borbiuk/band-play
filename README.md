@@ -20,6 +20,7 @@ This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy co
 - `Space bar`: Pause/Play the current track.
 - `n`: Play the next track from the start.
 - `m`: Play the next track, continuing with the previous track's progress.
+- Digits from `0` to `9`: Play the current rack with progress `(Digit * 10)%`
 
 Please note that customization of hotkeys is not available in the current version.
 
