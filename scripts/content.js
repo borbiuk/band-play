@@ -19,6 +19,9 @@ let autoscroll = true;
 // Play first track on the page when error occurred.
 let playFirst = true;
 
+// Step of track moving in seconds.
+let moveStep = 10;
+
 // Object to handle 'collection' and 'wishlist' pages.
 const collection = {
 
@@ -103,48 +106,51 @@ const collection = {
 
 		// Function to simulate a click at a specific percentage within the seek control.
 		click: (percentage) => {
-			// Get the seek control outer element
-			const seekControlOuter = document.querySelector('.seek-control-outer');
-
-			if (seekControlOuter) {
-				// Calculate the x-coordinate for the click event based on the percentage
-				const rect = seekControlOuter.getBoundingClientRect();
-				const x = rect.left + (rect.width * (percentage / 100));
-
-				// Create a new click event
-				const clickEvent = new MouseEvent('click', {
-					bubbles: true,
-					cancelable: true,
-					view: window,
-					clientX: x,
-					clientY: rect.top + (rect.height / 2) // Middle of the element vertically
-				});
-
-				// Dispatch the event to the seek control outer element
-				seekControlOuter.dispatchEvent(clickEvent);
+			const control = document.querySelector('.progress-bar');
+			if (utils.notExist(control)) {
+				return;
 			}
+
+			const rect = control.getBoundingClientRect();
+			const x = rect.left + (rect.width * (percentage / 100));
+			const clickEvent = new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+				view: window,
+				clientX: x,
+				clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+			});
+
+			// Dispatch the event to the seek control outer element
+			control.dispatchEvent(clickEvent);
 		},
 
-		// Function to calculate the playback percentage of the current track
-		calculateTimePercentage: () => {
-			const convertTimeToSeconds = (timeStr) => {
-				const parts = timeStr.split(':');
-				const minutes = parseInt(parts[0], 10);
-				const seconds = parseInt(parts[1], 10);
-				return (minutes * 60) + seconds;
-			};
+		// Function to calculate the playback percentage of the current track.
+		calculateTimePercentage: (add = 0) => {
 
 			// Retrieve the time strings
-			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
 			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]').textContent;
+			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
 
 			// Convert time strings to seconds
-			const positionInSeconds = convertTimeToSeconds(positionStr);
-			const durationInSeconds = convertTimeToSeconds(durationStr);
+			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+			let positionInSeconds = utils.convertTimeToSeconds(positionStr) + add;
+			if (positionInSeconds < 0) {
+				positionInSeconds = 0;
+			}
+			else if (positionInSeconds > durationInSeconds) {
+				positionInSeconds = durationInSeconds;
+			}
 
 			// Calculate the percentage
 			return (positionInSeconds / durationInSeconds) * 100;
-		}
+		},
+
+		// Move track back or forward on 'moveStep' seconds.
+		move: (forward) => {
+			const percentage = collection.percentage.calculateTimePercentage(forward ? moveStep : -moveStep);
+			collection.percentage.click(percentage);
+		},
 	},
 
 	// Object to handle the next track button functionalities.
@@ -256,10 +262,32 @@ const album = {
 
 			const fromX = thumbRect.left;
 			const fromY = thumbRect.top + (thumbRect.height / 2);
-			const toX = controlRect.left + (controlRect.width * (percentage / 100)) - (thumbRect.width / 2);
+			const toX = controlRect.left + ((controlRect.width - thumbRect.width) * (percentage / 100));
 			const toY = controlRect.top + (controlRect.height / 2);
 
 			utils.drugElement(thumb, fromX, fromY, toX, toY);
+		},
+
+		move: (forward) => {
+
+			// Retrieve the time strings
+			const positionStr = document.querySelector('.time_elapsed').textContent;
+			const durationStr = document.querySelector('.time_total').textContent;
+
+			// Convert time strings to seconds
+			const positionInSeconds = utils.convertTimeToSeconds(positionStr);
+			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+
+			let nextPositionInSeconds = positionInSeconds + (forward ? moveStep : -moveStep);
+			if (nextPositionInSeconds < 0) {
+				nextPositionInSeconds = 0;
+			}
+			else if (nextPositionInSeconds > durationInSeconds) {
+				nextPositionInSeconds = durationInSeconds;
+			}
+
+			const percentage = (nextPositionInSeconds / durationInSeconds) * 100;
+			album.percentage.click(percentage);
 		},
 	}
 };
@@ -400,6 +428,14 @@ const utils = {
 	// Check if a value exists (not null, undefined, or empty string).
 	exist: (value) => !utils.notExist(value),
 
+	// Convert time string (00:00) to seconds.
+	convertTimeToSeconds: (timeStr) => {
+		const parts = timeStr.split(':');
+		const minutes = parseInt(parts[0], 10);
+		const seconds = parseInt(parts[1], 10);
+		return (minutes * 60) + seconds;
+	},
+
 	// Drug element.
 	drugElement: (element, fromX, fromY, toX, toY) => {
 		const down = new MouseEvent('mousedown', {
@@ -473,7 +509,7 @@ main();
 // Event listeners for keyboard shortcuts.
 document.addEventListener('keydown', (event) => {
 	if (event.target?.localName === 'input') {
-		return;
+		return true;
 	}
 
 	const url = window.location.href;
@@ -512,6 +548,16 @@ document.addEventListener('keydown', (event) => {
 		else if (collection.checkUrl(url)) {
 			event.preventDefault();
 			collection.percentage.click(percentage);
+		}
+	}
+	else if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+		const forward = event.code === 'ArrowRight';
+
+		if (album.checkUrl(url)) {
+			album.percentage.move(forward);
+		}
+		else if (collection.checkUrl(url)) {
+			collection.percentage.move(forward);
 		}
 	}
 
