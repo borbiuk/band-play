@@ -10,6 +10,9 @@ let feedPauseTrackId = null;
 // The ID of latest played track on the feed page.
 let lastFeedPlayingTrackId = null;
 
+// Enable autoplay on all pages.
+let autoplay = true;
+
 // Enable autoscroll to track that was start playing.
 let autoscroll = true;
 
@@ -26,7 +29,7 @@ const collection = {
 	},
 
 	// Check if the current track has played more than 99% and play the next track if so.
-	tryPlayNextTrack: () => {
+	tryAutoplay: () => {
 		const progress = collection.getPlayingTrackProgress();
 		if (utils.exist(progress) && progress >= 99) {
 			collection.playNextTrack();
@@ -311,7 +314,7 @@ const feed = {
 	},
 
 	// Try to play the next track in the feed.
-	tryPlayNextTrack: () => {
+	tryAutoplay: () => {
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.exist(nowPlaying)) {
 			lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
@@ -440,11 +443,15 @@ const main = () => {
 		try {
 			collection.nextTrackButton.addToPlayer();
 
+			if (!autoplay) {
+				return;
+			}
+
 			const url = window.location.href;
 			if (feed.checkUrl(url)) {
-				feed.tryPlayNextTrack();
+				feed.tryAutoplay();
 			} else if (collection.checkUrl(url)){
-				collection.tryPlayNextTrack();
+				collection.tryAutoplay();
 			}
 		} catch (e) {
 			console.log(e);
@@ -523,8 +530,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		return;
 	}
 
-	if (message?.code === 'AUTOSCROLL_CHANGED' || message?.code === 'PLAYFIRST_CHANGED') {
-		chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
+	if (message?.code === 'STORAGE_CHANGED') {
+		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst'], (result) => {
+			autoplay = result.autoplay;
 			autoscroll = result.autoscroll;
 			playFirst = result.playFirst;
 		});
