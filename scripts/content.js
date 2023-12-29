@@ -20,7 +20,7 @@ let autoscroll = true;
 let playFirst = true;
 
 // Step of track moving in seconds.
-let moveStep = 10;
+let movingStep = 10;
 
 // Object to handle 'collection' and 'wishlist' pages.
 const collection = {
@@ -146,9 +146,9 @@ const collection = {
 			return (positionInSeconds / durationInSeconds) * 100;
 		},
 
-		// Move track back or forward on 'moveStep' seconds.
+		// Move track back or forward on 'movingStep' seconds.
 		move: (forward) => {
-			const percentage = collection.percentage.calculateTimePercentage(forward ? moveStep : -moveStep);
+			const percentage = collection.percentage.calculateTimePercentage(forward ? movingStep : -movingStep);
 			collection.percentage.click(percentage);
 		},
 	},
@@ -278,7 +278,7 @@ const album = {
 			const positionInSeconds = utils.convertTimeToSeconds(positionStr);
 			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
 
-			let nextPositionInSeconds = positionInSeconds + (forward ? moveStep : -moveStep);
+			let nextPositionInSeconds = positionInSeconds + (forward ? movingStep : -movingStep);
 			if (nextPositionInSeconds < 0) {
 				nextPositionInSeconds = 0;
 			}
@@ -577,16 +577,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	if (message?.code === 'STORAGE_CHANGED') {
-		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst'], (result) => {
-			autoplay = result.autoplay;
-			autoscroll = result.autoscroll;
-			playFirst = result.playFirst;
+		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
+			autoplay = Boolean(result.autoplay);
+			autoscroll = Boolean(result.autoscroll);
+			playFirst = Boolean(result.playFirst);
+			movingStep = Number(result.movingStep);
 		});
 	}
 });
 
 // Init configuration form local storage.
-chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
-	autoscroll = result.autoscroll;
-	playFirst = result.playFirst;
+chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
+	autoplay = Boolean(result.autoplay);
+	autoscroll = Boolean(result.autoscroll);
+	playFirst = Boolean(result.playFirst);
+	movingStep = Number(result.movingStep);
 });
