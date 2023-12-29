@@ -1,34 +1,70 @@
+
+// Checkboxes ids.
+const checkBoxes = [
+	'autoplay',
+	'autoscroll',
+	'playFirst',
+];
+
+// Update local storage.
+const updateStorage = (key, value) => {
+	chrome.storage.local.set({[key]: value});
+};
+
+// Send Chrome event about local storage changes.
+const sendStorageChangedMessage = (tabId) => {
+	chrome.tabs.sendMessage(tabId, {
+		code: 'STORAGE_CHANGED',
+	});
+};
+
+// Configure the config button animations.
+const configButton = () => {
+	const button = document.getElementById('toggleButton');
+	const menu = document.querySelector('.menu');
+
+	button.addEventListener('click', () => {
+		menu.classList.toggle('hidden');
+		button.classList.toggle('rotated');
+	});
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
-	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		const tabId = tabs[0]?.id;
 
-		const autoscrollCheckBox = document.getElementById('autoscroll');
-		autoscrollCheckBox.addEventListener('change', () => {
-			chrome.storage.local.set({ autoscroll: autoscrollCheckBox.checked });
-			chrome.tabs.sendMessage(tabId, {
-				code: 'AUTOSCROLL_CHANGED',
+		// Subscribe on checkboxes changes
+		checkBoxes.forEach(checkboxId => {
+			const checkBox = document.getElementById(checkboxId);
+			checkBox.addEventListener('change', () => {
+				updateStorage(checkboxId, Boolean(checkBox.checked));
+				sendStorageChangedMessage(tabId);
 			});
 		});
 
-		const playFirstCheckBox = document.getElementById('playFirst');
-		playFirstCheckBox.addEventListener('change', () => {
-			chrome.storage.local.set({ playFirst: playFirstCheckBox.checked });
-			chrome.tabs.sendMessage(tabId, {
-				code: 'PLAYFIRST_CHANGED',
-			});
+		// Subscribe on step changes
+		const stepInput = document.getElementById('movingStep');
+		stepInput.addEventListener('change', (event) => {
+			let value = parseInt(event.target.value);
+			if (value < 5) {
+				event.target.value = 5;
+			} else if (value > 60) {
+				event.target.value = 60;
+			}
+
+			updateStorage('movingStep', Number(event.target.value));
+			sendStorageChangedMessage(tabId);
 		});
 
 		// Initialize checkbox states from local storage
-		chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
-			autoscrollCheckBox.checked = result.autoscroll || false;
-			playFirstCheckBox.checked = result.playFirst || false;
-			chrome.tabs.sendMessage(tabId, {
-				code: 'AUTOSCROLL_CHANGED',
+		chrome.storage.local.get([...checkBoxes, 'movingStep'], (result) => {
+			checkBoxes.forEach(checkboxId => {
+				const checkBox = document.getElementById(checkboxId);
+				checkBox.checked = result[checkboxId] || false;
 			});
-			chrome.tabs.sendMessage(tabId, {
-				code: 'PLAYFIRST_CHANGED',
-			});
+
+			document.getElementById('movingStep').value = result['movingStep'] || 10;
 		});
 	});
 
@@ -46,5 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	rateButton.addEventListener('click', () => {
 		window.open('https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews', '_blank');
 	});
+
+	configButton();
 
 });

@@ -1,14 +1,16 @@
 #!/bin/bash
 
 ##########################################################
-# Create an .zip file of Google Chrome extension package #
+# Create a .zip file of Google Chrome extension package  #
 ##########################################################
 
-current_date_time=$(date +'%Y-%m-%d_%H-%M-%S')
-zip_filename="band-play-build${current_date_time}.zip"
+current_date_time=$(date +'%d-%m-%Y_%H:%M:%S')
+version=$(jq '.version' manifest.json | tr -d '"')
+zip_filename="band-play-build_${current_date_time}_${version}.zip"
 temp_dir="band-play-build"
 
 include_files=(
+	"assets/configuration.png"
 	"assets/button.png"
 	"assets/buymeacoffee.png"
 	"assets/github.png"
