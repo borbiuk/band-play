@@ -22,6 +22,12 @@
             overflow: hidden;
             display: block;
             background-color: var(--bandplay-10);
+            border-radius: 50%;
+            border: none;
+        }
+
+        .container {
+            position: relative;
         }
 
         .header {
@@ -44,10 +50,36 @@
             font-weight: bold;
         }
 
+        .round-button {
+            position: absolute;
+            top: 10px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--bandplay-10);
+            cursor: pointer;
+            transition: transform 0.7s ease; /* Transition for rotation */
+        }
+
+        .round-button:hover {
+            transform: rotate(45deg); /* Rotate on hover */
+            transition: transform 0.3s ease; /* Transition for rotation */
+            background-color: var(--bandplay-10);
+        }
+
         .menu {
             display: flex;
             flex-direction: column;
             font-size: 14px;
+            overflow: hidden; /* Hide overflowing content */
+            max-height: 0; /* Initially hidden */
+            transition: max-height 0.7s ease; /* Transition for height change */
+        }
+
+        .menu.hidden {
+            max-height: 163px;
         }
 
         .menu-item {
@@ -75,8 +107,8 @@
 
         input[type="number"]:focus {
             outline: none !important;
-            border: 2px solid var(--bandplay-50);
-            box-shadow: 0 0 4px var(--bandplay-80);
+            border: 3px solid var(--bandplay-40);
+            box-shadow: 0 0 6px var(--bandplay-40);
         }
 
         .menu-item input[type="number"] {
@@ -84,12 +116,11 @@
             width: 20px;
             padding: 3px;
             margin-left: 1px;
-            margin-right: 0px;
             margin-top: 2px;
-            border: 1px solid var(--bandplay-40);
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: var(--bandplay-20);
+            border: 2px solid var(--bandplay-70);
+            border-radius: 0.5rem;
+            font-size: 18px;
+            background-color: var(--bandplay-10);
             color: var(--bandplay-90);
         }
 
@@ -99,11 +130,16 @@
             cursor: pointer;
         }
 
+        .menu-item label:hover {
+            color: var(--bandplay-90);
+        }
+
         .footer {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            padding-top: 10px;
         }
 
         @keyframes shake {
@@ -144,7 +180,7 @@
         }
 
         button:hover {
-            background-color: var(--bandplay-50);
+            background-color: var(--bandplay-40);
         }
 
         button.buymeacoffe:hover img {
@@ -181,8 +217,14 @@
 		<span>BandPlay</span>
 	</div>
 
+	<!-- Toggle Button -->
+	<button id="toggleButton" class="round-button">
+		<img src="./../assets/configuration.png" alt="Configuration Icon"
+			 style="height: 28px !important; margin-left: -10px">
+	</button>
+
 	<!-- Menu -->
-	<div class="menu" style="margin-bottom: 28px">
+	<div class="menu">
 
 		<!-- Autoplay -->
 		<div class="menu-item" style="margin-bottom: 6px;">
@@ -203,7 +245,7 @@
 		</div>
 
 		<!-- Playback moving step -->
-		<div class="menu-item">
+		<div class="menu-item" style="margin-bottom: 12px;">
 			<input type="number" id="movingStep" min="5" max="60">
 			<label for="movingStep">Step in seconds</label>
 		</div>

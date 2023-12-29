@@ -18,6 +18,17 @@ const sendStorageChangedMessage = (tabId) => {
 	});
 };
 
+// Configure the config button animations.
+const configButton = () => {
+	const button = document.getElementById('toggleButton');
+	const menu = document.querySelector('.menu');
+
+	button.addEventListener('click', () => {
+		menu.classList.toggle('hidden');
+		button.classList.toggle('rotated');
+	});
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
 	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -54,12 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			});
 
 			document.getElementById('movingStep').value = result['movingStep'] || 10;
-
-			//sendStorageChangedMessage(tabId);
 		});
 	});
-
-
 
 	const githubButton = document.getElementById('github');
 	githubButton.addEventListener('click', () => {
@@ -75,5 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	rateButton.addEventListener('click', () => {
 		window.open('https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews', '_blank');
 	});
+
+	configButton();
 
 });

@@ -239,7 +239,7 @@ const collection = {
 
 const album = {
 
-	// Check that url is a album or track page url.
+	// Check that url is an album or track page url.
 	checkUrl: (url) => {
 		return url.includes('/album/') || url.includes('/track/');
 	},
