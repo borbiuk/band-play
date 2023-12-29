@@ -11,9 +11,6 @@
 		"tabs",
 		"storage"
 	],
-	"background": {
-		"service_worker": "scripts/background.js"
-	},
 	"content_scripts": [
 		{
 			"js": [
@@ -38,6 +35,11 @@
 	"action": {
 		"default_title": "Bandcamp play settings",
 		"default_popup": "popup/popup.html"
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "borbiuk.n@gmail.com"
+		}
 	},
 	"icons": {
 		"16": "assets/logo-16.png",
