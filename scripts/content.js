@@ -10,11 +10,17 @@ let feedPauseTrackId = null;
 // The ID of latest played track on the feed page.
 let lastFeedPlayingTrackId = null;
 
+// Enable autoplay on all pages.
+let autoplay = true;
+
 // Enable autoscroll to track that was start playing.
 let autoscroll = true;
 
 // Play first track on the page when error occurred.
 let playFirst = true;
+
+// Step of track moving in seconds.
+let movingStep = 10;
 
 // Object to handle 'collection' and 'wishlist' pages.
 const collection = {
@@ -26,7 +32,7 @@ const collection = {
 	},
 
 	// Check if the current track has played more than 99% and play the next track if so.
-	tryPlayNextTrack: () => {
+	tryAutoplay: () => {
 		const progress = collection.getPlayingTrackProgress();
 		if (utils.exist(progress) && progress >= 99) {
 			collection.playNextTrack();
@@ -100,48 +106,51 @@ const collection = {
 
 		// Function to simulate a click at a specific percentage within the seek control.
 		click: (percentage) => {
-			// Get the seek control outer element
-			const seekControlOuter = document.querySelector('.seek-control-outer');
-
-			if (seekControlOuter) {
-				// Calculate the x-coordinate for the click event based on the percentage
-				const rect = seekControlOuter.getBoundingClientRect();
-				const x = rect.left + (rect.width * (percentage / 100));
-
-				// Create a new click event
-				const clickEvent = new MouseEvent('click', {
-					bubbles: true,
-					cancelable: true,
-					view: window,
-					clientX: x,
-					clientY: rect.top + (rect.height / 2) // Middle of the element vertically
-				});
-
-				// Dispatch the event to the seek control outer element
-				seekControlOuter.dispatchEvent(clickEvent);
+			const control = document.querySelector('.progress-bar');
+			if (utils.notExist(control)) {
+				return;
 			}
+
+			const rect = control.getBoundingClientRect();
+			const x = rect.left + (rect.width * (percentage / 100));
+			const clickEvent = new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+				view: window,
+				clientX: x,
+				clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+			});
+
+			// Dispatch the event to the seek control outer element
+			control.dispatchEvent(clickEvent);
 		},
 
-		// Function to calculate the playback percentage of the current track
-		calculateTimePercentage: () => {
-			const convertTimeToSeconds = (timeStr) => {
-				const parts = timeStr.split(':');
-				const minutes = parseInt(parts[0], 10);
-				const seconds = parseInt(parts[1], 10);
-				return (minutes * 60) + seconds;
-			};
+		// Function to calculate the playback percentage of the current track.
+		calculateTimePercentage: (add = 0) => {
 
 			// Retrieve the time strings
-			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
 			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]').textContent;
+			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
 
 			// Convert time strings to seconds
-			const positionInSeconds = convertTimeToSeconds(positionStr);
-			const durationInSeconds = convertTimeToSeconds(durationStr);
+			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+			let positionInSeconds = utils.convertTimeToSeconds(positionStr) + add;
+			if (positionInSeconds < 0) {
+				positionInSeconds = 0;
+			}
+			else if (positionInSeconds > durationInSeconds) {
+				positionInSeconds = durationInSeconds;
+			}
 
 			// Calculate the percentage
 			return (positionInSeconds / durationInSeconds) * 100;
-		}
+		},
+
+		// Move track back or forward on 'movingStep' seconds.
+		move: (forward) => {
+			const percentage = collection.percentage.calculateTimePercentage(forward ? movingStep : -movingStep);
+			collection.percentage.click(percentage);
+		},
 	},
 
 	// Object to handle the next track button functionalities.
@@ -234,7 +243,7 @@ const collection = {
 
 const album = {
 
-	// Check that url is a album or track page url.
+	// Check that url is an album or track page url.
 	checkUrl: (url) => {
 		return url.includes('/album/') || url.includes('/track/');
 	},
@@ -257,10 +266,32 @@ const album = {
 
 			const fromX = thumbRect.left;
 			const fromY = thumbRect.top + (thumbRect.height / 2);
-			const toX = controlRect.left + (controlRect.width * (percentage / 100)) - (thumbRect.width / 2);
+			const toX = controlRect.left + ((controlRect.width - thumbRect.width) * (percentage / 100));
 			const toY = controlRect.top + (controlRect.height / 2);
 
 			utils.drugElement(thumb, fromX, fromY, toX, toY);
+		},
+
+		move: (forward) => {
+
+			// Retrieve the time strings
+			const positionStr = document.querySelector('.time_elapsed').textContent;
+			const durationStr = document.querySelector('.time_total').textContent;
+
+			// Convert time strings to seconds
+			const positionInSeconds = utils.convertTimeToSeconds(positionStr);
+			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+
+			let nextPositionInSeconds = positionInSeconds + (forward ? movingStep : -movingStep);
+			if (nextPositionInSeconds < 0) {
+				nextPositionInSeconds = 0;
+			}
+			else if (nextPositionInSeconds > durationInSeconds) {
+				nextPositionInSeconds = durationInSeconds;
+			}
+
+			const percentage = (nextPositionInSeconds / durationInSeconds) * 100;
+			album.percentage.click(percentage);
 		},
 	}
 };
@@ -315,7 +346,7 @@ const feed = {
 	},
 
 	// Try to play the next track in the feed.
-	tryPlayNextTrack: () => {
+	tryAutoplay: () => {
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.exist(nowPlaying)) {
 			lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
@@ -401,6 +432,14 @@ const utils = {
 	// Check if a value exists (not null, undefined, or empty string, or empty array).
 	exist: (value) => !utils.notExist(value),
 
+	// Convert time string (00:00) to seconds.
+	convertTimeToSeconds: (timeStr) => {
+		const parts = timeStr.split(':');
+		const minutes = parseInt(parts[0], 10);
+		const seconds = parseInt(parts[1], 10);
+		return (minutes * 60) + seconds;
+	},
+
 	// Drug element.
 	drugElement: (element, fromX, fromY, toX, toY) => {
 		const down = new MouseEvent('mousedown', {
@@ -443,11 +482,15 @@ const main = () => {
 		try {
 			collection.nextTrackButton.addToPlayer();
 
+			if (!autoplay) {
+				return;
+			}
+
 			const url = window.location.href;
 			if (feed.checkUrl(url)) {
-				feed.tryPlayNextTrack();
+				feed.tryAutoplay();
 			} else if (collection.checkUrl(url)){
-				collection.tryPlayNextTrack();
+				collection.tryAutoplay();
 			}
 		} catch (e) {
 			console.log(e);
@@ -470,7 +513,7 @@ main();
 // Event listeners for keyboard shortcuts.
 document.addEventListener('keydown', (event) => {
 	if (event.target?.localName === 'input') {
-		return;
+		return true;
 	}
 
 	const url = window.location.href;
@@ -511,6 +554,16 @@ document.addEventListener('keydown', (event) => {
 			collection.percentage.click(percentage);
 		}
 	}
+	else if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+		const forward = event.code === 'ArrowRight';
+
+		if (album.checkUrl(url)) {
+			album.percentage.move(forward);
+		}
+		else if (collection.checkUrl(url)) {
+			collection.percentage.move(forward);
+		}
+	}
 
 	return true;
 }, false);
@@ -518,16 +571,29 @@ document.addEventListener('keydown', (event) => {
 // Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
-	if (message?.code === 'AUTOSCROLL_CHANGED' || message?.code === 'PLAYFIRST_CHANGED') {
-		chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
-			autoscroll = result.autoscroll;
-			playFirst = result.playFirst;
+	// clear data on URL change message
+	if (message?.code === 'URL_CHANGED') {
+		tracks = [];
+		collection.nextTrackButton.click();
+		initTracks();
+
+		return;
+	}
+
+	if (message?.code === 'STORAGE_CHANGED') {
+		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
+			autoplay = Boolean(result.autoplay);
+			autoscroll = Boolean(result.autoscroll);
+			playFirst = Boolean(result.playFirst);
+			movingStep = Number(result.movingStep);
 		});
 	}
 });
 
 // Init configuration form local storage.
-chrome.storage.local.get(['autoscroll', 'playFirst'], (result) => {
-	autoscroll = result.autoscroll;
-	playFirst = result.playFirst;
+chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
+	autoplay = Boolean(result.autoplay);
+	autoscroll = Boolean(result.autoscroll);
+	playFirst = Boolean(result.playFirst);
+	movingStep = Number(result.movingStep);
 });
