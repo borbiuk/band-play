@@ -1,10 +1,12 @@
 
 // Checkboxes ids.
-const checkBoxes = [
-	'autoplay',
-	'autoscroll',
-	'playFirst',
-];
+const checkBoxes = {
+	autoplay: true,
+	autoscroll: true,
+	playFirst:  false
+}
+
+const checkBoxesIds = Object.keys(checkBoxes);
 
 // Update local storage.
 const updateStorage = (key, value) => {
@@ -29,13 +31,36 @@ const configButton = () => {
 	});
 };
 
+// Set defaults
+const updateConfig = (result) => {
+	result.autoplay = utils.exist(result.autoplay) ? Boolean(result.autoplay): true;
+	result.autoscroll = utils.exist(result.autoscroll) ? Boolean(result.autoscroll): true;
+	result.playFirst = Boolean(result.playFirst);
+	result.movingStep = Number(result.movingStep);
+	if (isNaN(result.movingStep)) {
+		result.movingStep = 10;
+	}
+	
+	console.log(result);
+};
+
+// Utility functions used across the codebase.
+const utils = {
+
+	// Check if a value does not exist (null, undefined, or empty string).
+	notExist: (value) => value === null || value === undefined || value === '',
+
+	// Check if a value exists (not null, undefined, or empty string).
+	exist: (value) => !utils.notExist(value),
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
 	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		const tabId = tabs[0]?.id;
 
 		// Subscribe on checkboxes changes
-		checkBoxes.forEach(checkboxId => {
+		checkBoxesIds.forEach(checkboxId => {
 			const checkBox = document.getElementById(checkboxId);
 			checkBox.addEventListener('change', () => {
 				updateStorage(checkboxId, Boolean(checkBox.checked));
@@ -57,9 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			sendStorageChangedMessage(tabId);
 		});
 
-		// Initialize checkbox states from local storage
-		chrome.storage.local.get([...checkBoxes, 'movingStep'], (result) => {
-			checkBoxes.forEach(checkboxId => {
+		// Initialize checkbox states from local storage or set default
+		chrome.storage.local.get([...checkBoxesIds, 'movingStep'], (result) => {
+			updateConfig(result)
+			checkBoxesIds.forEach(checkboxId => {
 				const checkBox = document.getElementById(checkboxId);
 				checkBox.checked = result[checkboxId] || false;
 			});

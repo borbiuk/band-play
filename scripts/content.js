@@ -145,8 +145,8 @@ const collection = {
 		calculateTimePercentage: (add = 0) => {
 
 			// Retrieve the time strings
-			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]').textContent;
-			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]').textContent;
+			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]')?.textContent;
+			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]')?.textContent;
 
 			// Convert time strings to seconds
 			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
@@ -628,6 +628,16 @@ document.addEventListener('keydown', (event) => {
 	return true;
 }, false);
 
+const updateConfig = (result) => {
+	autoplay = utils.exist(result.autoplay) ? Boolean(result.autoplay): true;
+	autoscroll = utils.exist(result.autoscroll) ? Boolean(result.autoscroll): true;
+	playFirst = Boolean(result.playFirst);
+	movingStep = Number(result.movingStep);
+	if (isNaN(movingStep)) {
+		movingStep = 10;
+	}
+}
+
 // Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
@@ -642,21 +652,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 	if (message?.code === 'STORAGE_CHANGED') {
 		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
-			autoplay = Boolean(result.autoplay);
-			autoscroll = Boolean(result.autoscroll);
-			playFirst = Boolean(result.playFirst);
-			movingStep = Number(result.movingStep);
+			updateConfig(result);
 		});
 	}
 });
 
 // Init configuration form local storage.
 chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
-	autoplay = Boolean(result.autoplay);
-	autoscroll = Boolean(result.autoscroll);
-	playFirst = Boolean(result.playFirst);
-	movingStep = Number(result.movingStep);
-	if (isNaN(movingStep)) {
-		movingStep = 10;
-	}
+	updateConfig(result);
 });
