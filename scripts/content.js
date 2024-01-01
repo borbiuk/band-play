@@ -40,8 +40,8 @@ const collection = {
 	},
 
 	// Play the next track in the collection.
-	playNextTrack: () => {
-		const nextTrackToPlay = collection.getNextTrack();
+	playNextTrack: (next) => {
+		const nextTrackToPlay = collection.getNextTrack(next);
 		if (utils.notExist(nextTrackToPlay)) {
 			return false;
 		}
@@ -74,7 +74,7 @@ const collection = {
 	},
 
 	// Get the next track to be played in the collection.
-	getNextTrack: () => {
+	getNextTrack: (next) => {
 		const nowPlayingId = collection.getNowPlayingTrackId();
 		if (utils.notExist(nowPlayingId)) {
 			return playFirst && tracks.length > 0 ? tracks[0] : null;
@@ -91,7 +91,11 @@ const collection = {
 			return playFirst && tracks.length > 0 ? tracks[0] : null;
 		}
 
-		return tracks[nowPlayingIndex + 1];
+		if (!next && nowPlayingIndex === 0) {
+			return null;
+		}
+
+		return tracks[nowPlayingIndex + (next ? 1 : -1)];
 	},
 
 	// Play or Pause current track in the collection.
@@ -255,8 +259,13 @@ const album = {
 		return url.includes('/album/') || url.includes('/track/');
 	},
 
-	playNextTrack: () => {
-		document.querySelector('.nextbutton').click();
+	playNextTrack: (next) => {
+		if (next) {
+			document.querySelector('.nextbutton').click();
+			return;
+		}
+
+		document.querySelector('.prevbutton').click();
 	},
 
 	play: (index) => {
@@ -392,11 +401,12 @@ const feed = {
 	},
 
 	// Play the next track in the feed.
-	playNextTrack: () => {
+	playNextTrack: (next) => {
+		const index = () => next ? 1 : -1;
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.notExist(nowPlaying)) {
 			const playPauseButton = utils.exist(feedPauseTrackId)
-				? tracks[utils.getTrackIndex(feedPauseTrackId) + 1].element.querySelector('.play-button')
+				? tracks[utils.getTrackIndex(feedPauseTrackId) + index()].element.querySelector('.play-button')
 				: tracks[0].element.querySelector('.play-button');
 			playPauseButton.click();
 			if (autoscroll) {
@@ -411,7 +421,7 @@ const feed = {
 			return;
 		}
 
-		const nextPlayPauseButton = tracks[utils.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].element.querySelector('.play-button');
+		const nextPlayPauseButton = tracks[utils.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + index()].element.querySelector('.play-button');
 		nextPlayPauseButton.click();
 		if (autoscroll) {
 			nextPlayPauseButton.scrollIntoView({
@@ -419,7 +429,7 @@ const feed = {
 			});
 		}
 		nextPlayPauseButton.onclick = () => {
-			feedPauseTrackId = tracks[utils.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + 1].id;
+			feedPauseTrackId = tracks[utils.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) + index()].id;
 			lastFeedPlayingTrackId = null;
 		}
 	},
@@ -560,11 +570,19 @@ document.addEventListener('keydown', (event) => {
 		}
 	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
 		if (album.checkUrl(url)) {
-			album.playNextTrack();
+			album.playNextTrack(true);
 		} else if (feed.checkUrl(url)) {
-			feed.playNextTrack();
+			feed.playNextTrack(true);
 		} else if (collection.checkUrl(url)) {
-			collection.playNextTrack()
+			collection.playNextTrack(true)
+		}
+	} else if (event.code === 'KeyB') { // Play the next track on the 'N' keydown
+		if (album.checkUrl(url)) {
+			album.playNextTrack(false);
+		} else if (feed.checkUrl(url)) {
+			feed.playNextTrack(false);
+		} else if (collection.checkUrl(url)) {
+			collection.playNextTrack(false)
 		}
 	} else if (event.code === 'KeyM') { // Play the next track with currently played percentage on the 'M' keydown
 		if (collection.checkUrl(url)) {
