@@ -656,4 +656,7 @@ chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], 
 	autoscroll = Boolean(result.autoscroll);
 	playFirst = Boolean(result.playFirst);
 	movingStep = Number(result.movingStep);
+	if (isNaN(movingStep)) {
+		movingStep = 10;
+	}
 });
