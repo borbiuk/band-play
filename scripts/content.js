@@ -35,7 +35,7 @@ const collection = {
 	tryAutoplay: () => {
 		const progress = collection.getPlayingTrackProgress();
 		if (utils.exist(progress) && progress >= 99) {
-			collection.playNextTrack();
+			collection.playNextTrack(true);
 		}
 	},
 
@@ -113,7 +113,7 @@ const collection = {
 		// Function to play the next track considering the saved playback percentage.
 		playNextTrack: () => {
 			let percentage = collection.percentage.calculateTimePercentage()
-			if (collection.playNextTrack()) {
+			if (collection.playNextTrack(true)) {
 				setTimeout(() => {
 					collection.percentage.click(percentage)
 				}, 500);
@@ -199,7 +199,7 @@ const collection = {
 			}
 
 			const button = collection.nextTrackButton.addClickListener(() => {
-				collection.playNextTrack();
+				collection.playNextTrack(true);
 			});
 
 			player.style.width = '105px';
