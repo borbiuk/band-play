@@ -55,6 +55,18 @@ const collection = {
 		return true;
 	},
 
+	play: (index) => {
+		if (index < 0 || index >= tracks.length) {
+			return;
+		}
+
+		const track = tracks[index];
+		track.element.querySelector('a')?.click();
+		if (autoscroll) {
+			track.element.scrollIntoView({block: 'center', behavior: 'smooth'});
+		}
+	},
+
 	// Get the progress of the currently playing track.
 	getPlayingTrackProgress: () => {
 		const left = document.querySelector('div.seek-control')?.style?.left;
@@ -137,8 +149,7 @@ const collection = {
 			let positionInSeconds = utils.convertTimeToSeconds(positionStr) + add;
 			if (positionInSeconds < 0) {
 				positionInSeconds = 0;
-			}
-			else if (positionInSeconds > durationInSeconds) {
+			} else if (positionInSeconds > durationInSeconds) {
 				positionInSeconds = durationInSeconds;
 			}
 
@@ -248,6 +259,19 @@ const album = {
 		document.querySelector('.nextbutton').click();
 	},
 
+	play: (index) => {
+		if (index < 0) {
+			return;
+		}
+
+		const playButtons = document.querySelectorAll('td.play-col > a:not(:has(div.play_status.disabled))');
+		if (index >= playButtons.length) {
+			return;
+		}
+
+		playButtons[index].querySelector('div').click();
+	},
+
 	playPause: () => {
 		document.querySelector('.playbutton')?.click();
 	},
@@ -281,8 +305,7 @@ const album = {
 			let nextPositionInSeconds = positionInSeconds + (forward ? movingStep : -movingStep);
 			if (nextPositionInSeconds < 0) {
 				nextPositionInSeconds = 0;
-			}
-			else if (nextPositionInSeconds > durationInSeconds) {
+			} else if (nextPositionInSeconds > durationInSeconds) {
 				nextPositionInSeconds = durationInSeconds;
 			}
 
@@ -300,11 +323,9 @@ const initTracks = () => {
 		collectionsId = url.includes('/wishlist')
 			? 'wishlist-grid'
 			: 'collection-grid';
-	}
-	else if (feed.checkUrl(url)){
+	} else if (feed.checkUrl(url)) {
 		collectionsId = 'story-list'
-	}
-	else {
+	} else {
 		return;
 	}
 
@@ -403,6 +424,20 @@ const feed = {
 		}
 	},
 
+	play: (index) => {
+		if (index < 0 || index >= tracks.length) {
+			return;
+		}
+
+		const playPauseButton = tracks[index].element.querySelector('.play-button');
+		playPauseButton.click();
+		if (autoscroll) {
+			playPauseButton.scrollIntoView({
+				block: 'center', behavior: 'smooth'
+			});
+		}
+	},
+
 	// Play or Pause current track in the feed.
 	playPause: () => {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
@@ -486,7 +521,7 @@ const main = () => {
 			const url = window.location.href;
 			if (feed.checkUrl(url)) {
 				feed.tryAutoplay();
-			} else if (collection.checkUrl(url)){
+			} else if (collection.checkUrl(url)) {
 				collection.tryAutoplay();
 			}
 		} catch (e) {
@@ -518,45 +553,56 @@ document.addEventListener('keydown', (event) => {
 
 		if (album.checkUrl(url)) {
 			album.playPause();
-		}
-		else if (feed.checkUrl(url)) {
+		} else if (feed.checkUrl(url)) {
 			feed.playPause();
-		}
-		else if (collection.checkUrl(url)) {
+		} else if (collection.checkUrl(url)) {
 			collection.playPause();
 		}
 	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
 		if (album.checkUrl(url)) {
 			album.playNextTrack();
-		}
-		else if (feed.checkUrl(url)) {
+		} else if (feed.checkUrl(url)) {
 			feed.playNextTrack();
-		}
-		else if (collection.checkUrl(url)) {
+		} else if (collection.checkUrl(url)) {
 			collection.playNextTrack()
 		}
 	} else if (event.code === 'KeyM') { // Play the next track with currently played percentage on the 'M' keydown
 		if (collection.checkUrl(url)) {
 			collection.percentage.playNextTrack();
 		}
-	} else if (event.code.startsWith('Digit')) { // Play the current track with percentage on the 'Digit' keydown
+	} else if (event.code.startsWith('Digit')) {
+		if (event.shiftKey) {
+			const index = Number(event.code.split('Digit')[1]) - 1;
+			if (index < 0) {
+				return;
+			}
+
+			if (album.checkUrl(url)) {
+				album.play(index);
+			} else if (feed.checkUrl(url)) {
+				feed.play(index);
+			} else if (collection.checkUrl(url)) {
+				collection.play(index)
+			}
+
+			return;
+		}
+
+		// Play the current track with percentage on the 'Digit' keydown
 		const percentage = Number(event.code.split('Digit')[1]) * 10;
 
 		if (album.checkUrl(url)) {
 			album.percentage.click(percentage);
-		}
-		else if (collection.checkUrl(url)) {
+		} else if (collection.checkUrl(url)) {
 			event.preventDefault();
 			collection.percentage.click(percentage);
 		}
-	}
-	else if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+	} else if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
 		const forward = event.code === 'ArrowRight';
 
 		if (album.checkUrl(url)) {
 			album.percentage.move(forward);
-		}
-		else if (collection.checkUrl(url)) {
+		} else if (collection.checkUrl(url)) {
 			collection.percentage.move(forward);
 		}
 	}
