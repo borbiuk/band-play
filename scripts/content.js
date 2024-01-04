@@ -103,6 +103,23 @@ const collection = {
 		document.querySelector('.playpause')?.click();
 	},
 
+	open: () => {
+		const nowPlayingId = collection.getNowPlayingTrackId();
+		if (utils.notExist(nowPlayingId)) {
+			return;
+		}
+
+		const nowPlayingIndex = utils.getTrackIndex(nowPlayingId);
+		if (nowPlayingIndex === -1) {
+			return;
+		}
+
+		const url = tracks[nowPlayingIndex].element
+			.querySelector('.item-link')
+			.getAttribute('href');
+		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
+	},
+
 	// Get the ID of the currently playing track.
 	getNowPlayingTrackId: () => document.querySelector('div[data-collect-item]')
 		?.getAttribute('data-collect-item')
@@ -285,6 +302,16 @@ const album = {
 		document.querySelector('.playbutton')?.click();
 	},
 
+	open: () => {
+		let url = document.querySelector('.current_track .title')
+			?.querySelector('a')
+			?.getAttribute('href');
+
+		if (utils.exist(url)) {
+			chrome.runtime.sendMessage({id: 'CREATE_TAB', url: window.location.origin + url});
+		}
+	},
+
 	percentage: {
 		click: (percentage) => {
 			const control = document.querySelector('.progbar_empty');
@@ -458,7 +485,17 @@ const feed = {
 			tracks[utils.getTrackIndex(feedPauseTrackId)].element.querySelector('.play-button').click();
 			feedPauseTrackId = null;
 		}
-	}
+	},
+
+	open: () => {
+		const playingFeed = document.querySelector('[data-tralbumid].playing');
+		if (utils.notExist(playingFeed)) {
+			return;
+		}
+
+		const url = playingFeed.querySelector('.item-link').getAttribute('href');
+		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
+	},
 };
 
 // Utility functions used across the codebase.
@@ -623,14 +660,22 @@ document.addEventListener('keydown', (event) => {
 		} else if (collection.checkUrl(url)) {
 			collection.percentage.move(forward);
 		}
+	} else if (event.code === 'KeyO') {
+		if (album.checkUrl(url)) {
+			album.open();
+		} else if (feed.checkUrl(url)) {
+			feed.open();
+		} else if (collection.checkUrl(url)) {
+			collection.open();
+		}
 	}
 
 	return true;
 }, false);
 
 const updateConfig = (result) => {
-	autoplay = utils.exist(result.autoplay) ? Boolean(result.autoplay): true;
-	autoscroll = utils.exist(result.autoscroll) ? Boolean(result.autoscroll): true;
+	autoplay = utils.exist(result.autoplay) ? Boolean(result.autoplay) : true;
+	autoscroll = utils.exist(result.autoscroll) ? Boolean(result.autoscroll) : true;
 	playFirst = Boolean(result.playFirst);
 	movingStep = Number(result.movingStep);
 	if (isNaN(movingStep)) {

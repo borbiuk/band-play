@@ -21,6 +21,7 @@ This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy co
 - `n`: Play the next track from the start.
 - `b`: Play the previous track from the start.
 - `m`: Play the next track, continuing with the previous track's progress.
+- `o`: Open the current track in new tab.
 - Digits from `0` to `9`: Play the current track with progress `(Digit * 10)%`.
 - Shift + `0` to `9`: Play the track by index.
 - `←` and `→` move track playback back or forward on `step` seconds.

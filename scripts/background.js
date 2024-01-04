@@ -18,3 +18,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		code: 'URL_CHANGED'
 	});
 });
+
+// subscribe on messages
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	// Open new tab without focus on it
+	if (request?.id === 'CREATE_TAB') {
+		chrome.tabs.create({url: request.url, active: false});
+	}
+});
