@@ -55,6 +55,7 @@ const collection = {
 		return true;
 	},
 
+	// Play track by index.
 	play: (index) => {
 		if (index < 0 || index >= tracks.length) {
 			return;
@@ -103,6 +104,7 @@ const collection = {
 		document.querySelector('.playpause')?.click();
 	},
 
+	// open the current track in new tab.
 	open: () => {
 		const nowPlayingId = collection.getNowPlayingTrackId();
 		if (utils.notExist(nowPlayingId)) {
@@ -276,6 +278,7 @@ const album = {
 		return url.includes('/album/') || url.includes('/track/');
 	},
 
+	// Play next or previous track.
 	playNextTrack: (next) => {
 		if (next) {
 			document.querySelector('.nextbutton').click();
@@ -285,6 +288,7 @@ const album = {
 		document.querySelector('.prevbutton').click();
 	},
 
+	// Play track by index.
 	play: (index) => {
 		if (index < 0) {
 			return;
@@ -298,10 +302,12 @@ const album = {
 		playButtons[index].querySelector('div').click();
 	},
 
+	// Play or pause the current track.
 	playPause: () => {
 		document.querySelector('.playbutton')?.click();
 	},
 
+	// Open the current track in new tab.
 	open: () => {
 		let url = document.querySelector('.current_track .title')
 			?.querySelector('a')
@@ -313,6 +319,8 @@ const album = {
 	},
 
 	percentage: {
+		
+		// Move track playback to specific percentage.
 		click: (percentage) => {
 			const control = document.querySelector('.progbar_empty');
 			const thumb = document.querySelector('.thumb.ui-draggable');
@@ -328,6 +336,7 @@ const album = {
 			utils.drugElement(thumb, fromX, fromY, toX, toY);
 		},
 
+		// Move track playback forward or back on 'movingStep' seconds.
 		move: (forward) => {
 
 			// Retrieve the time strings
@@ -461,6 +470,7 @@ const feed = {
 		}
 	},
 
+	// Play track by index.
 	play: (index) => {
 		if (index < 0 || index >= tracks.length) {
 			return;
@@ -487,6 +497,7 @@ const feed = {
 		}
 	},
 
+	// Open current track on new tab.
 	open: () => {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
 		if (utils.notExist(playingFeed)) {
@@ -673,11 +684,12 @@ document.addEventListener('keydown', (event) => {
 	return true;
 }, false);
 
-const updateConfig = (result) => {
-	autoplay = utils.exist(result.autoplay) ? Boolean(result.autoplay) : true;
-	autoscroll = utils.exist(result.autoscroll) ? Boolean(result.autoscroll) : true;
-	playFirst = Boolean(result.playFirst);
-	movingStep = Number(result.movingStep);
+// Update local variables 
+const updateConfig = (config) => {
+	autoplay = utils.exist(config.autoplay) ? Boolean(config.autoplay) : true;
+	autoscroll = utils.exist(config.autoscroll) ? Boolean(config.autoscroll) : true;
+	playFirst = Boolean(config.playFirst);
+	movingStep = Number(config.movingStep);
 	if (isNaN(movingStep)) {
 		movingStep = 10;
 	}
