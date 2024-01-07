@@ -26,56 +26,13 @@ let movingStep = 10;
 const collection = {
 
 	// Check that url is a 'collection' or 'wishlist' page url.
-	checkUrl: (url) => {
+	checkUrl(url) {
 		const collectionPageRegex = /^https?:\/\/(?:[^./?#]+\.)?bandcamp\.com\/[^/?#]+(?:\/wishlist)?$/i;
 		return collectionPageRegex.test(url.split('?'));
 	},
 
-	// Check if the current track has played more than 99% and play the next track if so.
-	tryAutoplay: () => {
-		const progress = collection.getPlayingTrackProgress();
-		if (utils.exist(progress) && progress >= 99) {
-			collection.playNextTrack(true);
-		}
-	},
-
-	// Play the next track in the collection.
-	playNextTrack: (next) => {
-		const nextTrackToPlay = collection.getNextTrack(next);
-		if (utils.notExist(nextTrackToPlay)) {
-			return false;
-		}
-
-		nextTrackToPlay.element.querySelector('a')?.click();
-
-		if (autoscroll) {
-			nextTrackToPlay.element.scrollIntoView({block: 'center', behavior: 'smooth'});
-		}
-
-		return true;
-	},
-
-	// Play track by index.
-	play: (index) => {
-		if (index < 0 || index >= tracks.length) {
-			return;
-		}
-
-		const track = tracks[index];
-		track.element.querySelector('a')?.click();
-		if (autoscroll) {
-			track.element.scrollIntoView({block: 'center', behavior: 'smooth'});
-		}
-	},
-
-	// Get the progress of the currently playing track.
-	getPlayingTrackProgress: () => {
-		const left = document.querySelector('div.seek-control')?.style?.left;
-		return utils.notExist(left) ? null : parseFloat(left);
-	},
-
 	// Get the next track to be played in the collection.
-	getNextTrack: (next) => {
+	getNextTrack(next) {
 		const nowPlayingId = collection.getNowPlayingTrackId();
 		if (utils.notExist(nowPlayingId)) {
 			return playFirst && tracks.length > 0 ? tracks[0] : null;
@@ -84,7 +41,7 @@ const collection = {
 		let nowPlayingIndex = utils.getTrackIndex(nowPlayingId);
 
 		if (nowPlayingIndex === -1) {
-			initTracks();
+			utils.initTracks();
 			nowPlayingIndex = utils.getTrackIndex(nowPlayingId);
 		}
 
@@ -99,136 +56,22 @@ const collection = {
 		return tracks[nowPlayingIndex + (next ? 1 : -1)];
 	},
 
-	// Play or Pause current track in the collection.
-	playPause: () => {
-		document.querySelector('.playpause')?.click();
-	},
-
-	// open the current track in new tab.
-	open: () => {
-		const nowPlayingId = collection.getNowPlayingTrackId();
-		if (utils.notExist(nowPlayingId)) {
-			return;
-		}
-
-		const nowPlayingIndex = utils.getTrackIndex(nowPlayingId);
-		if (nowPlayingIndex === -1) {
-			return;
-		}
-
-		const url = tracks[nowPlayingIndex].element
-			.querySelector('.item-link')
-			.getAttribute('href');
-		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
-	},
-
 	// Get the ID of the currently playing track.
 	getNowPlayingTrackId: () => document.querySelector('div[data-collect-item]')
 		?.getAttribute('data-collect-item')
 		?.substring(1),
 
-	// Object to control the percentage of the track being played.
-	percentage: {
-		// Function to play the next track considering the saved playback percentage.
-		playNextTrack: () => {
-			let percentage = collection.percentage.calculateTimePercentage()
-			if (collection.playNextTrack(true)) {
-				setTimeout(() => {
-					collection.percentage.click(percentage)
-				}, 500);
-			}
-		},
-
-		// Function to simulate a click at a specific percentage within the seek control.
-		click: (percentage) => {
-			const control = document.querySelector('.progress-bar');
-			if (utils.notExist(control)) {
-				return;
-			}
-
-			const rect = control.getBoundingClientRect();
-			const x = rect.left + (rect.width * (percentage / 100));
-			const clickEvent = new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-				view: window,
-				clientX: x,
-				clientY: rect.top + (rect.height / 2) // Middle of the element vertically
-			});
-
-			// Dispatch the event to the seek control outer element
-			control.dispatchEvent(clickEvent);
-		},
-
-		// Function to calculate the playback percentage of the current track.
-		calculateTimePercentage: (add = 0) => {
-
-			// Retrieve the time strings
-			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]')?.textContent;
-			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]')?.textContent;
-
-			// Convert time strings to seconds
-			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
-			let positionInSeconds = utils.convertTimeToSeconds(positionStr) + add;
-			if (positionInSeconds < 0) {
-				positionInSeconds = 0;
-			} else if (positionInSeconds > durationInSeconds) {
-				positionInSeconds = durationInSeconds;
-			}
-
-			// Calculate the percentage
-			return (positionInSeconds / durationInSeconds) * 100;
-		},
-
-		// Move track back or forward on 'movingStep' seconds.
-		move: (forward) => {
-			const percentage = collection.percentage.calculateTimePercentage(forward ? movingStep : -movingStep);
-			collection.percentage.click(percentage);
-		},
+	// Get the progress of the currently playing track.
+	getPlayingTrackProgress() {
+		const left = document.querySelector('div.seek-control')?.style?.left;
+		return utils.notExist(left) ? null : parseFloat(left);
 	},
 
 	// Object to handle the next track button functionalities.
 	nextTrackButton: {
 
 		// Click the next track button.
-		click: () => {
-			const showNextButton = document.querySelectorAll('.show-more');
-			if (utils.notExist(showNextButton)) {
-				return false;
-			}
-
-			showNextButton.forEach(x => x.click());
-			return true;
-		},
-
-		// Add the next track button to the player.
-		addToPlayer: () => {
-			if (nextButtonAdded) {
-				return;
-			}
-
-			const existedNewButton = document.querySelector('.band-play-next-button');
-			if (utils.exist(existedNewButton)) {
-				return;
-			}
-
-			const player = document.querySelector('.transport');
-			if (utils.notExist(player)) {
-				return;
-			}
-
-			const button = collection.nextTrackButton.addClickListener(() => {
-				collection.playNextTrack(true);
-			});
-
-			player.style.width = '105px';
-			player.appendChild(button);
-
-			nextButtonAdded = true;
-		},
-
-		// Add click listener to the next track button.
-		addClickListener: (onClick) => {
+		addClickListener(onClick) {
 			const button = document.createElement('button');
 			button.className = 'band-play-next-button';
 			button.style.cssText = `
@@ -267,48 +110,174 @@ const collection = {
 			});
 
 			return button;
+		},
+
+		// Add the next track button to the player.
+		addToPlayer() {
+			if (nextButtonAdded) {
+				return;
+			}
+
+			const existedNewButton = document.querySelector('.band-play-next-button');
+			if (utils.exist(existedNewButton)) {
+				return;
+			}
+
+			const player = document.querySelector('.transport');
+			if (utils.notExist(player)) {
+				return;
+			}
+
+			const button = collection.nextTrackButton.addClickListener(() => {
+				collection.playNextTrack(true);
+			});
+
+			player.style.width = '105px';
+			player.appendChild(button);
+
+			nextButtonAdded = true;
+		},
+
+		// Add click listener to the next track button.
+		click() {
+			const showNextButton = document.querySelectorAll('.show-more');
+			if (utils.notExist(showNextButton)) {
+				return false;
+			}
+
+			showNextButton.forEach(x => x.click());
+			return true;
+		}
+	},
+
+	// Open the current track in new tab.
+	open() {
+		const nowPlayingId = collection.getNowPlayingTrackId();
+		if (utils.notExist(nowPlayingId)) {
+			return;
+		}
+
+		const nowPlayingIndex = utils.getTrackIndex(nowPlayingId);
+		if (nowPlayingIndex === -1) {
+			return;
+		}
+
+		const url = tracks[nowPlayingIndex].element
+			.querySelector('.item-link')
+			.getAttribute('href');
+		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
+	},
+
+	percentage: {
+		// Function to calculate the playback percentage of the current track.
+		calculateTimePercentage(add = 0) {
+
+			// Retrieve the time strings
+			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]')?.textContent;
+			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]')?.textContent;
+
+			// Convert time strings to seconds
+			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+			let positionInSeconds = utils.convertTimeToSeconds(positionStr) + add;
+			if (positionInSeconds < 0) {
+				positionInSeconds = 0;
+			} else if (positionInSeconds > durationInSeconds) {
+				positionInSeconds = durationInSeconds;
+			}
+
+			// Calculate the percentage
+			return (positionInSeconds / durationInSeconds) * 100;
+		},
+
+		// Function to simulate a click at a specific percentage within the seek control.
+		click(percentage) {
+			const control = document.querySelector('.progress-bar');
+			if (utils.notExist(control)) {
+				return;
+			}
+
+			const rect = control.getBoundingClientRect();
+			const x = rect.left + (rect.width * (percentage / 100));
+			const clickEvent = new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+				view: window,
+				clientX: x,
+				clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+			});
+
+			// Dispatch the event to the seek control outer element
+			control.dispatchEvent(clickEvent);
+		},
+
+		// Move track back or forward on 'movingStep' seconds.
+		move(forward) {
+			const percentage = collection.percentage.calculateTimePercentage(forward ? movingStep : -movingStep);
+			collection.percentage.click(percentage);
+		},
+
+		// Function to play the next track considering the saved playback percentage.
+		playNextTrack() {
+			let percentage = collection.percentage.calculateTimePercentage()
+			if (collection.playNextTrack(true)) {
+				setTimeout(() => {
+					collection.percentage.click(percentage)
+				}, 500);
+			}
+		},
+	},
+
+	// Play track by index.
+	play(index) {
+		if (index < 0 || index >= tracks.length) {
+			return;
+		}
+
+		const track = tracks[index];
+		track.element.querySelector('a')?.click();
+		if (autoscroll) {
+			track.element.scrollIntoView({block: 'center', behavior: 'smooth'});
+		}
+	},
+
+	// Play the next track in the collection.
+	playNextTrack(next) {
+		const nextTrackToPlay = collection.getNextTrack(next);
+		if (utils.notExist(nextTrackToPlay)) {
+			return false;
+		}
+
+		nextTrackToPlay.element.querySelector('a')?.click();
+
+		if (autoscroll) {
+			nextTrackToPlay.element.scrollIntoView({block: 'center', behavior: 'smooth'});
+		}
+
+		return true;
+	},
+
+	// Play or Pause the current track in the collection.
+	playPause() {
+		document.querySelector('.playpause')?.click();
+	},
+
+	// Check if the current track has played more than 99% and play the next track if so.
+	tryAutoplay() {
+		const progress = collection.getPlayingTrackProgress();
+		if (utils.exist(progress) && progress >= 99.5) {
+			collection.playNextTrack(true);
 		}
 	}
 };
 
+// Object to handle Album or Track page.
 const album = {
 
-	// Check that url is an album or track page url.
-	checkUrl: (url) => {
-		return url.includes('/album/') || url.includes('/track/');
-	},
-
-	// Play next or previous track.
-	playNextTrack: (next) => {
-		if (next) {
-			document.querySelector('.nextbutton').click();
-			return;
-		}
-
-		document.querySelector('.prevbutton').click();
-	},
-
-	// Play track by index.
-	play: (index) => {
-		if (index < 0) {
-			return;
-		}
-
-		const playButtons = document.querySelectorAll('td.play-col > a:not(:has(div.play_status.disabled))');
-		if (index >= playButtons.length) {
-			return;
-		}
-
-		playButtons[index].querySelector('div').click();
-	},
-
-	// Play or pause the current track.
-	playPause: () => {
-		document.querySelector('.playbutton')?.click();
-	},
+	// Check that url is an Album or Track page url.
+	checkUrl: (url) => url.includes('/album/') || url.includes('/track/'),
 
 	// Open the current track in new tab.
-	open: () => {
+	open() {
 		let url = document.querySelector('.current_track .title')
 			?.querySelector('a')
 			?.getAttribute('href');
@@ -319,9 +288,9 @@ const album = {
 	},
 
 	percentage: {
-		
+
 		// Move track playback to specific percentage.
-		click: (percentage) => {
+		click(percentage) {
 			const control = document.querySelector('.progbar_empty');
 			const thumb = document.querySelector('.thumb.ui-draggable');
 
@@ -337,7 +306,7 @@ const album = {
 		},
 
 		// Move track playback forward or back on 'movingStep' seconds.
-		move: (forward) => {
+		move(forward) {
 
 			// Retrieve the time strings
 			const positionStr = document.querySelector('.time_elapsed').textContent;
@@ -357,78 +326,63 @@ const album = {
 			const percentage = (nextPositionInSeconds / durationInSeconds) * 100;
 			album.percentage.click(percentage);
 		},
+	},
+
+	// Play track by index.
+	play(index) {
+		if (index < 0) {
+			return;
+		}
+
+		const playButtons = document.querySelectorAll('td.play-col > a:not(:has(div.play_status.disabled))');
+		if (index >= playButtons.length) {
+			return;
+		}
+
+		playButtons[index].querySelector('div').click();
+	},
+
+	// Play next or previous track.
+	playNextTrack(next) {
+		if (next) {
+			document.querySelector('.nextbutton').click();
+			return;
+		}
+
+		document.querySelector('.prevbutton').click();
+	},
+
+	// Play or Pause the current track on the Album page.
+	playPause() {
+		document.querySelector('.playbutton')?.click()
 	}
 };
-
-// Function to initialize tracks based on the current page.
-const initTracks = () => {
-	let collectionsId;
-	const url = window.location.href;
-	if (collection.checkUrl(url)) {
-		collectionsId = url.includes('/wishlist')
-			? 'wishlist-grid'
-			: 'collection-grid';
-	} else if (feed.checkUrl(url)) {
-		collectionsId = 'story-list'
-	} else {
-		return;
-	}
-
-	const allTracksOnPage = document.getElementById(collectionsId)
-		?.querySelectorAll('[data-tralbumid]');
-	if (utils.notExist(allTracksOnPage) || tracks.length === allTracksOnPage?.length) {
-		return;
-	}
-
-	tracks = Array.from(allTracksOnPage)
-		.filter(x => utils.exist(x.getAttribute('data-trackid'))) // not released tracks
-		.map(x => ({
-			id: x.getAttribute('data-tralbumid'),
-			element: x
-		}));
-
-	if (feed.checkUrl(url)) {
-		tracks.forEach(x => {
-			x.element.querySelector('.play-button').onclick = () => {
-				lastFeedPlayingTrackId = null;
-				if (!x.element.classList.contains('playing')) {
-					feedPauseTrackId = x.id;
-				}
-			}
-		});
-	}
-}
 
 // Object to handle 'feed' page.
 const feed = {
 
 	// Check that url is a 'feed' page url.
-	checkUrl: (url) => {
-		return url.endsWith('/feed') || url.includes('/feed?')
+	checkUrl: (url) => url.endsWith('/feed') || url.includes('/feed?'),
+
+	// Open current track on new tab.
+	open() {
+		const playingFeed = document.querySelector('[data-tralbumid].playing');
+		if (utils.notExist(playingFeed)) {
+			return;
+		}
+
+		const url = playingFeed.querySelector('.item-link').getAttribute('href');
+		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
 	},
 
-	// Try to play the next track in the feed.
-	tryAutoplay: () => {
-		const nowPlaying = document.querySelector('[data-tralbumid].playing');
-		if (utils.exist(nowPlaying)) {
-			lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
+	// Play track by index.
+	play(index) {
+		if (index < 0 || index >= tracks.length) {
 			return;
 		}
 
-		if (utils.notExist(lastFeedPlayingTrackId)) {
-			return;
-		}
-
-		if (utils.exist(feedPauseTrackId)) {
-			return;
-		}
-
-		feedPauseTrackId = null;
-
-		lastFeedPlayingTrackId = tracks[utils.getTrackIndex(lastFeedPlayingTrackId) + 1].id;
-		const playPauseButton = tracks[utils.getTrackIndex(lastFeedPlayingTrackId)].element.querySelector('.play-button');
+		const playPauseButton = tracks[index].element.querySelector('.play-button');
 		playPauseButton.click();
-
 		if (autoscroll) {
 			playPauseButton.scrollIntoView({
 				block: 'center', behavior: 'smooth'
@@ -437,7 +391,7 @@ const feed = {
 	},
 
 	// Play the next track in the feed.
-	playNextTrack: (next) => {
+	playNextTrack(next) {
 		const index = () => next ? 1 : -1;
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.notExist(nowPlaying)) {
@@ -470,23 +424,8 @@ const feed = {
 		}
 	},
 
-	// Play track by index.
-	play: (index) => {
-		if (index < 0 || index >= tracks.length) {
-			return;
-		}
-
-		const playPauseButton = tracks[index].element.querySelector('.play-button');
-		playPauseButton.click();
-		if (autoscroll) {
-			playPauseButton.scrollIntoView({
-				block: 'center', behavior: 'smooth'
-			});
-		}
-	},
-
 	// Play or Pause current track in the feed.
-	playPause: () => {
+	playPause() {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
 		if (utils.exist(playingFeed)) {
 			playingFeed.querySelector('.play-button').click();
@@ -497,23 +436,38 @@ const feed = {
 		}
 	},
 
-	// Open current track on new tab.
-	open: () => {
-		const playingFeed = document.querySelector('[data-tralbumid].playing');
-		if (utils.notExist(playingFeed)) {
+	// Try to play the next track in the feed if current is ended.
+	tryAutoplay() {
+		const nowPlaying = document.querySelector('[data-tralbumid].playing');
+		if (utils.exist(nowPlaying)) {
+			lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
 			return;
 		}
 
-		const url = playingFeed.querySelector('.item-link').getAttribute('href');
-		chrome.runtime.sendMessage({id: 'CREATE_TAB', url});
+		if (utils.notExist(lastFeedPlayingTrackId)) {
+			return;
+		}
+
+		if (utils.exist(feedPauseTrackId)) {
+			return;
+		}
+
+		feedPauseTrackId = null;
+
+		lastFeedPlayingTrackId = tracks[utils.getTrackIndex(lastFeedPlayingTrackId) + 1].id;
+		const playPauseButton = tracks[utils.getTrackIndex(lastFeedPlayingTrackId)].element.querySelector('.play-button');
+		playPauseButton.click();
+
+		if (autoscroll) {
+			playPauseButton.scrollIntoView({
+				block: 'center', behavior: 'smooth'
+			});
+		}
 	},
 };
 
 // Utility functions used across the codebase.
 const utils = {
-
-	// Get the index of a track by its ID in the tracks array.
-	getTrackIndex: (trackId) => tracks.findIndex(x => x.id === trackId),
 
 	// Check if a value does not exist (null, undefined, or empty string).
 	notExist: (value) => value === null || value === undefined || value === '',
@@ -521,8 +475,68 @@ const utils = {
 	// Check if a value exists (not null, undefined, or empty string).
 	exist: (value) => !utils.notExist(value),
 
+	// Get the index of a track by its ID in the tracks array.
+	getTrackIndex: (trackId) => tracks.findIndex(x => x.id === trackId),
+
+	// Get the object to handle current page functionality.
+	currentService() {
+		const url = window.location.href;
+		if (feed.checkUrl(url)) {
+			return feed;
+		}
+
+		if (album.checkUrl(url)) {
+			return album;
+		}
+
+		if (collection.checkUrl(url)) {
+			return collection;
+		}
+
+		return null;
+	},
+
+	// Function to initialize tracks based on the current page.
+	initTracks() {
+		let collectionsId;
+		const url = window.location.href;
+		if (collection.checkUrl(url)) {
+			collectionsId = url.includes('/wishlist')
+				? 'wishlist-grid'
+				: 'collection-grid';
+		} else if (feed.checkUrl(url)) {
+			collectionsId = 'story-list'
+		} else {
+			return;
+		}
+
+		const allTracksOnPage = document.getElementById(collectionsId)
+			?.querySelectorAll('[data-tralbumid]');
+		if (utils.notExist(allTracksOnPage) || tracks.length === allTracksOnPage?.length) {
+			return;
+		}
+
+		tracks = Array.from(allTracksOnPage)
+			.filter(x => utils.exist(x.getAttribute('data-trackid'))) // not released tracks
+			.map(x => ({
+				id: x.getAttribute('data-tralbumid'),
+				element: x
+			}));
+
+		if (feed.checkUrl(url)) {
+			tracks.forEach(x => {
+				x.element.querySelector('.play-button').onclick = () => {
+					lastFeedPlayingTrackId = null;
+					if (!x.element.classList.contains('playing')) {
+						feedPauseTrackId = x.id;
+					}
+				}
+			});
+		}
+	},
+
 	// Convert time string (00:00) to seconds.
-	convertTimeToSeconds: (timeStr) => {
+	convertTimeToSeconds(timeStr) {
 		const parts = timeStr.split(':');
 		const minutes = parseInt(parts[0], 10);
 		const seconds = parseInt(parts[1], 10);
@@ -530,7 +544,7 @@ const utils = {
 	},
 
 	// Drug element.
-	drugElement: (element, fromX, fromY, toX, toY) => {
+	drugElement(element, fromX, fromY, toX, toY) {
 		const down = new MouseEvent('mousedown', {
 			bubbles: true,
 			cancelable: true,
@@ -558,6 +572,27 @@ const utils = {
 		element.dispatchEvent(down);
 		element.dispatchEvent(move);
 		element.dispatchEvent(up);
+	},
+
+	// Function to define that keyboard event should be handled as hotkey of extension. 
+	isHotKey(event) {
+
+		if (event.ctrlKey) {
+			return false;
+		}
+
+		if (event.shiftKey) {
+			return event.code.startsWith('Digit');
+		} else {
+			return event.code.startsWith('Digit') || ['Space',
+				'KeyN',
+				'KeyB',
+				'KeyM',
+				'ArrowRight',
+				'ArrowLeft',
+				'KeyO'
+			].includes(event.code);
+		}
 	},
 };
 
@@ -588,10 +623,10 @@ const main = () => {
 	}, 300);
 
 	// Initialization loop to refresh tracks periodically
-	initTracks();
+	utils.initTracks();
 	setInterval(() => {
 		try {
-			initTracks();
+			utils.initTracks();
 		} catch (e) {
 			console.log(e);
 		}
@@ -601,54 +636,30 @@ main();
 
 // Event listeners for keyboard shortcuts.
 document.addEventListener('keydown', (event) => {
-	if (event.target?.localName === 'input') {
+	if (event.target?.localName === 'input' || !utils.isHotKey(event)) {
 		return true;
 	}
 
-	const url = window.location.href;
-	if (event.code === 'Space') { // Play/Pause current track on the 'Space' keydown
-		event.preventDefault();
+	event.preventDefault();
 
-		if (album.checkUrl(url)) {
-			album.playPause();
-		} else if (feed.checkUrl(url)) {
-			feed.playPause();
-		} else if (collection.checkUrl(url)) {
-			collection.playPause();
-		}
+	const page = utils.currentService();
+	if (utils.notExist(page)) {
+		return true;
+	}
+
+	if (event.code === 'Space') { // Play/Pause current track on the 'Space' keydown
+		page.playPause();
 	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
-		if (album.checkUrl(url)) {
-			album.playNextTrack(true);
-		} else if (feed.checkUrl(url)) {
-			feed.playNextTrack(true);
-		} else if (collection.checkUrl(url)) {
-			collection.playNextTrack(true)
-		}
+		page.playNextTrack(true);
 	} else if (event.code === 'KeyB') { // Play the next track on the 'N' keydown
-		if (album.checkUrl(url)) {
-			album.playNextTrack(false);
-		} else if (feed.checkUrl(url)) {
-			feed.playNextTrack(false);
-		} else if (collection.checkUrl(url)) {
-			collection.playNextTrack(false)
-		}
+		page.playNextTrack(false);
 	} else if (event.code === 'KeyM') { // Play the next track with currently played percentage on the 'M' keydown
-		if (collection.checkUrl(url)) {
-			collection.percentage.playNextTrack();
-		}
+		page.percentage?.playNextTrack();
 	} else if (event.code.startsWith('Digit')) {
 		if (event.shiftKey) {
 			const index = Number(event.code.split('Digit')[1]) - 1;
-			if (index < 0) {
-				return;
-			}
-
-			if (album.checkUrl(url)) {
-				album.play(index);
-			} else if (feed.checkUrl(url)) {
-				feed.play(index);
-			} else if (collection.checkUrl(url)) {
-				collection.play(index)
+			if (index >= 0) {
+				page.play(index);
 			}
 
 			return;
@@ -656,29 +667,13 @@ document.addEventListener('keydown', (event) => {
 
 		// Play the current track with percentage on the 'Digit' keydown
 		const percentage = Number(event.code.split('Digit')[1]) * 10;
-
-		if (album.checkUrl(url)) {
-			album.percentage.click(percentage);
-		} else if (collection.checkUrl(url)) {
-			event.preventDefault();
-			collection.percentage.click(percentage);
-		}
-	} else if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
-		const forward = event.code === 'ArrowRight';
-
-		if (album.checkUrl(url)) {
-			album.percentage.move(forward);
-		} else if (collection.checkUrl(url)) {
-			collection.percentage.move(forward);
-		}
+		page.percentage?.click(percentage);
+	} else if (event.code === 'ArrowRight') {
+		page.percentage?.move(true);
+	} else if (event.code === 'ArrowLeft') {
+		page.percentage?.move(false);
 	} else if (event.code === 'KeyO') {
-		if (album.checkUrl(url)) {
-			album.open();
-		} else if (feed.checkUrl(url)) {
-			feed.open();
-		} else if (collection.checkUrl(url)) {
-			collection.open();
-		}
+		page.open();
 	}
 
 	return true;
@@ -702,7 +697,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message?.code === 'URL_CHANGED') {
 		tracks = [];
 		collection.nextTrackButton.click();
-		initTracks();
+		utils.initTracks();
 
 		return;
 	}
