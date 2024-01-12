@@ -26,3 +26,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		chrome.tabs.create({url: request.url, active: false});
 	}
 });
+
+// Subscribe on extension update
+chrome.runtime.onUpdateAvailable.addListener((details) => {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, {
+			code: 'SHOW_UPDATE',
+			details
+		});
+	});
+});

@@ -692,9 +692,13 @@ const updateConfig = (config) => {
 
 // Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	
+	if (utils.notExist(message?.code)) {
+		return;
+	}
 
 	// clear data on URL change message
-	if (message?.code === 'URL_CHANGED') {
+	if (message.code === 'URL_CHANGED') {
 		tracks = [];
 		collection.nextTrackButton.click();
 		utils.initTracks();
@@ -702,10 +706,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		return;
 	}
 
-	if (message?.code === 'STORAGE_CHANGED') {
+	if (message.code === 'STORAGE_CHANGED') {
 		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
 			updateConfig(result);
 		});
+	} else if (message.code === 'SHOW_UPDATE') {
+		alert(`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`);
 	}
 });
 
