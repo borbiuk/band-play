@@ -8,9 +8,6 @@ let service = null;
 // Current URL.
 let url = window.location.href;
 
-// Flag to track whether the next button has been added to the player.
-let nextButtonAdded = false;
-
 // Track ID on the feed page that was paused.
 let feedPauseTrackId = null;
 
@@ -105,74 +102,6 @@ const collection = {
 
 	// Object to handle the next track button functionalities.
 	nextTrackButton: {
-
-		// Click the next track button.
-		addClickListener(onClick) {
-			const button = document.createElement('button');
-			button.className = 'band-play-next-button';
-			button.style.cssText = `
-				height: 26px;
-				margin-top: -8px;
-				border: none;
-				background: none;
-			`;
-
-			const image = document.createElement('img');
-			image.src = chrome.runtime.getURL('assets/button.png');
-			image.style.cssText = `
-				height: 100%;
-				margin-bottom: -5px;
-			`;
-
-			button.appendChild(image);
-
-			// on hover
-			button.addEventListener('mouseenter', () => {
-				button.style.transform = 'scale(1.07)';
-			});
-			button.addEventListener('mouseleave', () => {
-				button.style.transform = 'scale(1)';
-			});
-
-			// on click
-			button.addEventListener('click', () => {
-				onClick();
-
-				// animation
-				button.style.transform = 'scale(1.2)';
-				setTimeout(() => {
-					button.style.transform = 'scale(1)';
-				}, 200);
-			});
-
-			return button;
-		},
-
-		// Add the next track button to the player.
-		addToPlayer() {
-			if (nextButtonAdded) {
-				return;
-			}
-
-			const existedNewButton = document.querySelector('.band-play-next-button');
-			if (utils.exist(existedNewButton)) {
-				return;
-			}
-
-			const player = document.querySelector('.transport');
-			if (utils.notExist(player)) {
-				return;
-			}
-
-			const button = collection.nextTrackButton.addClickListener(() => {
-				collection.playNextTrack(true);
-			});
-
-			player.style.width = '105px';
-			player.appendChild(button);
-
-			nextButtonAdded = true;
-		},
 
 		// Add click listener to the next track button.
 		click() {
@@ -323,8 +252,10 @@ const album = {
 		}
 	},
 
-	initTracks() {},
-	tryAutoplay() {},
+	initTracks() {
+	},
+	tryAutoplay() {
+	},
 
 	percentage: {
 
@@ -539,20 +470,54 @@ const discover = {
 	checkUrl: () => url.includes('/discover'),
 
 	open: () => {
-		document.querySelector('.go-to-album')?.click();
+		const itemUrl = document.querySelector('.go-to-album')?.href;
+		if (utils.exist(itemUrl)) {
+			chrome.runtime.sendMessage({id: 'CREATE_TAB', url: itemUrl});
+		}
 	},
 
 	// 
 	initTracks() {
+		const list = document.querySelectorAll('.swipe-carousel');
+		if (utils.notExist(list) || list.length === discover.tracks.length) {
+			return;
+		}
+
+		discover.tracks = Array.from(list)
+			.map(x => ({
+				id: x.id,
+				element: x,
+			}));
 	},
 
 	//
 	tracks: [],
 
-	tryAutoplay() {},
+	tryAutoplay() {
+		const progress = discover.getPlayingTrackProgress();
+		if (utils.exist(progress) && progress >= 99.5) {
+			discover.playNextTrack(true);
+		}
+	},
+
+	getPlayingTrackProgress() {
+		// Retrieve the time strings
+		const positionStr = document.querySelector('.playback-time.current')?.textContent;
+		const durationStr = document.querySelector('.playback-time.total')?.textContent;
+
+		// Convert time strings to seconds
+		const positionInSeconds = utils.convertTimeToSeconds(positionStr);
+		const durationInSeconds = utils.convertTimeToSeconds(durationStr);
+
+		return (positionInSeconds / durationInSeconds) * 100;
+	},
 
 	play: (index) => {
-		
+		if (index >= 0 && index < discover.tracks.length) {
+			discover.tracks[index].element
+				.querySelector('div button[aria-label="Play"]')
+				.click();
+		}
 	},
 
 	playPause: () => {
@@ -564,12 +529,80 @@ const discover = {
 	},
 
 	playNextTrack: (next) => {
+		const current = document.querySelector('.swipe-carousel div button[aria-label="Pause"]')
+			.parentElement
+			.parentElement
+			.id;
+		if (utils.notExist(current)) {
+			return;
+		}
 
+		const nowPlayingIndex = discover.tracks.findIndex(x => x.id === current);
+		if (nowPlayingIndex === -1 || nowPlayingIndex >= discover.tracks.length) {
+			return;
+		}
+
+		if (nowPlayingIndex === 0 && !next) {
+			return;
+		}
+
+		const nextTrackPlayButton = discover.tracks[nowPlayingIndex + (next ? 1 : -1)].element.querySelector('div button[aria-label="Play"]');
+		nextTrackPlayButton.click();
+
+		if (autoscroll) {
+			nextTrackPlayButton.scrollIntoView({
+				block: 'center', behavior: 'smooth'
+			});
+		}
 	},
 
 	percentage: {
 
 		click(percentage) {
+			
+			// TODO: [1] not working
+			// const control = document.querySelector('input.seek-control');
+			// if (utils.notExist(control)) {
+			// 	return;
+			// }
+			//
+			// const rect = control.getBoundingClientRect();
+			// const clickEvent = new MouseEvent('click', {
+			// 	bubbles: true,
+			// 	cancelable: true,
+			// 	view: window,
+			// 	clientX: rect.left + rect.width * (percentage / 100),
+			// 	clientY: rect.top + rect.height / 2 // Middle of the element vertically
+			// });
+			//
+			// // Dispatch the event to the seek control outer element
+			// control.dispatchEvent(clickEvent);
+
+			// TODO: [2] not working (animation only)
+			// const inputElement = document.querySelector('input.seek-control');
+			//
+			// if (!inputElement) {
+			// 	console.error('Seek control input element not found.');
+			// 	return;
+			// }
+			//
+			// const duration = inputElement.max - inputElement.min;
+			// inputElement.value = inputElement.min + (duration * (percentage / 100));
+			//
+			// const inputEvent = new Event('input', {
+			// 	bubbles: true,
+			// 	cancelable: true,
+			// 	view: window,
+			// });
+			//
+			// const changeEvent = new Event('change', {
+			// 	bubbles: true,
+			// 	cancelable: true,
+			// 	view: window,
+			// });
+			//
+			// inputElement.dispatchEvent(inputEvent);
+			// inputElement.dispatchEvent(changeEvent);
 		},
 
 		move(forward) {
@@ -616,7 +649,15 @@ const utils = {
 
 	// Convert time string (00:00) to seconds.
 	convertTimeToSeconds(timeStr) {
+		if (utils.notExist(timeStr)) {
+			return 0;
+		}
+
 		const parts = timeStr.split(':');
+		if (parts.length < 2) {
+			return 0;
+		}
+
 		const minutes = parseInt(parts[0], 10);
 		const seconds = parseInt(parts[1], 10);
 		return (minutes * 60) + seconds;
@@ -691,8 +732,6 @@ const main = () => {
 			if (utils.notExist(service)) {
 				return;
 			}
-
-			service.nextTrackButton?.addToPlayer();
 
 			if (autoplay) {
 				service.tryAutoplay();

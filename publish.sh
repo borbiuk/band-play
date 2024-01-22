@@ -10,7 +10,6 @@ zip_filename="band-play-build_${current_date_time}_${version}.zip"
 temp_dir="band-play-build"
 
 include_files=(
-	"assets/button.png"
 	"assets/buymeacoffee.png"
 	"assets/configuration.png"
 	"assets/github.png"
