@@ -1,5 +1,5 @@
 <br/>
-<img src="./assets/logo.png" alt="band-play logo" style="height: 138px; margin-bottom: -40px;"/>
+<img src="./public/assets/logo.png" alt="band-play logo" style="height: 138px; margin-bottom: -40px;"/>
 
 # Band Play
 

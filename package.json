@@ -1,0 +1,41 @@
+{
+	"name": "bandcamp-play",
+	"version": "1.0.0",
+	"description": "Bandcamp Play",
+	"main": "index.js",
+	"scripts": {
+		"watch": "webpack --config webpack/webpack.dev.js --watch",
+		"build": "webpack --config webpack/webpack.prod.js",
+		"style": "prettier --write \"src/**/*.{ts,tsx}\""
+	},
+	"author": "",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/borbiuk/band-play"
+	},
+	"dependencies": {
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	},
+	"devDependencies": {
+		"@types/chrome": "0.0.158",
+		"@types/jest": "^29.5.0",
+		"@types/react": "^18.0.29",
+		"@types/react-dom": "^18.0.11",
+		"copy-webpack-plugin": "^9.0.1",
+		"css-loader": "^6.10.0",
+		"glob": "^7.1.6",
+		"prettier": "^2.2.1",
+		"rimraf": "^3.0.2 ",
+		"sass": "^1.70.0",
+		"sass-loader": "^14.1.0",
+		"style-loader": "^3.3.4",
+		"ts-jest": "^29.1.0",
+		"ts-loader": "^8.0.0",
+		"typescript": "^5.0.4",
+		"webpack": "^5.90.1",
+		"webpack-cli": "^4.0.0",
+		"webpack-merge": "^5.0.0"
+	}
+}

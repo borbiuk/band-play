@@ -1,28 +1,33 @@
 #!/bin/bash
 
+# Create a build of extension by webpack to dist directory
+npm run build
+
 ##########################################################
 # Create a .zip file of Google Chrome extension package  #
 ##########################################################
 
 current_date_time=$(date +'%d-%m-%Y_%H:%M:%S')
-version=$(jq '.version' manifest.json | tr -d '"')
+version=$(jq '.version' dist/manifest.json | tr -d '"')
 zip_filename="band-play-build_${current_date_time}_${version}.zip"
 temp_dir="band-play-build"
 
+# Files that will be included to .zip
 include_files=(
-	"assets/buymeacoffee.png"
-	"assets/configuration.png"
-	"assets/github.png"
-	"assets/logo-16.png"
-	"assets/logo-32.png"
-	"assets/logo-48.png"
-	"assets/logo-128.png"
-	"assets/rate.png"
-	"manifest.json"
-	"popup/popup.html"
-	"popup/popup.js"
-	"scripts/background.js"
-	"scripts/content.js"
+	"dist/assets/buymeacoffee.png"
+	"dist/assets/configuration.png"
+	"dist/assets/github.png"
+	"dist/assets/logo-16.png"
+	"dist/assets/logo-32.png"
+	"dist/assets/logo-48.png"
+	"dist/assets/logo-128.png"
+	"dist/assets/rate.png"
+	"dist/background.js"
+	"dist/content_script.js"
+	"dist/manifest.json"
+	"dist/popup.html"
+	"dist/popup.js"
+	"dist/vendor.js"
 )
 
 # Create a temporary directory
@@ -30,15 +35,17 @@ mkdir "$temp_dir"
 
 # Copy to the temporary directory
 for file in "${include_files[@]}"; do
-	IFS='/' read -ra file_parts <<<"$file"
-	destination_dir="$temp_dir"
-	for part in "${file_parts[@]::${#file_parts[@]}-1}"; do
-		destination_dir="$destination_dir/$part"
-		if [ ! -d "$destination_dir" ]; then
-			mkdir "$destination_dir"
-		fi
-	done
-	cp "$file" "$temp_dir/$file"
+	# Remove the 'dist/' prefix from the file path
+	file_without_dist="${file#dist/}"
+
+	# Create the destination directory
+	destination_dir="$temp_dir/$(dirname "$file_without_dist")"
+	if [ ! -d "$destination_dir" ]; then
+		mkdir -p "$destination_dir"
+	fi
+
+	# Copy the file to the temporary directory
+	cp "$file" "$destination_dir/"
 done
 
 # Create a .zip file

@@ -6,3 +6,12 @@
 
 # builds
 *.zip
+dist/
+tmp/
+
+# logs
+npm-debug.log
+
+# dependencies
+node_modules/
+package-lock.json

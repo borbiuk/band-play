@@ -32,18 +32,20 @@ let movingStep = 10;
 
 // Object to handle 'collection' and 'wishlist' pages.
 const collection = {
-
 	// Check that url is a 'collection' or 'wishlist' page url.
 	checkUrl() {
-		const collectionPageRegex = /^https?:\/\/(?:[^./?#]+\.)?bandcamp\.com\/[^/?#]+(?:\/wishlist)?$/i;
-		return collectionPageRegex.test(url.split('?'));
+		const collectionPageRegex =
+			/^https?:\/\/(?:[^./?#]+\.)?bandcamp\.com\/[^/?#]+(?:\/wishlist)?$/i;
+		return collectionPageRegex.test(url.split('?')[0]);
 	},
 
 	// Get the next track to be played in the collection.
 	getNextTrack(next) {
 		const nowPlayingId = collection.getNowPlayingTrackId();
 		if (utils.notExist(nowPlayingId)) {
-			return playFirst && collection.tracks.length > 0 ? collection.tracks[0] : null;
+			return playFirst && collection.tracks.length > 0
+				? collection.tracks[0]
+				: null;
 		}
 
 		let nowPlayingIndex = utils.getTrackIndex(collection.tracks, nowPlayingId);
@@ -53,8 +55,13 @@ const collection = {
 			nowPlayingIndex = utils.getTrackIndex(collection.tracks, nowPlayingId);
 		}
 
-		if (nowPlayingIndex === -1 || nowPlayingIndex === collection.tracks.length - 1) {
-			return playFirst && collection.tracks.length > 0 ? collection.tracks[0] : null;
+		if (
+			nowPlayingIndex === -1 ||
+			nowPlayingIndex === collection.tracks.length - 1
+		) {
+			return playFirst && collection.tracks.length > 0
+				? collection.tracks[0]
+				: null;
 		}
 
 		if (!next && nowPlayingIndex === 0) {
@@ -65,17 +72,20 @@ const collection = {
 	},
 
 	// Get the ID of the currently playing track.
-	getNowPlayingTrackId: () => document.querySelector('div[data-collect-item]')
-		?.getAttribute('data-collect-item')
-		?.substring(1),
+	getNowPlayingTrackId: () =>
+		document
+			.querySelector('div[data-collect-item]')
+			?.getAttribute('data-collect-item')
+			?.substring(1),
 
 	// Get the progress of the currently playing track.
 	getPlayingTrackProgress() {
-		const left = document.querySelector('div.seek-control')?.style?.left;
+		const left =
+			document.querySelector<HTMLElement>('div.seek-control')?.style?.left;
 		return utils.notExist(left) ? null : parseFloat(left);
 	},
 
-	// 
+	//
 	initTracks() {
 		collection.nextTrackButton.click();
 
@@ -83,17 +93,21 @@ const collection = {
 			? 'wishlist-grid'
 			: 'collection-grid';
 
-		const allTracksOnPage = document.getElementById(collectionId)
+		const allTracksOnPage = document
+			.getElementById(collectionId)
 			?.querySelectorAll('[data-tralbumid]');
-		if (utils.notExist(allTracksOnPage) || collection.tracks.length === allTracksOnPage?.length) {
+		if (
+			utils.notExist(allTracksOnPage) ||
+			collection.tracks.length === allTracksOnPage?.length
+		) {
 			return;
 		}
 
 		collection.tracks = Array.from(allTracksOnPage)
-			.filter(x => utils.exist(x.getAttribute('data-trackid'))) // not released tracks
-			.map(x => ({
+			.filter((x) => utils.exist(x.getAttribute('data-trackid'))) // not released tracks
+			.map((x) => ({
 				id: x.getAttribute('data-tralbumid'),
-				element: x
+				element: x,
 			}));
 	},
 
@@ -102,17 +116,17 @@ const collection = {
 
 	// Object to handle the next track button functionalities.
 	nextTrackButton: {
-
 		// Add click listener to the next track button.
 		click() {
-			const showNextButton = document.querySelectorAll('.show-more');
+			const showNextButton =
+				document.querySelectorAll<HTMLElement>('.show-more');
 			if (utils.notExist(showNextButton)) {
 				return false;
 			}
 
-			showNextButton.forEach(x => x.click());
+			showNextButton.forEach((x) => x.click());
 			return true;
-		}
+		},
 	},
 
 	// Open the current track in new tab.
@@ -122,7 +136,10 @@ const collection = {
 			return;
 		}
 
-		const nowPlayingIndex = utils.getTrackIndex(collection.tracks, nowPlayingId);
+		const nowPlayingIndex = utils.getTrackIndex(
+			collection.tracks,
+			nowPlayingId
+		);
 		if (nowPlayingIndex === -1) {
 			return;
 		}
@@ -130,16 +147,19 @@ const collection = {
 		const itemUrl = collection.tracks[nowPlayingIndex].element
 			.querySelector('.item-link')
 			.getAttribute('href');
-		chrome.runtime.sendMessage({id: 'CREATE_TAB', url: itemUrl});
+		chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl });
 	},
 
 	percentage: {
 		// Function to calculate the playback percentage of the current track.
 		calculateTimePercentage(add = 0) {
-
 			// Retrieve the time strings
-			const durationStr = document.querySelector('.pos-dur [data-bind="text: durationStr"]')?.textContent;
-			const positionStr = document.querySelector('.pos-dur [data-bind="text: positionStr"]')?.textContent;
+			const durationStr = document.querySelector(
+				'.pos-dur [data-bind="text: durationStr"]'
+			)?.textContent;
+			const positionStr = document.querySelector(
+				'.pos-dur [data-bind="text: positionStr"]'
+			)?.textContent;
 
 			// Convert time strings to seconds
 			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
@@ -162,13 +182,13 @@ const collection = {
 			}
 
 			const rect = control.getBoundingClientRect();
-			const x = rect.left + (rect.width * (percentage / 100));
+			const x = rect.left + rect.width * (percentage / 100);
 			const clickEvent = new MouseEvent('click', {
 				bubbles: true,
 				cancelable: true,
 				view: window,
 				clientX: x,
-				clientY: rect.top + (rect.height / 2) // Middle of the element vertically
+				clientY: rect.top + rect.height / 2, // Middle of the element vertically
 			});
 
 			// Dispatch the event to the seek control outer element
@@ -177,16 +197,18 @@ const collection = {
 
 		// Move track back or forward on 'movingStep' seconds.
 		move(forward) {
-			const percentage = collection.percentage.calculateTimePercentage(forward ? movingStep : -movingStep);
+			const percentage = collection.percentage.calculateTimePercentage(
+				forward ? movingStep : -movingStep
+			);
 			collection.percentage.click(percentage);
 		},
 
 		// Function to play the next track considering the saved playback percentage.
 		playNextTrack() {
-			let percentage = collection.percentage.calculateTimePercentage()
+			let percentage = collection.percentage.calculateTimePercentage();
 			if (collection.playNextTrack(true)) {
 				setTimeout(() => {
-					collection.percentage.click(percentage)
+					collection.percentage.click(percentage);
 				}, 500);
 			}
 		},
@@ -201,7 +223,7 @@ const collection = {
 		const track = collection.tracks[index];
 		track.element.querySelector('a')?.click();
 		if (autoscroll) {
-			track.element.scrollIntoView({block: 'center', behavior: 'smooth'});
+			track.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
 		}
 	},
 
@@ -215,7 +237,10 @@ const collection = {
 		nextTrackToPlay.element.querySelector('a')?.click();
 
 		if (autoscroll) {
-			nextTrackToPlay.element.scrollIntoView({block: 'center', behavior: 'smooth'});
+			nextTrackToPlay.element.scrollIntoView({
+				block: 'center',
+				behavior: 'smooth',
+			});
 		}
 
 		return true;
@@ -223,7 +248,7 @@ const collection = {
 
 	// Play or Pause the current track in the collection.
 	playPause() {
-		document.querySelector('.playpause')?.click();
+		document.querySelector<HTMLElement>('.playpause')?.click();
 	},
 
 	// Check if the current track has played more than 99% and play the next track if so.
@@ -232,23 +257,26 @@ const collection = {
 		if (utils.exist(progress) && progress >= 99.5) {
 			collection.playNextTrack(true);
 		}
-	}
+	},
 };
 
 // Object to handle Album or Track page.
 const album = {
-
 	// Check that url is an Album or Track page url.
 	checkUrl: () => url.includes('/album/') || url.includes('/track/'),
 
 	// Open the current track in new tab.
 	open() {
-		let itemUrl = document.querySelector('.current_track .title')
+		let itemUrl = document
+			.querySelector('.current_track .title')
 			?.querySelector('a')
 			?.getAttribute('href');
 
 		if (utils.exist(itemUrl)) {
-			chrome.runtime.sendMessage({id: 'CREATE_TAB', url: window.location.origin + itemUrl});
+			chrome.runtime.sendMessage({
+				id: 'CREATE_TAB',
+				url: window.location.origin + itemUrl,
+			});
 		}
 	},
 
@@ -258,7 +286,6 @@ const album = {
 	},
 
 	percentage: {
-
 		// Move track playback to specific percentage.
 		click(percentage) {
 			const control = document.querySelector('.progbar_empty');
@@ -268,16 +295,17 @@ const album = {
 			const thumbRect = thumb.getBoundingClientRect();
 
 			const fromX = thumbRect.left;
-			const fromY = thumbRect.top + (thumbRect.height / 2);
-			const toX = controlRect.left + ((controlRect.width - thumbRect.width) * (percentage / 100));
-			const toY = controlRect.top + (controlRect.height / 2);
+			const fromY = thumbRect.top + thumbRect.height / 2;
+			const toX =
+				controlRect.left +
+				(controlRect.width - thumbRect.width) * (percentage / 100);
+			const toY = controlRect.top + controlRect.height / 2;
 
 			utils.drugElement(thumb, fromX, fromY, toX, toY);
 		},
 
 		// Move track playback forward or back on 'movingStep' seconds.
 		move(forward) {
-
 			// Retrieve the time strings
 			const positionStr = document.querySelector('.time_elapsed').textContent;
 			const durationStr = document.querySelector('.time_total').textContent;
@@ -286,7 +314,8 @@ const album = {
 			const positionInSeconds = utils.convertTimeToSeconds(positionStr);
 			const durationInSeconds = utils.convertTimeToSeconds(durationStr);
 
-			let nextPositionInSeconds = positionInSeconds + (forward ? movingStep : -movingStep);
+			let nextPositionInSeconds =
+				positionInSeconds + (forward ? movingStep : -movingStep);
 			if (nextPositionInSeconds < 0) {
 				nextPositionInSeconds = 0;
 			} else if (nextPositionInSeconds > durationInSeconds) {
@@ -304,7 +333,9 @@ const album = {
 			return;
 		}
 
-		const playButtons = document.querySelectorAll('td.play-col > a:not(:has(div.play_status.disabled))');
+		const playButtons = document.querySelectorAll(
+			'td.play-col > a:not(:has(div.play_status.disabled))'
+		);
 		if (index >= playButtons.length) {
 			return;
 		}
@@ -315,50 +346,53 @@ const album = {
 	// Play next or previous track.
 	playNextTrack(next) {
 		if (next) {
-			document.querySelector('.nextbutton').click();
+			document.querySelector<HTMLElement>('.nextbutton').click();
 			return;
 		}
 
-		document.querySelector('.prevbutton').click();
+		document.querySelector<HTMLElement>('.prevbutton').click();
 	},
 
 	// Play or Pause the current track on the Album page.
 	playPause() {
-		document.querySelector('.playbutton')?.click()
-	}
+		document.querySelector<HTMLElement>('.playbutton')?.click();
+	},
 };
 
 // Object to handle 'feed' page.
 const feed = {
-
 	// Check that url is a 'feed' page url.
 	checkUrl: () => url.endsWith('/feed') || url.includes('/feed?'),
 
-	// 
+	//
 	initTracks() {
 		const collectionId = 'story-list';
 		const itemIdSelector = 'data-tralbumid';
 
-		const allTracksOnPage = document.getElementById(collectionId)
+		const allTracksOnPage = document
+			.getElementById(collectionId)
 			?.querySelectorAll('[data-tralbumid]');
-		if (utils.notExist(allTracksOnPage) || feed.tracks.length === allTracksOnPage?.length) {
+		if (
+			utils.notExist(allTracksOnPage) ||
+			feed.tracks.length === allTracksOnPage?.length
+		) {
 			return;
 		}
 
 		feed.tracks = Array.from(allTracksOnPage)
-			.map(x => ({
+			.map((x) => ({
 				id: x.getAttribute(itemIdSelector),
-				element: x
+				element: x,
 			}))
-			.filter(x => utils.exist(x.id));
+			.filter((x) => utils.exist(x.id));
 
-		feed.tracks.forEach(x => {
+		feed.tracks.forEach((x) => {
 			x.element.querySelector('.play-button').onclick = () => {
 				lastFeedPlayingTrackId = null;
 				if (x.element.classList.contains('playing')) {
 					feedPauseTrackId = x.id;
 				}
-			}
+			};
 		});
 	},
 
@@ -372,8 +406,10 @@ const feed = {
 			return;
 		}
 
-		const itemUrl = playingFeed.querySelector('.item-link').getAttribute('href');
-		chrome.runtime.sendMessage({id: 'CREATE_TAB', url: itemUrl});
+		const itemUrl = playingFeed
+			.querySelector('.item-link')
+			.getAttribute('href');
+		chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl });
 	},
 
 	// Play track by index.
@@ -382,57 +418,77 @@ const feed = {
 			return;
 		}
 
-		const playPauseButton = feed.tracks[index].element.querySelector('.play-button');
+		const playPauseButton =
+			feed.tracks[index].element.querySelector('.play-button');
 		playPauseButton.click();
 		if (autoscroll) {
 			playPauseButton.scrollIntoView({
-				block: 'center', behavior: 'smooth'
+				block: 'center',
+				behavior: 'smooth',
 			});
 		}
 	},
 
 	// Play the next track in the feed.
 	playNextTrack(next) {
-		const index = () => next ? 1 : -1;
+		const index = () => (next ? 1 : -1);
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (utils.notExist(nowPlaying)) {
 			const playPauseButton = utils.exist(feedPauseTrackId)
-				? feed.tracks[utils.getTrackIndex(feed.tracks, feedPauseTrackId) + index()].element.querySelector('.play-button')
+				? feed.tracks[
+				utils.getTrackIndex(feed.tracks, feedPauseTrackId) + index()
+					].element.querySelector('.play-button')
 				: feed.tracks[0].element.querySelector('.play-button');
 			playPauseButton.click();
 			if (autoscroll) {
 				playPauseButton.scrollIntoView({
-					block: 'center', behavior: 'smooth'
+					block: 'center',
+					behavior: 'smooth',
 				});
 			}
 			playPauseButton.onclick = () => {
 				feedPauseTrackId = playFirst ? feed.tracks[0].id : null;
 				lastFeedPlayingTrackId = null;
-			}
+			};
 			return;
 		}
 
-		const nextPlayPauseButton = feed.tracks[utils.getTrackIndex(feed.tracks, nowPlaying.getAttribute('data-tralbumid')) + index()].element.querySelector('.play-button');
+		const nextPlayPauseButton =
+			feed.tracks[
+			utils.getTrackIndex(
+				feed.tracks,
+				nowPlaying.getAttribute('data-tralbumid')
+			) + index()
+				].element.querySelector('.play-button');
 		nextPlayPauseButton.click();
 		if (autoscroll) {
 			nextPlayPauseButton.scrollIntoView({
-				block: 'center', behavior: 'smooth'
+				block: 'center',
+				behavior: 'smooth',
 			});
 		}
 		nextPlayPauseButton.onclick = () => {
-			feedPauseTrackId = feed.tracks[utils.getTrackIndex(feed.tracks, nowPlaying.getAttribute('data-tralbumid')) + index()].id;
+			feedPauseTrackId =
+				feed.tracks[
+				utils.getTrackIndex(
+					feed.tracks,
+					nowPlaying.getAttribute('data-tralbumid')
+				) + index()
+					].id;
 			lastFeedPlayingTrackId = null;
-		}
+		};
 	},
 
 	// Play or Pause current track in the feed.
 	playPause() {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
 		if (utils.exist(playingFeed)) {
-			playingFeed.querySelector('.play-button').click();
+			playingFeed.querySelector<HTMLElement>('.play-button').click();
 			feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
 		} else if (utils.exist(feedPauseTrackId)) {
-			feed.tracks[utils.getTrackIndex(feed.tracks, feedPauseTrackId)].element.querySelector('.play-button').click();
+			feed.tracks[utils.getTrackIndex(feed.tracks, feedPauseTrackId)].element
+				.querySelector('.play-button')
+				.click();
 			feedPauseTrackId = null;
 		}
 	},
@@ -453,13 +509,19 @@ const feed = {
 			return;
 		}
 
-		lastFeedPlayingTrackId = feed.tracks[utils.getTrackIndex(feed.tracks, lastFeedPlayingTrackId) + 1].id;
-		const playPauseButton = feed.tracks[utils.getTrackIndex(feed.tracks, lastFeedPlayingTrackId)].element.querySelector('.play-button');
+		lastFeedPlayingTrackId =
+			feed.tracks[utils.getTrackIndex(feed.tracks, lastFeedPlayingTrackId) + 1]
+				.id;
+		const playPauseButton =
+			feed.tracks[
+				utils.getTrackIndex(feed.tracks, lastFeedPlayingTrackId)
+				].element.querySelector('.play-button');
 		playPauseButton.click();
 
 		if (autoscroll) {
 			playPauseButton.scrollIntoView({
-				block: 'center', behavior: 'smooth'
+				block: 'center',
+				behavior: 'smooth',
 			});
 		}
 	},
@@ -470,24 +532,24 @@ const discover = {
 	checkUrl: () => url.includes('/discover'),
 
 	open: () => {
-		const itemUrl = document.querySelector('.go-to-album')?.href;
+		const itemUrl =
+			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
 		if (utils.exist(itemUrl)) {
-			chrome.runtime.sendMessage({id: 'CREATE_TAB', url: itemUrl});
+			chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl });
 		}
 	},
 
-	// 
+	//
 	initTracks() {
 		const list = document.querySelectorAll('.swipe-carousel');
 		if (utils.notExist(list) || list.length === discover.tracks.length) {
 			return;
 		}
 
-		discover.tracks = Array.from(list)
-			.map(x => ({
-				id: x.id,
-				element: x,
-			}));
+		discover.tracks = Array.from(list).map((x) => ({
+			id: x.id,
+			element: x,
+		}));
 	},
 
 	//
@@ -502,8 +564,12 @@ const discover = {
 
 	getPlayingTrackProgress() {
 		// Retrieve the time strings
-		const positionStr = document.querySelector('.playback-time.current')?.textContent;
-		const durationStr = document.querySelector('.playback-time.total')?.textContent;
+		const positionStr = document.querySelector(
+			'.playback-time.current'
+		)?.textContent;
+		const durationStr = document.querySelector(
+			'.playback-time.total'
+		)?.textContent;
 
 		// Convert time strings to seconds
 		const positionInSeconds = utils.convertTimeToSeconds(positionStr);
@@ -529,15 +595,14 @@ const discover = {
 	},
 
 	playNextTrack: (next) => {
-		const current = document.querySelector('.swipe-carousel div button[aria-label="Pause"]')
-			.parentElement
-			.parentElement
-			.id;
+		const current = document.querySelector(
+			'.swipe-carousel div button[aria-label="Pause"]'
+		).parentElement.parentElement.id;
 		if (utils.notExist(current)) {
 			return;
 		}
 
-		const nowPlayingIndex = discover.tracks.findIndex(x => x.id === current);
+		const nowPlayingIndex = discover.tracks.findIndex((x) => x.id === current);
 		if (nowPlayingIndex === -1 || nowPlayingIndex >= discover.tracks.length) {
 			return;
 		}
@@ -546,20 +611,21 @@ const discover = {
 			return;
 		}
 
-		const nextTrackPlayButton = discover.tracks[nowPlayingIndex + (next ? 1 : -1)].element.querySelector('div button[aria-label="Play"]');
+		const nextTrackPlayButton = discover.tracks[
+		nowPlayingIndex + (next ? 1 : -1)
+			].element.querySelector('div button[aria-label="Play"]');
 		nextTrackPlayButton.click();
 
 		if (autoscroll) {
 			nextTrackPlayButton.scrollIntoView({
-				block: 'center', behavior: 'smooth'
+				block: 'center',
+				behavior: 'smooth',
 			});
 		}
 	},
 
 	percentage: {
-
 		click(percentage) {
-			
 			// TODO: [1] not working
 			// const control = document.querySelector('input.seek-control');
 			// if (utils.notExist(control)) {
@@ -577,7 +643,6 @@ const discover = {
 			//
 			// // Dispatch the event to the seek control outer element
 			// control.dispatchEvent(clickEvent);
-
 			// TODO: [2] not working (animation only)
 			// const inputElement = document.querySelector('input.seek-control');
 			//
@@ -616,7 +681,6 @@ const discover = {
 
 // Utility functions used across the codebase.
 const utils = {
-
 	// Check if a value does not exist (null, undefined, or empty string).
 	notExist: (value) => value === null || value === undefined || value === '',
 
@@ -624,7 +688,8 @@ const utils = {
 	exist: (value) => !utils.notExist(value),
 
 	// Get the index of a track by its ID in the tracks array.
-	getTrackIndex: (serviceTracks, trackId) => serviceTracks.findIndex(x => x.id === trackId),
+	getTrackIndex: (serviceTracks, trackId) =>
+		serviceTracks.findIndex((x) => x.id === trackId),
 
 	// Get the object to handle current page functionality.
 	currentService() {
@@ -660,7 +725,7 @@ const utils = {
 
 		const minutes = parseInt(parts[0], 10);
 		const seconds = parseInt(parts[1], 10);
-		return (minutes * 60) + seconds;
+		return minutes * 60 + seconds;
 	},
 
 	// Drug element.
@@ -694,9 +759,8 @@ const utils = {
 		element.dispatchEvent(up);
 	},
 
-	// Function to define that keyboard event should be handled as hotkey of extension. 
+	// Function to define that keyboard event should be handled as hotkey of extension.
 	isHotKey(event) {
-
 		if (event.ctrlKey) {
 			return false;
 		}
@@ -704,14 +768,18 @@ const utils = {
 		if (event.shiftKey) {
 			return event.code.startsWith('Digit');
 		} else {
-			return event.code.startsWith('Digit') || ['Space',
-				'KeyN',
-				'KeyB',
-				'KeyM',
-				'ArrowRight',
-				'ArrowLeft',
-				'KeyO'
-			].includes(event.code);
+			return (
+				event.code.startsWith('Digit') ||
+				[
+					'Space',
+					'KeyN',
+					'KeyB',
+					'KeyM',
+					'ArrowRight',
+					'ArrowLeft',
+					'KeyO',
+				].includes(event.code)
+			);
 		}
 	},
 };
@@ -722,8 +790,7 @@ const utils = {
 
 // Main function to start the application.
 const main = () => {
-	console.log("[Start]: Band Play");
-
+	console.log('[Start]: Band Play');
 
 	// Main execution loop for track playback and initialization
 	setInterval(() => {
@@ -736,7 +803,6 @@ const main = () => {
 			if (autoplay) {
 				service.tryAutoplay();
 			}
-
 		} catch (e) {
 			console.log(e);
 		}
@@ -751,7 +817,7 @@ const main = () => {
 			console.log(e);
 		}
 	}, 1_000);
-}
+};
 main();
 
 /*
@@ -759,63 +825,75 @@ main();
 */
 
 // Event listeners for keyboard shortcuts.
-document.addEventListener('keydown', (event) => {
-	if (event.target?.localName === 'input' || !utils.isHotKey(event)) {
-		return true;
-	}
-
-	event.preventDefault();
-
-	if (utils.notExist(service)) {
-		return true;
-	}
-
-	if (event.code === 'Space') { // Play/Pause current track on the 'Space' keydown
-		service.playPause();
-	} else if (event.code === 'KeyN') { // Play the next track on the 'N' keydown
-		service.playNextTrack(true);
-	} else if (event.code === 'KeyB') { // Play the next track on the 'N' keydown
-		service.playNextTrack(false);
-	} else if (event.code === 'KeyM') { // Play the next track with currently played percentage on the 'M' keydown
-		service.percentage?.playNextTrack();
-	} else if (event.code.startsWith('Digit')) {
-		if (event.shiftKey) {
-			const index = Number(event.code.split('Digit')[1]) - 1;
-			if (index >= 0) {
-				service.play(index);
-			}
-
-			return;
+document.addEventListener(
+	'keydown',
+	(event: KeyboardEvent) => {
+		if (
+			(event.target as HTMLElement)?.localName === 'input' ||
+			!utils.isHotKey(event)
+		) {
+			return true;
 		}
 
-		// Play the current track with percentage on the 'Digit' keydown
-		const percentage = Number(event.code.split('Digit')[1]) * 10;
-		service.percentage?.click(percentage);
-	} else if (event.code === 'ArrowRight') {
-		service.percentage?.move(true);
-	} else if (event.code === 'ArrowLeft') {
-		service.percentage?.move(false);
-	} else if (event.code === 'KeyO') {
-		service.open();
-	}
+		event.preventDefault();
 
-	return true;
-}, false);
+		if (utils.notExist(service)) {
+			return true;
+		}
 
-// Update local variables 
+		if (event.code === 'Space') {
+			// Play/Pause current track on the 'Space' keydown
+			service.playPause();
+		} else if (event.code === 'KeyN') {
+			// Play the next track on the 'N' keydown
+			service.playNextTrack(true);
+		} else if (event.code === 'KeyB') {
+			// Play the next track on the 'N' keydown
+			service.playNextTrack(false);
+		} else if (event.code === 'KeyM') {
+			// Play the next track with currently played percentage on the 'M' keydown
+			service.percentage?.playNextTrack();
+		} else if (event.code.startsWith('Digit')) {
+			if (event.shiftKey) {
+				const index = Number(event.code.split('Digit')[1]) - 1;
+				if (index >= 0) {
+					service.play(index);
+				}
+
+				return;
+			}
+
+			// Play the current track with percentage on the 'Digit' keydown
+			const percentage = Number(event.code.split('Digit')[1]) * 10;
+			service.percentage?.click(percentage);
+		} else if (event.code === 'ArrowRight') {
+			service.percentage?.move(true);
+		} else if (event.code === 'ArrowLeft') {
+			service.percentage?.move(false);
+		} else if (event.code === 'KeyO') {
+			service.open();
+		}
+
+		return true;
+	},
+	false
+);
+
+// Update local variables
 const updateConfig = (config) => {
 	autoplay = utils.exist(config.autoplay) ? Boolean(config.autoplay) : true;
-	autoscroll = utils.exist(config.autoscroll) ? Boolean(config.autoscroll) : true;
+	autoscroll = utils.exist(config.autoscroll)
+		? Boolean(config.autoscroll)
+		: true;
 	playFirst = Boolean(config.playFirst);
 	movingStep = Number(config.movingStep);
 	if (isNaN(movingStep)) {
 		movingStep = 10;
 	}
-}
+};
 
 // Event listeners for Chrome messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-
 	if (utils.notExist(message?.code)) {
 		return;
 	}
@@ -832,15 +910,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	if (message.code === 'STORAGE_CHANGED') {
-		chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
-			updateConfig(result);
-		});
+		chrome.storage.local.get(
+			['autoplay', 'autoscroll', 'playFirst', 'movingStep'],
+			(result) => {
+				updateConfig(result);
+			}
+		);
 	} else if (message.code === 'SHOW_UPDATE') {
-		alert(`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`);
+		alert(
+			`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
+		);
 	}
 });
 
 // Init configuration form local storage.
-chrome.storage.local.get(['autoplay', 'autoscroll', 'playFirst', 'movingStep'], (result) => {
-	updateConfig(result);
-});
+chrome.storage.local.get(
+	['autoplay', 'autoscroll', 'playFirst', 'movingStep'],
+	(result) => {
+		updateConfig(result);
+	}
+);
