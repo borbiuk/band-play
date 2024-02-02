@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
-		//"strict": true,
+		"strict": false,
+		"strictNullChecks": false,
 		"target": "es6",
 		"moduleResolution": "bundler",
 		"module": "ES6",

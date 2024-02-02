@@ -23,7 +23,7 @@ include_files=(
 	"dist/assets/logo-128.png"
 	"dist/assets/rate.png"
 	"dist/background.js"
-	"dist/content_script.js"
+	"dist/content.js"
 	"dist/manifest.json"
 	"dist/popup.html"
 	"dist/popup.js"

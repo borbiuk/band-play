@@ -1,8 +1,13 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './popup.scss';
+import { ConfigService } from '../common/config-service';
+import { Config } from '../contracts/config';
 
 const Popup = () => {
+
+	const configService = new ConfigService();
+
 	// Checkboxes ids.
 	const checkBoxes = {
 		autoplay: true,
@@ -10,15 +15,10 @@ const Popup = () => {
 		playFirst: false,
 	};
 
-	const checkBoxesIds = Object.keys(checkBoxes);
-
-	// Update local storage.
-	const updateStorage = (key, value) => {
-		chrome.storage.local.set({ [key]: value });
-	};
+	const checkBoxesIds: (keyof Config)[] = Object.keys(checkBoxes) as (keyof Config)[];
 
 	// Send Chrome event about local storage changes.
-	const sendStorageChangedMessage = (tabId) => {
+	const sendStorageChangedMessage = (tabId: number) => {
 		chrome.tabs.sendMessage(tabId, {
 			code: 'STORAGE_CHANGED',
 		});
@@ -35,32 +35,6 @@ const Popup = () => {
 		});
 	};
 
-	// Set defaults
-	const updateConfig = (result) => {
-		result.autoplay = utils.exist(result.autoplay)
-			? Boolean(result.autoplay)
-			: true;
-		result.autoscroll = utils.exist(result.autoscroll)
-			? Boolean(result.autoscroll)
-			: true;
-		result.playFirst = Boolean(result.playFirst);
-		result.movingStep = Number(result.movingStep);
-		if (isNaN(result.movingStep)) {
-			result.movingStep = 10;
-		}
-
-		console.log(result);
-	};
-
-	// Utility functions used across the codebase.
-	const utils = {
-		// Check if a value does not exist (null, undefined, or empty string).
-		notExist: (value) => value === null || value === undefined || value === '',
-
-		// Check if a value exists (not null, undefined, or empty string).
-		exist: (value) => !utils.notExist(value),
-	};
-
 	document.addEventListener('DOMContentLoaded', () => {
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 			const tabId = tabs[0]?.id;
@@ -71,7 +45,7 @@ const Popup = () => {
 					checkboxId
 				) as HTMLInputElement;
 				checkBox.addEventListener('change', () => {
-					updateStorage(checkboxId, Boolean(checkBox.checked));
+					configService.update(checkboxId, Boolean(checkBox.checked));
 					sendStorageChangedMessage(tabId);
 				});
 			});
@@ -87,23 +61,23 @@ const Popup = () => {
 					target.value = String(60);
 				}
 
-				updateStorage('movingStep', Number(target.value));
+				configService.update('movingStep', Number(target.value));
 				sendStorageChangedMessage(tabId);
 			});
 
 			// Initialize checkbox states from local storage or set default
-			chrome.storage.local.get([...checkBoxesIds, 'movingStep'], (result) => {
-				updateConfig(result);
-				checkBoxesIds.forEach((checkboxId) => {
-					const checkBox = document.getElementById(
-						checkboxId
-					) as HTMLInputElement;
-					checkBox.checked = result[checkboxId] || false;
-				});
+			configService.getAll().then(config => {
+				Object.keys(config).forEach(checkboxId => {
+					if (checkboxId === 'movingStep') {
+						(document.getElementById('movingStep') as HTMLInputElement).value = String(config[checkboxId] || 10);
+						return;
+					}
 
-				(document.getElementById('movingStep') as HTMLInputElement).value =
-					result['movingStep'] || 10;
-			});
+					const checkBox = document.getElementById(checkboxId) as HTMLInputElement;
+					checkBox.checked = config[checkboxId] || false;
+				});
+			})
+
 		});
 
 		const githubButton = document.getElementById('github');

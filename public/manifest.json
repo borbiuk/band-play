@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"description": "Automation of work with Bandcamp: autoplay, control by hotkeys and etc.",
 	"host_permissions": [
 		"https://bandcamp.com/*",
@@ -18,7 +18,7 @@
 		{
 			"js": [
 				"vendor.js",
-				"content_script.js"
+				"content.js"
 			],
 			"matches": [
 				"https://bandcamp.com/*",
@@ -28,7 +28,7 @@
 	],
 	"action": {
 		"default_title": "Bandcamp play settings",
-		"default_popup": "popup.html"
+		"default_popup": "./popup.html"
 	},
 	"icons": {
 		"16": "assets/logo-16.png",
