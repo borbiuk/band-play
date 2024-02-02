@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"watch": "webpack --config webpack/webpack.dev.js --watch",
-		"build": "webpack --config webpack/webpack.prod.js"
+		"build": "webpack --config webpack/webpack.prod.js",
+		"zip": "./zip.sh"
 	},
 	"author": "",
 	"license": "MIT",
