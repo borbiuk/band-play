@@ -9,15 +9,15 @@ export interface Service {
 
 	initTracks(): void;
 
-	tryAutoplay(): any;
+	tryAutoplay(): void;
 
-	play(index: number): any;
+	play(index: number): void;
 
-	playNextTrack(next: boolean): any;
+	playNextTrack(next: boolean): void;
 
-	playNextTrackWithPercentage(): any;
+	playNextTrackWithPercentage(): void;
 
-	playPause(): any;
+	playPause(): void;
 
 	playPercentage(percentage: number): void;
 
@@ -30,4 +30,3 @@ export interface Track {
 	id: string;
 	element: Element;
 }
-

@@ -1,5 +1,4 @@
 export interface Config {
-
 	// Enable autoplay on all pages.
 	autoplay: boolean;
 

@@ -3,7 +3,6 @@ import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Album implements Service {
-
 	config: Config;
 	tracks: Track[] = [];
 
@@ -34,7 +33,8 @@ export class Album implements Service {
 		const durationInSeconds = this.convertTimeToSeconds(durationStr);
 
 		let nextPositionInSeconds =
-			positionInSeconds + (forward ? this.config.movingStep : -this.config.movingStep);
+			positionInSeconds +
+			(forward ? this.config.movingStep : -this.config.movingStep);
 		if (nextPositionInSeconds < 0) {
 			nextPositionInSeconds = 0;
 		} else if (nextPositionInSeconds > durationInSeconds) {
@@ -46,7 +46,7 @@ export class Album implements Service {
 	}
 
 	open() {
-		let itemUrl = document
+		const itemUrl = document
 			.querySelector('.current_track .title')
 			?.querySelector('a')
 			?.getAttribute('href');
@@ -63,9 +63,7 @@ export class Album implements Service {
 		return url.includes('/album/') || url.includes('/track/');
 	}
 
-	tryAutoplay() {
-
-	}
+	tryAutoplay() {}
 
 	playPause() {
 		document.querySelector<HTMLElement>('.playbutton')?.click();
@@ -80,8 +78,7 @@ export class Album implements Service {
 		document.querySelector<HTMLElement>('.prevbutton').click();
 	}
 
-	playNextTrackWithPercentage() {
-	}
+	playNextTrackWithPercentage() {}
 
 	play(index: number) {
 		if (index < 0) {
@@ -98,8 +95,7 @@ export class Album implements Service {
 		playButtons[index].querySelector('div').click();
 	}
 
-	initTracks(): void {
-	}
+	initTracks(): void {}
 
 	private convertTimeToSeconds(timeStr: string) {
 		if (notExist(timeStr)) {
@@ -117,7 +113,13 @@ export class Album implements Service {
 	}
 
 	// Drug element.
-	private drugElement(element: Element, fromX: number, fromY: number, toX: number, toY: number) {
+	private drugElement(
+		element: Element,
+		fromX: number,
+		fromY: number,
+		toX: number,
+		toY: number
+	) {
 		const down = new MouseEvent('mousedown', {
 			bubbles: true,
 			cancelable: true,
@@ -146,5 +148,4 @@ export class Album implements Service {
 		element.dispatchEvent(move);
 		element.dispatchEvent(up);
 	}
-
 }

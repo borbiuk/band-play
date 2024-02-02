@@ -43,9 +43,7 @@ export class Collection implements Service {
 			return;
 		}
 
-		const nowPlayingIndex = this.getTrackIndex(
-			nowPlayingId
-		);
+		const nowPlayingIndex = this.getTrackIndex(nowPlayingId);
 		if (nowPlayingIndex === -1) {
 			return;
 		}
@@ -86,7 +84,7 @@ export class Collection implements Service {
 	}
 
 	playNextTrackWithPercentage() {
-		let percentage = this.calculateTimePercentage();
+		const percentage = this.calculateTimePercentage();
 		if (this.playNextTrack(true)) {
 			setTimeout(() => {
 				this.playPercentage(percentage);
@@ -102,7 +100,10 @@ export class Collection implements Service {
 		const track = this.tracks[index];
 		track.element.querySelector('a')?.click();
 		if (this.config.autoscroll) {
-			track.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+			track.element.scrollIntoView({
+				block: 'center',
+				behavior: 'smooth',
+			});
 		}
 	}
 
@@ -153,9 +154,10 @@ export class Collection implements Service {
 
 	getPlayingTrackProgress() {
 		const left =
-			document.querySelector<HTMLElement>('div.seek-control')?.style?.left;
+			document.querySelector<HTMLElement>('div.seek-control')?.style
+				?.left;
 		return notExist(left) ? null : parseFloat(left);
-	};
+	}
 
 	initTracks() {
 		this.clickShowAllTracks();

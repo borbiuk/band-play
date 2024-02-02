@@ -1,7 +1,7 @@
 import { notExist } from './common/utils';
 
 // Send URL change message
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
 	// url not changed
 	if (notExist(changeInfo.url)) {
 		return;
@@ -17,7 +17,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 // Subscribe on messages
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 	// Open new tab without focus on it
 	if (request?.id === 'CREATE_TAB') {
 		chrome.tabs.create({ url: request.url, active: false });

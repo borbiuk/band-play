@@ -5,7 +5,6 @@ import { ConfigService } from '../common/config-service';
 import { Config } from '../contracts/config';
 
 const Popup = () => {
-
 	const configService = new ConfigService();
 
 	// Checkboxes ids.
@@ -15,7 +14,9 @@ const Popup = () => {
 		playFirst: false,
 	};
 
-	const checkBoxesIds: (keyof Config)[] = Object.keys(checkBoxes) as (keyof Config)[];
+	const checkBoxesIds: (keyof Config)[] = Object.keys(
+		checkBoxes
+	) as (keyof Config)[];
 
 	// Send Chrome event about local storage changes.
 	const sendStorageChangedMessage = (tabId: number) => {
@@ -54,7 +55,7 @@ const Popup = () => {
 			const stepInput = document.getElementById('movingStep');
 			stepInput.addEventListener('change', (event) => {
 				const target = event.target as HTMLInputElement;
-				let value = parseInt(target.value);
+				const value = parseInt(target.value);
 				if (value < 5) {
 					target.value = String(5);
 				} else if (value > 60) {
@@ -66,18 +67,23 @@ const Popup = () => {
 			});
 
 			// Initialize checkbox states from local storage or set default
-			configService.getAll().then(config => {
-				Object.keys(config).forEach(checkboxId => {
+			configService.getAll().then((config) => {
+				Object.keys(config).forEach((checkboxId) => {
 					if (checkboxId === 'movingStep') {
-						(document.getElementById('movingStep') as HTMLInputElement).value = String(config[checkboxId] || 10);
+						(
+							document.getElementById(
+								'movingStep'
+							) as HTMLInputElement
+						).value = String(config[checkboxId] || 10);
 						return;
 					}
 
-					const checkBox = document.getElementById(checkboxId) as HTMLInputElement;
+					const checkBox = document.getElementById(
+						checkboxId
+					) as HTMLInputElement;
 					checkBox.checked = config[checkboxId] || false;
 				});
-			})
-
+			});
 		});
 
 		const githubButton = document.getElementById('github');
@@ -116,7 +122,7 @@ const Popup = () => {
 			{/* Header */}
 			<div className="header" id="logo" style={{ marginBottom: '18px' }}>
 				{/* Logo */}
-				<img src="./../assets/logo-128.png" alt="Bandplay logo"/>
+				<img src="./../assets/logo-128.png" alt="Bandplay logo" />
 				<span>BandPlay</span>
 			</div>
 
@@ -133,25 +139,25 @@ const Popup = () => {
 			<div className="menu">
 				{/* Autoplay */}
 				<div className="menu-item" style={{ marginBottom: '6px' }}>
-					<input type="checkbox" id="autoplay"/>
+					<input type="checkbox" id="autoplay" />
 					<label htmlFor="autoplay">Autoplay</label>
 				</div>
 
 				{/* Autoscroll */}
 				<div className="menu-item" style={{ marginBottom: '6px' }}>
-					<input type="checkbox" id="autoscroll"/>
+					<input type="checkbox" id="autoscroll" />
 					<label htmlFor="autoscroll">Enable auto-scroll</label>
 				</div>
 
 				{/* Play first */}
 				<div className="menu-item" style={{ marginBottom: '6px' }}>
-					<input type="checkbox" id="playFirst"/>
+					<input type="checkbox" id="playFirst" />
 					<label htmlFor="playFirst">Play first when error</label>
 				</div>
 
 				{/* Playback moving step */}
 				<div className="menu-item" style={{ marginBottom: '12px' }}>
-					<input type="number" id="movingStep" min="5" max="60"/>
+					<input type="number" id="movingStep" min="5" max="60" />
 					<label htmlFor="movingStep">Step in seconds</label>
 				</div>
 			</div>
@@ -162,7 +168,10 @@ const Popup = () => {
 				<button
 					id="github"
 					className="button github"
-					style={{ padding: '10px 2px !important', marginBottom: '10px' }}
+					style={{
+						padding: '10px 2px !important',
+						marginBottom: '10px',
+					}}
 				>
 					<img
 						src="./../assets/github.png"
@@ -177,7 +186,10 @@ const Popup = () => {
 					className="button buymeacoffe"
 					style={{ marginBottom: '10px' }}
 				>
-					<img src="./../assets/buymeacoffee.png" alt="buymeacoffee logo"/>
+					<img
+						src="./../assets/buymeacoffee.png"
+						alt="buymeacoffee logo"
+					/>
 					<span>Buy me a coffee</span>
 				</button>
 
@@ -199,6 +211,6 @@ const root = createRoot(document.getElementById('root')!);
 
 root.render(
 	<React.StrictMode>
-		<Popup/>
+		<Popup />
 	</React.StrictMode>
 );

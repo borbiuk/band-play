@@ -55,8 +55,8 @@ export class Discover implements Service {
 		}
 
 		const nextTrackPlayButton = this.tracks[
-		nowPlayingIndex + (next ? 1 : -1)
-			].element.querySelector<HTMLElement>('div button[aria-label="Play"]');
+			nowPlayingIndex + (next ? 1 : -1)
+		].element.querySelector<HTMLElement>('div button[aria-label="Play"]');
 		nextTrackPlayButton.click();
 
 		if (this.config.autoscroll) {
@@ -67,8 +67,7 @@ export class Discover implements Service {
 		}
 	}
 
-	playNextTrackWithPercentage() {
-	}
+	playNextTrackWithPercentage() {}
 
 	playPause() {
 		let button = document.querySelector('.play-circle-outline-icon');
@@ -78,11 +77,9 @@ export class Discover implements Service {
 		button?.parentElement?.click();
 	}
 
-	playPercentage(percentage: number): void {
-	}
+	playPercentage(_: number): void {}
 
-	move(forward: boolean): void {
-	}
+	move(_: boolean): void {}
 
 	open(): void {
 		const itemUrl =
@@ -123,5 +120,4 @@ export class Discover implements Service {
 		const seconds = parseInt(parts[1], 10);
 		return minutes * 60 + seconds;
 	}
-
 }

@@ -17,7 +17,7 @@ module.exports = {
 			name: 'vendor',
 			chunks(chunk) {
 				return chunk.name !== 'background';
-			}
+			},
 		},
 	},
 	module: {
@@ -29,11 +29,7 @@ module.exports = {
 			},
 			{
 				test: /\.s[ac]ss$/i,
-				use: [
-					'style-loader',
-					'css-loader',
-					'sass-loader',
-				],
+				use: ['style-loader', 'css-loader', 'sass-loader'],
 				exclude: /node_modules/,
 			},
 		],
@@ -43,7 +39,7 @@ module.exports = {
 	},
 	plugins: [
 		new CopyPlugin({
-			patterns: [{from: '.', to: './', context: 'public'}],
+			patterns: [{ from: '.', to: './', context: 'public' }],
 			options: {},
 		}),
 	],

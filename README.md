@@ -17,14 +17,14 @@ To use the extension, simply navigate to a supported album/track or collection/w
 
 This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy control over music playback:
 
-- `Space bar`: Pause/Play the current track.
-- `n`: Play the next track from the start.
-- `b`: Play the previous track from the start.
-- `m`: Play the next track, continuing with the previous track's progress.
-- `o`: Open the current track in new tab.
-- Digits from `0` to `9`: Play the current track with progress `(Digit * 10)%`.
-- Shift + `0` to `9`: Play the track by index.
-- `←` and `→` move track playback back or forward on `step` seconds.
+-   `Space bar`: Pause/Play the current track.
+-   `n`: Play the next track from the start.
+-   `b`: Play the previous track from the start.
+-   `m`: Play the next track, continuing with the previous track's progress.
+-   `o`: Open the current track in new tab.
+-   Digits from `0` to `9`: Play the current track with progress `(Digit * 10)%`.
+-   Shift + `0` to `9`: Play the track by index.
+-   `←` and `→` move track playback back or forward on `step` seconds.
 
 Please note that customization of hotkeys is not available in the current version.
 
@@ -39,12 +39,12 @@ Please note that customization of hotkeys is not available in the current versio
 
 ### File Structure
 
-- `assets/`: Contains images and icons used by the extension.
-- `popup/`: Contains HTML and JavaScript files used for popup of extension.
-- `scripts/`: Contains the JavaScript files for background and content scripts.
-- `LICENSE`: The license under which this extension is released.
-- `manifest.json`: The Chrome extension manifest file.
-- `publish.sh`: A script for building and packaging the extension for distribution.
+-   `assets/`: Contains images and icons used by the extension.
+-   `popup/`: Contains HTML and JavaScript files used for popup of extension.
+-   `scripts/`: Contains the JavaScript files for background and content scripts.
+-   `LICENSE`: The license under which this extension is released.
+-   `manifest.json`: The Chrome extension manifest file.
+-   `publish.sh`: A script for building and packaging the extension for distribution.
 
 ## 🤝 Contributing
 

@@ -3,7 +3,6 @@ import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Feed implements Service {
-
 	// The ID of latest played track on the feed page.
 	private lastFeedPlayingTrackId: string;
 
@@ -39,19 +38,21 @@ export class Feed implements Service {
 			.filter((x) => exist(x.id));
 
 		this.tracks.forEach((x) => {
-			x.element.querySelector<HTMLElement>('.play-button').onclick = () => {
-				this.lastFeedPlayingTrackId = null;
-				if (x.element.classList.contains('playing')) {
-					this.feedPauseTrackId = x.id;
-				}
-			};
+			x.element.querySelector<HTMLElement>('.play-button').onclick =
+				() => {
+					this.lastFeedPlayingTrackId = null;
+					if (x.element.classList.contains('playing')) {
+						this.feedPauseTrackId = x.id;
+					}
+				};
 		});
 	}
 
 	tryAutoplay() {
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');
 		if (exist(nowPlaying)) {
-			this.lastFeedPlayingTrackId = nowPlaying.getAttribute('data-tralbumid');
+			this.lastFeedPlayingTrackId =
+				nowPlaying.getAttribute('data-tralbumid');
 			return;
 		}
 
@@ -64,12 +65,11 @@ export class Feed implements Service {
 		}
 
 		this.lastFeedPlayingTrackId =
-			this.tracks[this.getTrackIndex(this.lastFeedPlayingTrackId) + 1]
-				.id;
+			this.tracks[this.getTrackIndex(this.lastFeedPlayingTrackId) + 1].id;
 		const playPauseButton =
 			this.tracks[
 				this.getTrackIndex(this.lastFeedPlayingTrackId)
-				].element.querySelector<HTMLElement>('.play-button');
+			].element.querySelector<HTMLElement>('.play-button');
 		playPauseButton.click();
 
 		if (this.config.autoscroll) {
@@ -86,7 +86,9 @@ export class Feed implements Service {
 		}
 
 		const playPauseButton =
-			this.tracks[index].element.querySelector<HTMLElement>('.play-button');
+			this.tracks[index].element.querySelector<HTMLElement>(
+				'.play-button'
+			);
 		playPauseButton.click();
 		if (this.config.autoscroll) {
 			playPauseButton.scrollIntoView({
@@ -102,9 +104,11 @@ export class Feed implements Service {
 		if (notExist(nowPlaying)) {
 			const playPauseButton = exist(this.feedPauseTrackId)
 				? this.tracks[
-				this.getTrackIndex(this.feedPauseTrackId) + index()
+						this.getTrackIndex(this.feedPauseTrackId) + index()
 					].element.querySelector<HTMLElement>('.play-button')
-				: this.tracks[0].element.querySelector<HTMLElement>('.play-button');
+				: this.tracks[0].element.querySelector<HTMLElement>(
+						'.play-button'
+					);
 			playPauseButton.click();
 			if (this.config.autoscroll) {
 				playPauseButton.scrollIntoView({
@@ -113,7 +117,9 @@ export class Feed implements Service {
 				});
 			}
 			playPauseButton.onclick = () => {
-				this.feedPauseTrackId = this.config.playFirst ? this.tracks[0].id : null;
+				this.feedPauseTrackId = this.config.playFirst
+					? this.tracks[0].id
+					: null;
 				this.lastFeedPlayingTrackId = null;
 			};
 			return;
@@ -121,10 +127,9 @@ export class Feed implements Service {
 
 		const nextPlayPauseButton =
 			this.tracks[
-			this.getTrackIndex(
-				nowPlaying.getAttribute('data-tralbumid')
-			) + index()
-				].element.querySelector<HTMLElement>('.play-button');
+				this.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) +
+					index()
+			].element.querySelector<HTMLElement>('.play-button');
 		nextPlayPauseButton.click();
 		if (this.config.autoscroll) {
 			nextPlayPauseButton.scrollIntoView({
@@ -135,16 +140,15 @@ export class Feed implements Service {
 		nextPlayPauseButton.onclick = () => {
 			this.feedPauseTrackId =
 				this.tracks[
-				this.getTrackIndex(
-					nowPlaying.getAttribute('data-tralbumid')
-				) + index()
-					].id;
+					this.getTrackIndex(
+						nowPlaying.getAttribute('data-tralbumid')
+					) + index()
+				].id;
 			this.lastFeedPlayingTrackId = null;
 		};
 	}
 
-	playNextTrackWithPercentage() {
-	}
+	playNextTrackWithPercentage() {}
 
 	playPause() {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
@@ -159,11 +163,9 @@ export class Feed implements Service {
 		}
 	}
 
-	playPercentage(percentage: number): void {
-	}
+	playPercentage(_: number): void {}
 
-	move(forward: boolean): void {
-	}
+	move(_: boolean): void {}
 
 	open(): void {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
@@ -180,5 +182,4 @@ export class Feed implements Service {
 	private getTrackIndex(trackId: string) {
 		return this.tracks.findIndex((x) => x.id === trackId);
 	}
-
 }

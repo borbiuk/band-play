@@ -9,12 +9,7 @@ import { Feed } from './services/feed';
 
 const configService = new ConfigService();
 
-const services = [
-	new Album(),
-	new Discover(),
-	new Feed(),
-	new Collection()
-];
+const services = [new Album(), new Discover(), new Feed(), new Collection()];
 
 let config: Config;
 let service: Service = null;
@@ -22,8 +17,8 @@ let service: Service = null;
 // Get the object to handle current page functionality.
 const currentService = () => {
 	const url = window.location.href;
-	return services.find(x => x.checkUrl(url));
-}
+	return services.find((x) => x.checkUrl(url));
+};
 
 // Main function to start the application.
 const main = async () => {
@@ -59,7 +54,7 @@ const main = async () => {
 	}, 1_000);
 };
 
-main().catch(e => {
+main().catch((e) => {
 	console.error(e);
 });
 
@@ -123,26 +118,28 @@ document.addEventListener(
 );
 
 // Event listeners for Chrome messages.
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-	if (notExist(message?.code)) {
-		return;
-	}
+chrome.runtime.onMessage.addListener(
+	async (message, _sender, _sendResponse) => {
+		if (notExist(message?.code)) {
+			return;
+		}
 
-	// clear data on URL change message
-	if (message.code === 'URL_CHANGED') {
-		service = currentService();
-		service.config = config;
-		service.tracks = [];
-		service.initTracks();
+		// clear data on URL change message
+		if (message.code === 'URL_CHANGED') {
+			service = currentService();
+			service.config = config;
+			service.tracks = [];
+			service.initTracks();
 
-		return;
-	}
+			return;
+		}
 
-	if (message.code === 'STORAGE_CHANGED') {
-		config = await configService.getAll();
-	} else if (message.code === 'SHOW_UPDATE') {
-		alert(
-			`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
-		);
+		if (message.code === 'STORAGE_CHANGED') {
+			config = await configService.getAll();
+		} else if (message.code === 'SHOW_UPDATE') {
+			alert(
+				`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
+			);
+		}
 	}
-});
+);
