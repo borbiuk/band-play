@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# Create a build of extension by webpack to dist directory
+# Re-create a build of extension by webpack to dist directory
+if [ -d "dist" ]; then
+	rm -r "dist"
+	echo "'dist' removed"
+else
+	echo "'dist' no found"
+fi
 npm run build
 
 ##########################################################
@@ -14,8 +20,8 @@ temp_dir="band-play-build"
 
 # Files that will be included to .zip
 include_files=(
+	"dist/assets/bandcamp.png"
 	"dist/assets/buymeacoffee.png"
-	"dist/assets/configuration.png"
 	"dist/assets/github.png"
 	"dist/assets/logo-16.png"
 	"dist/assets/logo-32.png"

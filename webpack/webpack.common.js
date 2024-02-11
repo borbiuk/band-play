@@ -29,7 +29,10 @@ module.exports = {
 			},
 			{
 				test: /\.s[ac]ss$/i,
-				use: ['style-loader', 'css-loader', 'sass-loader'],
+				use: ['style-loader', 'css-loader', 'sass-loader', {
+					loader: 'postcss-loader',
+					options: {postcssOptions: {plugins: ['postcss-preset-env']}}
+				}],
 				exclude: /node_modules/,
 			},
 		],
@@ -39,8 +42,22 @@ module.exports = {
 	},
 	plugins: [
 		new CopyPlugin({
-			patterns: [{ from: '.', to: './', context: 'public' }],
-			options: {},
+			patterns: [{
+				from: '.',
+				to: './',
+				context: 'public',
+				globOptions: {
+					gitignore: true,
+					ignore: [
+						'**/buymeacoffee-original.png',
+						'**/configuration-original.png',
+						'**/logo-full.png',
+						'**/logo.png',
+						'**/rate-original.png',
+						'**/.DS_Store',
+					]
+				}
+			}]
 		}),
 	],
 };

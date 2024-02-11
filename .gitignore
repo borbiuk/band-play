@@ -3,6 +3,7 @@
 # JetBrains IDE
 .idea
 *.DotSettings.user
+*.DS_Store
 
 # builds
 *.zip
