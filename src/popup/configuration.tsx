@@ -75,6 +75,7 @@ export const Configuration = () => {
 				defaultValue={currentConfig.movingStep}
 				min={6}
 				max={60}
+				suffix="sec"
 				onChange={updateStorage}
 			/>
 		</div>

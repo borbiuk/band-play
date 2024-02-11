@@ -6,6 +6,7 @@ export const NumberInput = ({
 	defaultValue,
 	min,
 	max,
+	suffix, // new prop for the suffix
 	onChange,
 }) => {
 	const [value, setValue] = useState(defaultValue);
@@ -58,17 +59,23 @@ export const NumberInput = ({
 						<path stroke="currentColor" d="M1 1h16" />
 					</svg>
 				</button>
-				<input
-					type="number"
-					id={`${id}-number-input`}
-					min={min}
-					max={max}
-					value={value}
-					className="block h-8 w-full border-y text-center text-base font-medium tabular-nums text-gray-900 outline-none bg-band-100 border-band-200 py-2.5"
-					placeholder={max}
-					onChange={handleChange}
-					required
-				/>
+				<div className="relative h-8 w-full">
+					<input
+						type="number"
+						id={`${id}-number-input`}
+						min={min}
+						max={max}
+						value={value}
+						className="block h-full w-full border-y text-center text-base font-medium tabular-nums text-gray-900 outline-none bg-band-100 border-band-200 py-2.5"
+						placeholder={max}
+						onChange={handleChange}
+						required
+					/>
+					<span className="absolute right-2 bottom-1 pt-1 text-xs text-gray-500">
+						{suffix}
+					</span>
+				</div>
+
 				<button
 					type="button"
 					id={`${id}-increment-button`}

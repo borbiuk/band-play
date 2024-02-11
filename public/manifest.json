@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "3.0.4",
+	"version": "3.0.5",
 	"description": "Automation of work with Bandcamp: autoplay, control by hotkeys and etc.",
 	"host_permissions": [
 		"https://bandcamp.com/*",
