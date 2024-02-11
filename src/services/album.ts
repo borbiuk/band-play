@@ -55,6 +55,8 @@ export class Album implements Service {
 			chrome.runtime.sendMessage({
 				id: 'CREATE_TAB',
 				url: window.location.origin + itemUrl,
+			}).catch(e => {
+				console.error(e);
 			});
 		}
 	}

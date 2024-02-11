@@ -18,6 +18,9 @@ module.exports = {
 		extend: {
 			colors: {
 				band: band
+			},
+			scale: {
+				'115': '1.15'
 			}
 		},
 	},

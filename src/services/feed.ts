@@ -176,7 +176,10 @@ export class Feed implements Service {
 		const itemUrl = playingFeed
 			.querySelector('.item-link')
 			.getAttribute('href');
-		chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl });
+		chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
+			.catch(e => {
+				console.error(e);
+			});
 	}
 
 	private getTrackIndex(trackId: string) {

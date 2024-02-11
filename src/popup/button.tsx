@@ -3,15 +3,15 @@ import React from 'react';
 export const Button = ({ text, icon, onClick }) => {
 	return (
 		<button
-			className="bg-band-300 hover:bg-band-400 hover:cursor-pointer w-full h-8 flex flex-row items-center rounded-xl gap-x-2 px-2 duration-300"
+			className="flex h-8 w-full flex-row items-center gap-x-2 rounded-xl px-2 duration-300 bg-band-300 group hover:bg-band-400 hover:cursor-pointer"
 			onClick={onClick}
 		>
 			<img
 				src={icon}
 				alt="buymeacoffee logo"
-				className="h-6 w-6"
+				className="h-6 w-6 duration-300 group-hover:scale-105"
 			/>
-			<span className="flex justify-center w-full font-normal text-sm text-nowrap text-gray-900">
+			<span className="flex w-full justify-center text-sm font-normal text-gray-900 duration-300 text-nowrap group-hover:scale-110">
 				{text}
 			</span>
 		</button>

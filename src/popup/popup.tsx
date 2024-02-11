@@ -8,13 +8,12 @@ const Popup = () => {
 
 	return (
 		<div
-			className="relative p-4 pb-6 w-52 flex justify-center align-middle flex-col gap-y-6 overflow-hidden"
+			className="relative flex w-52 flex-col justify-center gap-y-6 overflow-hidden p-4 pb-6 align-middle bg-band-100"
 		>
 			{/* Header */}
-			<div className="flex flex-col gap-y-1 items-center w-full">
-				{/* Logo */}
-				<img src="./../assets/logo-128.png" alt="Bandplay logo" className="h-20 w-20"/>
-				<span className="text-xl text-gray-900 font-medium -mt-1">BandPlay</span>
+			<div className="flex w-full flex-col items-center gap-y-1">
+				<img src="./../assets/logo-128.png" alt="Bandplay logo" className="h-20 w-20 rounded-full shadow-xl"/>
+				<span className="z-10 -mt-1 text-2xl font-medium text-gray-900">BandPlay</span>
 			</div>
 
 			<Configuration/>

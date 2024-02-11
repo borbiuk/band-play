@@ -12,8 +12,7 @@ export const Footer = () => {
 			'_blank'
 		);
 
-	const openMyBandcamp = () =>
-		window.open('https://bandcamp.com/borbiuk', '_blank');
+	const openMyBandcamp = () => window.open('https://bandcamp.com/borbiuk', '_blank');
 
 	return (
 		<div className="flex flex-col gap-y-3">

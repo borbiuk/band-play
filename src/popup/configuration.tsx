@@ -11,14 +11,8 @@ export const Configuration = () => {
 	const [currentConfig, setCurrentConfig] = useState(null as Config);
 
 	const configService = new ConfigService();
-	const updateStorage = (key: keyof Config, value: unknown) => {
-		configService.update(key, value)
-			.then(() => {
-				// Send Chrome event about local storage changes.
-				chrome.tabs.sendMessage(tabId, {
-					code: 'STORAGE_CHANGED',
-				});
-			});
+	const updateStorage = async (key: keyof Config, value: unknown) => {
+		await configService.update(key, value, tabId);
 	};
 
 	const loadTabId = async () => {
@@ -41,13 +35,16 @@ export const Configuration = () => {
 	}
 
 	return (
-		<div className="flex flex-col gap-y-2 relative rounded-xl border border-gray-300 p-3 pt-5 shadow-md shadow-gray-300">
+		<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 pt-5 shadow-md shadow-gray-300">
 
-			<span className="absolute left-1 -mt-9 z-20 p-0.5 rounded-xl bg-band-100 text-gray-500 text-base">Configuration</span>
+			<span className="absolute left-1 z-20 -mt-9 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
+				Configuration
+			</span>
 
 			{/* Flags */}
 			<Checkbox id="autoplay" label="Autoplay" defaultValue={currentConfig.autoplay} onChange={updateStorage}/>
 			<Checkbox id="autoscroll" label="Autoscroll" defaultValue={currentConfig.autoscroll} onChange={updateStorage}/>
+			<Checkbox id="keepAwake" label="Keep Awake" defaultValue={currentConfig.keepAwake} onChange={updateStorage}/>
 			<Checkbox id="playFirst" label="Play First" defaultValue={currentConfig.playFirst} onChange={updateStorage}/>
 
 			{/* Playback moving step */}

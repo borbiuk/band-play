@@ -23,26 +23,24 @@ export const NumberInput = ({ id, label, defaultValue, min, max, onChange }) => 
 		}
 	};
 
-	const handleDecrement = () => {
-		setValue(Math.max(min, value - 1));
-	};
+	const handleDecrement = () => setValue(Math.max(min, value - 1));
 
-	const handleIncrement = () => {
-		setValue(Math.min(max, value + 1));
-	};
+	const handleIncrement = () => setValue(Math.min(max, value + 1));
 
 	return (
 		<div className="w-full">
-			<label htmlFor={`${id}-number-input`} className="pl-7 -ml-0.5 block mb-1 text-sm text-gray-900">{label}</label>
+			<label htmlFor={`${id}-number-input`} className="mb-1 block cursor-pointer pl-7 text-sm text-gray-900 -ml-0.5">
+				{label}
+			</label>
 			<div className="relative flex items-center">
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="bg-band-300 hover:bg-band-400 duration-300 border border-band-200 rounded-s-lg p-2 h-8 outline-none"
+					className="h-8 border p-2 outline-none duration-300 bg-band-300 border-band-200 rounded-s-lg hover:bg-band-400 hover:scale-110"
 					onClick={handleDecrement}
 				>
-					<svg className="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+					<svg className="h-3 w-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+						<path stroke="currentColor" d="M1 1h16"/>
 					</svg>
 				</button>
 				<input
@@ -51,7 +49,7 @@ export const NumberInput = ({ id, label, defaultValue, min, max, onChange }) => 
 					min={min}
 					max={max}
 					value={value}
-					className="bg-band-100 border-y border-band-200 h-8 text-center text-gray-900 text-base font-medium outline-none block w-full py-2.5 tabular-nums"
+					className="block h-8 w-full border-y text-center text-base font-medium tabular-nums text-gray-900 outline-none bg-band-100 border-band-200 py-2.5"
 					placeholder={max}
 					onChange={handleChange}
 					required
@@ -59,11 +57,11 @@ export const NumberInput = ({ id, label, defaultValue, min, max, onChange }) => 
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="bg-band-300 hover:bg-band-400 duration-300 border border-band-200 rounded-e-lg p-2 h-8 outline-none"
+					className="h-8 border p-2 outline-none duration-300 bg-band-300 border-band-200 rounded-e-lg hover:bg-band-400 hover:scale-110"
 					onClick={handleIncrement}
 				>
-					<svg className="w-3 h-3 text-gray-900 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+					<svg className="h-3 w-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+						<path stroke="currentColor" d="M9 1v16M1 9h16"/>
 					</svg>
 				</button>
 			</div>
