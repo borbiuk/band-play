@@ -1,8 +1,12 @@
+import { MessageCode } from '../common/message-code';
+import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
 import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Feed implements Service {
+	private readonly _messageService = new MessageService();
+
 	// The ID of latest played track on the feed page.
 	private lastFeedPlayingTrackId: string;
 
@@ -176,11 +180,15 @@ export class Feed implements Service {
 		const itemUrl = playingFeed
 			.querySelector('.item-link')
 			.getAttribute('href');
-		chrome.runtime
-			.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
-			.catch((e) => {
-				console.error(e);
-			});
+		if (exist(itemUrl)) {
+			this._messageService
+				.sendRuntimeMessage(MessageCode.CreateTab, {
+					url: itemUrl,
+				})
+				.catch((e) => {
+					console.error(e);
+				});
+		}
 	}
 
 	private getTrackIndex(trackId: string) {

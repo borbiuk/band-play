@@ -1,8 +1,12 @@
+import { MessageCode } from '../common/message-code';
+import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
 import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Discover implements Service {
+	private readonly _messageService: MessageService = new MessageService();
+
 	config: Config;
 	tracks: Track[] = [];
 
@@ -85,10 +89,12 @@ export class Discover implements Service {
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
 		if (exist(itemUrl)) {
-			chrome.runtime
-				.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
+			this._messageService
+				.sendRuntimeMessage(MessageCode.CreateTab, {
+					url: itemUrl,
+				})
 				.catch((e) => {
-					console.log(e);
+					console.error(e);
 				});
 		}
 	}

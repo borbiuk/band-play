@@ -1,14 +1,19 @@
 import { Config } from '../contracts/config';
+import { MessageCode } from './message-code';
+import { MessageService } from './message-service';
 import { exist } from './utils';
 
 export class ConfigService {
+	private readonly _messageService: MessageService = new MessageService();
+
 	async update<T>(key: keyof Config, value: T, tabId: number): Promise<void> {
 		await chrome.storage.local
 			.set({ [key]: value })
 			.then(async () => {
-				await chrome.tabs.sendMessage(tabId, {
-					code: 'STORAGE_CHANGED',
-				});
+				await this._messageService.sendTabMessage(
+					tabId,
+					MessageCode.StorageChanged
+				);
 			})
 			.catch((e) => {
 				console.log(e);

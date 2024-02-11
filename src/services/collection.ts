@@ -1,3 +1,5 @@
+import { MessageCode } from '../common/message-code';
+import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
 import { Config } from '../contracts/config';
 
@@ -5,6 +7,8 @@ import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Collection implements Service {
+	private readonly _messageService: MessageService = new MessageService();
+
 	private url: string;
 
 	config: Config;
@@ -51,11 +55,15 @@ export class Collection implements Service {
 		const itemUrl = this.tracks[nowPlayingIndex].element
 			.querySelector('.item-link')
 			.getAttribute('href');
-		chrome.runtime
-			.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
-			.catch((e) => {
-				console.log(e);
-			});
+		if (exist(itemUrl)) {
+			this._messageService
+				.sendRuntimeMessage(MessageCode.CreateTab, {
+					url: itemUrl,
+				})
+				.catch((e) => {
+					console.error(e);
+				});
+		}
 	}
 
 	tryAutoplay() {
@@ -114,7 +122,7 @@ export class Collection implements Service {
 	checkUrl(url: string) {
 		this.url = url;
 		const collectionPageRegex =
-			/^https?:\/\/(?:[^./?#]+\.)?bandcamp\.com\/[^/?#]+(?:\/wishlist)?$/i;
+			/^https:\/\/bandcamp\.com\/[a-zA-Z0-9]+(?:\/wishlist)?$/;
 		return collectionPageRegex.test(url.split('?')[0]);
 	}
 

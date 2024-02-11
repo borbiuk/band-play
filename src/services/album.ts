@@ -1,8 +1,12 @@
+import { MessageCode } from '../common/message-code';
+import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
 import { Config } from '../contracts/config';
 import { Service, Track } from '../contracts/service';
 
 export class Album implements Service {
+	private readonly _messageService: MessageService = new MessageService();
+
 	config: Config;
 	tracks: Track[] = [];
 
@@ -52,9 +56,8 @@ export class Album implements Service {
 			?.getAttribute('href');
 
 		if (exist(itemUrl)) {
-			chrome.runtime
-				.sendMessage({
-					id: 'CREATE_TAB',
+			this._messageService
+				.sendRuntimeMessage(MessageCode.CreateTab, {
 					url: window.location.origin + itemUrl,
 				})
 				.catch((e) => {

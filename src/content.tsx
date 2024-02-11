@@ -1,4 +1,5 @@
 import { ConfigService } from './common/config-service';
+import { MessageCode } from './common/message-code';
 import { isHotKey, notExist } from './common/utils';
 import { Config } from './contracts/config';
 import { Service } from './contracts/service';
@@ -30,10 +31,11 @@ const main = async () => {
 	setInterval(() => {
 		try {
 			service = currentService();
-			service.config = config;
 			if (notExist(service)) {
 				return;
 			}
+
+			service.config = config;
 
 			if (config.autoplay) {
 				service.tryAutoplay();
@@ -125,7 +127,7 @@ chrome.runtime.onMessage.addListener(
 		}
 
 		// clear data on URL change message
-		if (message.code === 'URL_CHANGED') {
+		if (message.code === MessageCode.UrlChanged) {
 			service = currentService();
 			service.config = config;
 			service.tracks = [];
@@ -134,11 +136,20 @@ chrome.runtime.onMessage.addListener(
 			return;
 		}
 
-		if (message.code === 'STORAGE_CHANGED') {
+		if (message.code === MessageCode.StorageChanged) {
 			config = await configService.getAll();
-		} else if (message.code === 'SHOW_UPDATE') {
+			return;
+		}
+
+		if (message.code === MessageCode.Log) {
+			console.log(message.data);
+
+			return;
+		}
+
+		if (message.code === MessageCode.ShowUpdate) {
 			alert(
-				`New update available! Version: ${message.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
+				`New update available! Version: ${message.data.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
 			);
 		}
 	}

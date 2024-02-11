@@ -1,5 +1,9 @@
 import { ConfigService } from './common/config-service';
+import { MessageCode } from './common/message-code';
+import { MessageService } from './common/message-service';
 import { notExist } from './common/utils';
+
+const messageService: MessageService = new MessageService();
 
 // Send URL change message.
 const registerUrlChange = () =>
@@ -13,24 +17,22 @@ const registerUrlChange = () =>
 			return;
 		}
 
-		chrome.tabs
-			.sendMessage(tabId, {
-				code: 'URL_CHANGED',
-			})
+		messageService
+			.sendTabMessage(tabId, MessageCode.UrlChanged)
 			.catch((e) => {
-				console.log(e);
+				console.error(e);
 			});
 	});
 
 // Subscribe on messages.
 const registerMessagesHandling = () =>
-	chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+	chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
 		// Open new tab without focus on it
-		if (request?.id === 'CREATE_TAB') {
+		if (message?.code === MessageCode.CreateTab) {
 			chrome.tabs
-				.create({ url: request.url, active: false })
+				.create({ url: message.data.url, active: false })
 				.catch((e) => {
-					console.log(e);
+					console.error(e);
 				});
 		}
 	});
@@ -39,13 +41,10 @@ const registerMessagesHandling = () =>
 const registerUpdateHandling = () =>
 	chrome.runtime.onUpdateAvailable.addListener((details) => {
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			chrome.tabs
-				.sendMessage(tabs[0].id, {
-					code: 'SHOW_UPDATE',
-					details,
-				})
+			messageService
+				.sendTabMessage(tabs[0].id, MessageCode.ShowUpdate, details)
 				.catch((e) => {
-					console.log(e);
+					console.error(e);
 				});
 		});
 	});
@@ -56,15 +55,42 @@ const registerKeepAwakeChange = () => {
 
 	chrome.runtime.onMessage.addListener(
 		async (message, _sender, _sendResponse) => {
-			if (message?.code === 'STORAGE_CHANGED') {
-				const { keepAwake } = await configService.getAll();
-				chrome.power.requestKeepAwake(keepAwake ? 'display' : 'system');
-			}
+			chrome.tabs.query(
+				{ active: true, currentWindow: true },
+				async (tabs) => {
+					if (message?.code === MessageCode.StorageChanged) {
+						await messageService.sendTabMessage(
+							tabs[0].id,
+							MessageCode.Log,
+							{ power: chrome.power }
+						);
+
+						const { keepAwake } = await configService.getAll();
+						chrome.power.requestKeepAwake(
+							keepAwake ? 'display' : 'system'
+						);
+					}
+				}
+			);
 		}
 	);
 };
 
-registerUrlChange();
-registerMessagesHandling();
-registerUpdateHandling();
-registerKeepAwakeChange();
+[
+	registerUrlChange,
+	registerMessagesHandling,
+	registerUpdateHandling,
+	registerKeepAwakeChange,
+].forEach((func) => {
+	try {
+		func();
+	} catch (error) {
+		messageService
+			.sendRuntimeMessage(MessageCode.Log, {
+				message: `Background ${func.name} function throw an error:\n${JSON.stringify(error)}`,
+			})
+			.catch((e) => {
+				console.error(e);
+			});
+	}
+});
