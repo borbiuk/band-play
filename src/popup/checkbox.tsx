@@ -8,7 +8,10 @@ export const Checkbox = ({ id, label, defaultValue, onChange }) => {
 	}, [isChecked]);
 
 	return (
-		<label className="inline-flex h-6 cursor-pointer items-center rounded-full" htmlFor={id}>
+		<label
+			className="inline-flex h-6 cursor-pointer items-center rounded-full"
+			htmlFor={id}
+		>
 			<div className="relative flex items-center">
 				<input
 					type="checkbox"

@@ -51,8 +51,9 @@ export class Collection implements Service {
 		const itemUrl = this.tracks[nowPlayingIndex].element
 			.querySelector('.item-link')
 			.getAttribute('href');
-		chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
-			.catch(e => {
+		chrome.runtime
+			.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
+			.catch((e) => {
 				console.log(e);
 			});
 	}

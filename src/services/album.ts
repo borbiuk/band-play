@@ -52,12 +52,14 @@ export class Album implements Service {
 			?.getAttribute('href');
 
 		if (exist(itemUrl)) {
-			chrome.runtime.sendMessage({
-				id: 'CREATE_TAB',
-				url: window.location.origin + itemUrl,
-			}).catch(e => {
-				console.error(e);
-			});
+			chrome.runtime
+				.sendMessage({
+					id: 'CREATE_TAB',
+					url: window.location.origin + itemUrl,
+				})
+				.catch((e) => {
+					console.error(e);
+				});
 		}
 	}
 

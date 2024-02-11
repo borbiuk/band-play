@@ -6,7 +6,6 @@ import { Checkbox } from './checkbox';
 import { NumberInput } from './number-input';
 
 export const Configuration = () => {
-
 	const [tabId, setTabId] = useState(null as number);
 	const [currentConfig, setCurrentConfig] = useState(null as Config);
 
@@ -16,7 +15,10 @@ export const Configuration = () => {
 	};
 
 	const loadTabId = async () => {
-		const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
 		return tabs[0].id;
 	};
 
@@ -25,7 +27,7 @@ export const Configuration = () => {
 			setTabId(tabId);
 		});
 
-		configService.getAll().then(config => {
+		configService.getAll().then((config) => {
 			setCurrentConfig(config);
 		});
 	}, []);
@@ -36,20 +38,45 @@ export const Configuration = () => {
 
 	return (
 		<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 pt-5 shadow-md shadow-gray-300">
-
 			<span className="absolute left-1 z-20 -mt-9 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
 				Configuration
 			</span>
 
 			{/* Flags */}
-			<Checkbox id="autoplay" label="Autoplay" defaultValue={currentConfig.autoplay} onChange={updateStorage}/>
-			<Checkbox id="autoscroll" label="Autoscroll" defaultValue={currentConfig.autoscroll} onChange={updateStorage}/>
-			<Checkbox id="keepAwake" label="Keep Awake" defaultValue={currentConfig.keepAwake} onChange={updateStorage}/>
-			<Checkbox id="playFirst" label="Play First" defaultValue={currentConfig.playFirst} onChange={updateStorage}/>
+			<Checkbox
+				id="autoplay"
+				label="Autoplay"
+				defaultValue={currentConfig.autoplay}
+				onChange={updateStorage}
+			/>
+			<Checkbox
+				id="autoscroll"
+				label="Autoscroll"
+				defaultValue={currentConfig.autoscroll}
+				onChange={updateStorage}
+			/>
+			<Checkbox
+				id="keepAwake"
+				label="Keep Awake"
+				defaultValue={currentConfig.keepAwake}
+				onChange={updateStorage}
+			/>
+			<Checkbox
+				id="playFirst"
+				label="Play First"
+				defaultValue={currentConfig.playFirst}
+				onChange={updateStorage}
+			/>
 
 			{/* Playback moving step */}
-			<NumberInput id="movingStep" label="Playback step" defaultValue={currentConfig.movingStep} min={6} max={60} onChange={updateStorage}/>
-
+			<NumberInput
+				id="movingStep"
+				label="Playback step"
+				defaultValue={currentConfig.movingStep}
+				min={6}
+				max={60}
+				onChange={updateStorage}
+			/>
 		</div>
 	);
 };

@@ -85,8 +85,9 @@ export class Discover implements Service {
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
 		if (exist(itemUrl)) {
-			chrome.runtime.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
-				.catch(e => {
+			chrome.runtime
+				.sendMessage({ id: 'CREATE_TAB', url: itemUrl })
+				.catch((e) => {
 					console.log(e);
 				});
 		}

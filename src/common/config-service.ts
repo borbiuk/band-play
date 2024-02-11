@@ -2,18 +2,15 @@ import { Config } from '../contracts/config';
 import { exist } from './utils';
 
 export class ConfigService {
-	async update<T>(
-		key: keyof Config,
-		value: T,
-		tabId: number
-	): Promise<void> {
-		await chrome.storage.local.set({ [key]: value })
+	async update<T>(key: keyof Config, value: T, tabId: number): Promise<void> {
+		await chrome.storage.local
+			.set({ [key]: value })
 			.then(async () => {
 				await chrome.tabs.sendMessage(tabId, {
 					code: 'STORAGE_CHANGED',
 				});
 			})
-			.catch(e => {
+			.catch((e) => {
 				console.log(e);
 			});
 	}
@@ -28,9 +25,7 @@ export class ConfigService {
 		])) as Config;
 		config = {
 			...config,
-			autoplay: exist(config.autoplay)
-				? Boolean(config.autoplay)
-				: true,
+			autoplay: exist(config.autoplay) ? Boolean(config.autoplay) : true,
 			autoscroll: exist(config.autoscroll)
 				? Boolean(config.autoscroll)
 				: true,
