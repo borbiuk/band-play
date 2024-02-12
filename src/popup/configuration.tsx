@@ -10,8 +10,9 @@ export const Configuration = () => {
 	const [currentConfig, setCurrentConfig] = useState(null as Config);
 
 	const configService = new ConfigService();
+
 	const updateStorage = async (key: keyof Config, value: unknown) => {
-		await configService.update(key, value, tabId);
+		await configService.update(key, value);
 	};
 
 	const loadTabId = async () => {

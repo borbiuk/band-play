@@ -1,4 +1,5 @@
 import { Config } from './config';
+import { Track } from './track';
 
 export interface Service {
 	config: Config;
@@ -24,9 +25,4 @@ export interface Service {
 	move(forward: boolean): void;
 
 	open(): void;
-}
-
-export interface Track {
-	id: string;
-	element: Element;
 }

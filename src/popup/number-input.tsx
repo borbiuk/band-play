@@ -30,9 +30,9 @@ export const NumberInput = ({
 		}
 	};
 
-	const handleDecrement = () => setValue(Math.max(min, value - 1));
+	const handleDecrement = () => setValue(Math.max(min, value - 5));
 
-	const handleIncrement = () => setValue(Math.min(max, value + 1));
+	const handleIncrement = () => setValue(Math.min(max, value + 5));
 
 	return (
 		<div className="w-full">

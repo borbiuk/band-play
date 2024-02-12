@@ -1,10 +1,11 @@
-import { MessageCode } from '../common/message-code';
 import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
 import { Config } from '../contracts/config';
+import { MessageCode } from '../contracts/message-code';
 
 // Service to handle 'collection' and 'wishlist' pages.
-import { Service, Track } from '../contracts/service';
+import { Service } from '../contracts/service';
+import { Track } from '../contracts/track';
 
 export class Collection implements Service {
 	private readonly _messageService: MessageService = new MessageService();
@@ -57,8 +58,9 @@ export class Collection implements Service {
 			.getAttribute('href');
 		if (exist(itemUrl)) {
 			this._messageService
-				.sendRuntimeMessage(MessageCode.CreateTab, {
-					url: itemUrl,
+				.sendToBackground<string>({
+					code: MessageCode.CreateNewTab,
+					data: itemUrl,
 				})
 				.catch((e) => {
 					console.error(e);

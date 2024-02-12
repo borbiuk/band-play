@@ -1,18 +1,20 @@
 import { ConfigService } from './common/config-service';
-import { MessageCode } from './common/message-code';
+import { MessageService } from './common/message-service';
 import { isHotKey, notExist } from './common/utils';
 import { Config } from './contracts/config';
+import { Message } from './contracts/message';
+import { MessageCode } from './contracts/message-code';
 import { Service } from './contracts/service';
 import { Album } from './services/album';
 import { Collection } from './services/collection';
 import { Discover } from './services/discover';
 import { Feed } from './services/feed';
 
-const configService = new ConfigService();
-
 const services = [new Album(), new Discover(), new Feed(), new Collection()];
 
-let config: Config;
+const configService = new ConfigService();
+const messageService = new MessageService();
+
 let service: Service = null;
 
 // Get the object to handle current page functionality.
@@ -25,31 +27,30 @@ const currentService = () => {
 const main = async () => {
 	console.log('[Start]: Band Play');
 
-	config = await configService.getAll();
+	service = currentService();
+	service.config = await configService.getAll();
+	configService.addListener((newConfig) => {
+		service.config = newConfig;
+	});
 
 	// Main execution loop for track playback and initialization
 	setInterval(() => {
+		if (!service?.config.autoplay) {
+			return;
+		}
+
 		try {
-			service = currentService();
-			if (notExist(service)) {
-				return;
-			}
-
-			service.config = config;
-
-			if (config.autoplay) {
-				service.tryAutoplay();
-			}
+			service?.tryAutoplay();
 		} catch (e) {
 			console.log(e);
 		}
 	}, 300);
 
 	// Initialization loop to refresh tracks periodically
-	currentService()?.initTracks();
+	service?.initTracks();
 	setInterval(() => {
 		try {
-			currentService()?.initTracks();
+			service?.initTracks();
 		} catch (e) {
 			console.log(e);
 		}
@@ -120,8 +121,8 @@ document.addEventListener(
 );
 
 // Event listeners for Chrome messages.
-chrome.runtime.onMessage.addListener(
-	async (message, _sender, _sendResponse) => {
+messageService.addListener(
+	async (message: Message<any>) => {
 		if (notExist(message?.code)) {
 			return;
 		}
@@ -129,28 +130,17 @@ chrome.runtime.onMessage.addListener(
 		// clear data on URL change message
 		if (message.code === MessageCode.UrlChanged) {
 			service = currentService();
-			service.config = config;
 			service.tracks = [];
 			service.initTracks();
 
 			return;
 		}
 
-		if (message.code === MessageCode.StorageChanged) {
-			config = await configService.getAll();
-			return;
-		}
-
-		if (message.code === MessageCode.Log) {
-			console.log(message.data);
-
-			return;
-		}
-
-		if (message.code === MessageCode.ShowUpdate) {
+		if (message.code === MessageCode.NewUpdateAvailable) {
 			alert(
-				`New update available! Version: ${message.data.details.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
+				`New update available! Version: ${message.data.version}\n\nCheck extension page in Chrome Web Store:\n\nhttps://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh`
 			);
 		}
-	}
+	},
+	(error: Error) => console.error(error)
 );
