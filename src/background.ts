@@ -77,8 +77,13 @@ const registerKeepAwakeChange = () => {
 			return;
 		}
 
-		chrome.power.requestKeepAwake(keepAwake ? 'display' : 'system');
-		chrome.power.releaseKeepAwake();
+		if (keepAwake) {
+			chrome.power.requestKeepAwake('display');
+		}
+		else {
+			chrome.power.releaseKeepAwake();
+		}
+
 		currentKeepAwake = keepAwake;
 	});
 };
