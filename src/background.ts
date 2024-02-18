@@ -72,19 +72,26 @@ const registerUpdateHandling = () =>
 const registerKeepAwakeChange = () => {
 	let currentKeepAwake: boolean = null;
 
-	configService.addListener(async ({ keepAwake }: Config) => {
+	const update = (keepAwake: boolean) => {
 		if (keepAwake === currentKeepAwake) {
 			return;
 		}
 
 		if (keepAwake) {
 			chrome.power.requestKeepAwake('display');
-		}
-		else {
+		} else {
 			chrome.power.releaseKeepAwake();
 		}
 
 		currentKeepAwake = keepAwake;
+	};
+
+	configService.getAll().then(({ keepAwake }: Config) => {
+		update(keepAwake);
+	});
+
+	configService.addListener(({ keepAwake }: Config) => {
+		update(keepAwake);
 	});
 };
 
