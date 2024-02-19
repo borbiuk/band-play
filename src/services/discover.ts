@@ -42,6 +42,8 @@ export class Discover implements Service {
 		}
 	}
 
+	addToWishlist(): void {}
+
 	playNextTrack(next: boolean) {
 		const current = document.querySelector(
 			'.swipe-carousel div button[aria-label="Pause"]'

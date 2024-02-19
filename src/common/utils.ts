@@ -7,6 +7,11 @@ export const exist = <T>(value: T) => !notExist(value);
 
 // Function to define that keyboard event should be handled as hotkey of extension.
 export const isHotKey = (event: KeyboardEvent) => {
+	const targetName = (event.target as HTMLElement)?.localName;
+	if (['input', 'textarea'].includes(targetName)) {
+		return false;
+	}
+
 	if (event.ctrlKey) {
 		return false;
 	}
@@ -21,6 +26,7 @@ export const isHotKey = (event: KeyboardEvent) => {
 				'KeyN',
 				'KeyB',
 				'KeyM',
+				'KeyL',
 				'ArrowRight',
 				'ArrowLeft',
 				'KeyO',

@@ -69,10 +69,7 @@ main().catch((e) => {
 document.addEventListener(
 	'keydown',
 	(event: KeyboardEvent) => {
-		if (
-			(event.target as HTMLElement)?.localName === 'input' ||
-			!isHotKey(event)
-		) {
+		if (!isHotKey(event)) {
 			return true;
 		}
 
@@ -94,6 +91,8 @@ document.addEventListener(
 		} else if (event.code === 'KeyM') {
 			// Play the next track with currently played percentage on the 'M' keydown
 			service.playNextTrackWithPercentage();
+		} else if (event.code === 'KeyL') {
+			service.addToWishlist();
 		} else if (event.code.startsWith('Digit')) {
 			if (event.shiftKey) {
 				const index = Number(event.code.split('Digit')[1]) - 1;

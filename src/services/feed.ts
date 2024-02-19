@@ -103,6 +103,26 @@ export class Feed implements Service {
 		}
 	}
 
+	addToWishlist(): void {
+		const nowPlaying = document.querySelector('[data-tralbumid].playing');
+		if (notExist(nowPlaying)) {
+			return;
+		}
+
+		const id = `#collect-item_${nowPlaying.getAttribute('data-tralbumid')}`;
+		const buttonContainer = nowPlaying.querySelector<HTMLElement>(id);
+		if (notExist(buttonContainer)) {
+			return;
+		}
+
+		if (buttonContainer.parentElement.parentElement.classList.contains('wishlisted')) {
+			buttonContainer.querySelector<HTMLElement>('.wishlisted-msg').click();
+		}
+		else {
+			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
+		}
+	}
+
 	playNextTrack(next: boolean) {
 		const index = () => (next ? 1 : -1);
 		const nowPlaying = document.querySelector('[data-tralbumid].playing');

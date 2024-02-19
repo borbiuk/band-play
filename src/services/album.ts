@@ -104,6 +104,19 @@ export class Album implements Service {
 		playButtons[index].querySelector('div').click();
 	}
 
+	addToWishlist(): void {
+		const buttonContainer = document.getElementById('collect-item');
+		if (notExist(buttonContainer)) {
+			return;
+		}
+
+		if (buttonContainer.classList.contains('wishlist')) {
+			document.getElementById('wishlist-msg').click();
+		} else if (buttonContainer.classList.contains('wishlisted')) {
+			document.getElementById('wishlisted-msg')?.click();
+		}
+	}
+
 	initTracks(): void {}
 
 	private convertTimeToSeconds(timeStr: string) {

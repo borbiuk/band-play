@@ -121,6 +121,8 @@ export class Collection implements Service {
 		}
 	}
 
+	addToWishlist(): void {}
+
 	checkUrl(url: string) {
 		this.url = url;
 		const collectionPageRegex =

@@ -25,4 +25,6 @@ export interface Service {
 	move(forward: boolean): void;
 
 	open(): void;
+
+	addToWishlist(): void;
 }
