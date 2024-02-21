@@ -39,10 +39,6 @@ const registerUrlChange = () =>
 // Subscribe on messages.
 const registerMessagesHandling = () =>
 	messageService.addListener((message) => {
-		if (notExist(message?.code)) {
-			return;
-		}
-
 		// Open new tab without focus on it
 		if (message?.code === MessageCode.CreateNewTab) {
 			chrome.tabs

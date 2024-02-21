@@ -4,6 +4,9 @@ import './popup.scss';
 import { Configuration } from './configuration';
 import { Footer } from './footer';
 
+/**
+ * Popup component representing the user interface of the Chrome extension popup.
+ */
 const Popup = () => {
 	return (
 		<div className="relative flex w-52 flex-col justify-center gap-y-6 overflow-hidden p-3 pb-4 align-middle bg-band-100">

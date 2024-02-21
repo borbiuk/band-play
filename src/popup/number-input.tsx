@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
+/**
+ * NumberInput component for handling numeric input with increment and decrement buttons.
+ *
+ * @param {string} id - The unique identifier for the input.
+ * @param {string} label - The label for the input.
+ * @param {number} defaultValue - The default value for the input.
+ * @param {number} min - The minimum allowed value for the input.
+ * @param {number} max - The maximum allowed value for the input.
+ * @param {string} suffix - The suffix to be displayed next to the input value.
+ * @param {Function} onChange - The callback function to be executed when the value changes.
+ */
 export const NumberInput = ({
 	id,
 	label,

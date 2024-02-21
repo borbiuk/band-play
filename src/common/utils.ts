@@ -8,7 +8,11 @@ export const exist = <T>(value: T) => !notExist(value);
 // Function to define that keyboard event should be handled as hotkey of extension.
 export const isHotKey = (event: KeyboardEvent) => {
 	const targetName = (event.target as HTMLElement)?.localName;
-	if (['input', 'textarea'].includes(targetName) || event.ctrlKey || event.metaKey) {
+	if (
+		['input', 'textarea'].includes(targetName) ||
+		event.ctrlKey ||
+		event.metaKey
+	) {
 		return false;
 	}
 

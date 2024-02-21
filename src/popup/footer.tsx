@@ -1,5 +1,6 @@
 import React from 'react';
-import { ConfigService } from '../common/config-service';
+import { MessageService } from '../common/message-service';
+import { MessageCode } from '../contracts/message-code';
 import { Button } from './button';
 
 export const Footer = () => {
@@ -15,10 +16,16 @@ export const Footer = () => {
 			'_blank'
 		);
 
-	const configService: ConfigService = new ConfigService();
+	const messageService: MessageService = new MessageService();
 	const showGuide = async (): Promise<void> => {
-		await configService.update('showGuide', true);
-	}
+		chrome.tabs
+			.query({ active: true, currentWindow: true })
+			.then(async (tabs) => {
+				await messageService.sendToContent(tabs[0].id, {
+					code: MessageCode.ShowGuide,
+				});
+			});
+	};
 
 	const openMyBandcamp = () =>
 		window.open('https://bandcamp.com/borbiuk', '_blank');

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
+/**
+ * Checkbox component for handling boolean input with a checkbox.
+ *
+ * @param {string} id - The unique identifier for the checkbox.
+ * @param {string} label - The label for the checkbox.
+ * @param {boolean} defaultValue - The default value for the checkbox.
+ * @param {Function} onChange - The callback function to be executed when the value changes.
+ */
 export const Checkbox = ({ id, label, defaultValue, onChange }) => {
 	const [isChecked, setIsChecked] = useState(defaultValue);
 

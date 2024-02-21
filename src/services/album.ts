@@ -39,7 +39,7 @@ export class Album implements Service {
 
 		let nextPositionInSeconds =
 			positionInSeconds +
-			(forward ? this.config.movingStep : -this.config.movingStep);
+			(forward ? this.config.playbackStep : -this.config.playbackStep);
 		if (nextPositionInSeconds < 0) {
 			nextPositionInSeconds = 0;
 		} else if (nextPositionInSeconds > durationInSeconds) {

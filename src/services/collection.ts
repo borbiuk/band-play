@@ -37,7 +37,7 @@ export class Collection implements Service {
 
 	move(forward: boolean): void {
 		const percentage = this.calculateTimePercentage(
-			forward ? this.config.movingStep : -this.config.movingStep
+			forward ? this.config.playbackStep : -this.config.playbackStep
 		);
 		this.playPercentage(percentage);
 	}

@@ -115,10 +115,15 @@ export class Feed implements Service {
 			return;
 		}
 
-		if (buttonContainer.parentElement.parentElement.classList.contains('wishlisted')) {
-			buttonContainer.querySelector<HTMLElement>('.wishlisted-msg').click();
-		}
-		else {
+		if (
+			buttonContainer.parentElement.parentElement.classList.contains(
+				'wishlisted'
+			)
+		) {
+			buttonContainer
+				.querySelector<HTMLElement>('.wishlisted-msg')
+				.click();
+		} else {
 			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
 		}
 	}

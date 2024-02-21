@@ -12,7 +12,7 @@ export interface Config {
 	playFirst: boolean;
 
 	// Step of track moving in seconds.
-	movingStep: number;
+	playbackStep: number;
 
 	// Define if guid is showing.
 	showGuide: boolean;

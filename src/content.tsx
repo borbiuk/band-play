@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ConfigService } from './common/config-service';
 import { MessageService } from './common/message-service';
-import { isHotKey, notExist } from './common/utils';
+import { exist, isHotKey, notExist } from './common/utils';
 import { Message } from './contracts/message';
 import { MessageCode } from './contracts/message-code';
 import { Service } from './contracts/service';
@@ -20,19 +20,24 @@ const messageService = new MessageService();
 let service: Service = null;
 
 // Get the object to handle current page functionality.
-const currentService = () => {
+const currentService = async (): Promise<Service> => {
 	const url = window.location.href;
-	return services.find((x) => x.checkUrl(url));
+	const service = services.find((x) => x.checkUrl(url));
+	if (exist(service)) {
+		service.config = await configService.getAll();
+	}
+	return service;
 };
 
 // Main function to start the application.
 const main = async () => {
 	console.log('[Start]: Band Play');
 
-	service = currentService();
-	service.config = await configService.getAll();
+	service = await currentService();
 	configService.addListener((newConfig) => {
-		service.config = newConfig;
+		if (exist(service)) {
+			service.config = newConfig;
+		}
 	});
 
 	// Main execution loop for track playback and initialization
@@ -124,13 +129,9 @@ document.addEventListener(
 // Event listeners for Chrome messages.
 messageService.addListener(
 	async (message: Message<any>) => {
-		if (notExist(message?.code)) {
-			return;
-		}
-
 		// clear data on URL change message
 		if (message.code === MessageCode.UrlChanged) {
-			service = currentService();
+			service = await currentService();
 			service.tracks = [];
 			service.initTracks();
 
@@ -151,7 +152,7 @@ const mountGuideWindow = () => {
 	const guideContainerId = 'band-play_guide-container';
 	const guideContainer = document.createElement('div');
 	guideContainer.id = guideContainerId;
-	document.body.append(guideContainer)
+	document.body.append(guideContainer);
 
 	const root = createRoot(document.getElementById(guideContainerId));
 	root.render(
@@ -162,5 +163,3 @@ const mountGuideWindow = () => {
 };
 
 mountGuideWindow();
-
-

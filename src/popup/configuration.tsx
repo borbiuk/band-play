@@ -5,6 +5,9 @@ import { Config } from '../contracts/config';
 import { Checkbox } from './checkbox';
 import { NumberInput } from './number-input';
 
+/**
+ * Configuration component for managing and displaying user preferences.
+ */
 export const Configuration = () => {
 	const [tabId, setTabId] = useState(null as number);
 	const [currentConfig, setCurrentConfig] = useState(null as Config);
@@ -33,6 +36,7 @@ export const Configuration = () => {
 		});
 	}, []);
 
+	// Render loading indicator if tabId or currentConfig is not available.
 	if (notExist(tabId) || notExist(currentConfig)) {
 		return <div>...</div>;
 	}
@@ -71,9 +75,9 @@ export const Configuration = () => {
 
 			{/* Playback moving step */}
 			<NumberInput
-				id="movingStep"
+				id="playbackStep"
 				label="Playback step"
-				defaultValue={currentConfig.movingStep}
+				defaultValue={currentConfig.playbackStep}
 				min={6}
 				max={60}
 				suffix="sec"

@@ -20,6 +20,7 @@ module.exports = {
 				band: band,
 			},
 			scale: {
+				101: '1.01',
 				115: '1.15',
 			},
 		},
