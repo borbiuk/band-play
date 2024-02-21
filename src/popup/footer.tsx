@@ -1,4 +1,5 @@
 import React from 'react';
+import { ConfigService } from '../common/config-service';
 import { Button } from './button';
 
 export const Footer = () => {
@@ -13,6 +14,11 @@ export const Footer = () => {
 			'https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews',
 			'_blank'
 		);
+
+	const configService: ConfigService = new ConfigService();
+	const showGuide = async (): Promise<void> => {
+		await configService.update('showGuide', true);
+	}
 
 	const openMyBandcamp = () =>
 		window.open('https://bandcamp.com/borbiuk', '_blank');
@@ -38,6 +44,11 @@ export const Footer = () => {
 				onClick={openMyBandcamp}
 				text="My bandcamp"
 				icon="./../assets/bandcamp.png"
+			/>
+			<Button
+				onClick={showGuide}
+				text="Show Guide"
+				icon="./../assets/guide.png"
 			/>
 		</div>
 	);

@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// required to avoid overwriting bandcamp styles
+*,
+::before,
+::after {
+	box-sizing: unset; 
+}

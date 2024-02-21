@@ -13,4 +13,7 @@ export interface Config {
 
 	// Step of track moving in seconds.
 	movingStep: number;
+
+	// Define if guid is showing.
+	showGuide: boolean;
 }

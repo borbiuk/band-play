@@ -1,7 +1,8 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { ConfigService } from './common/config-service';
 import { MessageService } from './common/message-service';
 import { isHotKey, notExist } from './common/utils';
-import { Config } from './contracts/config';
 import { Message } from './contracts/message';
 import { MessageCode } from './contracts/message-code';
 import { Service } from './contracts/service';
@@ -9,6 +10,7 @@ import { Album } from './services/album';
 import { Collection } from './services/collection';
 import { Discover } from './services/discover';
 import { Feed } from './services/feed';
+import { Guide } from './guide/guide';
 
 const services = [new Album(), new Discover(), new Feed(), new Collection()];
 
@@ -143,3 +145,22 @@ messageService.addListener(
 	},
 	(error: Error) => console.error(error)
 );
+
+// guide
+const mountGuideWindow = () => {
+	const guideContainerId = 'band-play_guide-container';
+	const guideContainer = document.createElement('div');
+	guideContainer.id = guideContainerId;
+	document.body.append(guideContainer)
+
+	const root = createRoot(document.getElementById(guideContainerId));
+	root.render(
+		<React.StrictMode>
+			<Guide />
+		</React.StrictMode>
+	);
+};
+
+mountGuideWindow();
+
+

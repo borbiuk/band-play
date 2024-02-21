@@ -36,6 +36,7 @@ export class ConfigService {
 			'keepAwake',
 			'playFirst',
 			'movingStep',
+			'showGuide'
 		])) as Config;
 
 		return this.getWithDefaults(config);
@@ -53,6 +54,7 @@ export class ConfigService {
 				: true,
 			playFirst: Boolean(config.playFirst),
 			movingStep: Number(config.movingStep),
+			showGuide: Boolean(config.showGuide),
 		};
 
 		if (isNaN(config.movingStep)) {
