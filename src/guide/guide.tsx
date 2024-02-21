@@ -52,7 +52,7 @@ export const Guide = () => {
 				</button>
 
 				{/* Content */}
-				<div className="flex flex-row gap-6 px-3 pt-2 pb-6 text-md xl:flex-col">
+				<div className="flex flex-row gap-x-2 gap-y-6 px-3 pt-4 pb-6 text-md lg:flex-col lg:pt-2">
 					{/* Playlist control */}
 					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 shadow-md shadow-gray-300 duration-300 bg-band-200 hover:scale-101">
 						<span className="absolute left-1 z-20 -mt-7 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">

@@ -12,7 +12,7 @@ export const Hotkey = ({ fileName, title, description }) => {
 		chrome.runtime.getURL(`./assets/keys/${path}`);
 
 	return (
-		<div className="flex flex-row items-start gap-x-4 min-w-120">
+		<div className="flex flex-row items-start gap-x-2 min-w-56 lg:min-w-80 lg:gap-x-4">
 			<img
 				src={getKeyImageUrl(fileName)}
 				alt={fileName}
