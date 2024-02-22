@@ -1,19 +1,19 @@
 import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
-import { Config } from '../contracts/config';
+import { ConfigModel } from '../contracts/config-model';
 import { MessageCode } from '../contracts/message-code';
 
 // Service to handle 'collection' and 'wishlist' pages.
-import { Service } from '../contracts/service';
-import { Track } from '../contracts/track';
+import { PageService } from '../contracts/page-service';
+import { TrackModel } from '../contracts/track-model';
 
-export class Collection implements Service {
-	private readonly _messageService: MessageService = new MessageService();
+export class CollectionPageService implements PageService {
+	private readonly messageService: MessageService = new MessageService();
 
 	private url: string;
 
-	config: Config;
-	tracks: Track[] = [];
+	config: ConfigModel;
+	tracks: TrackModel[] = [];
 
 	playPercentage(percentage: number): void {
 		const control = document.querySelector('.progress-bar');
@@ -57,7 +57,7 @@ export class Collection implements Service {
 			.querySelector('.item-link')
 			.getAttribute('href');
 		if (exist(itemUrl)) {
-			this._messageService
+			this.messageService
 				.sendToBackground<string>({
 					code: MessageCode.CreateNewTab,
 					data: itemUrl,

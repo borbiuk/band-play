@@ -1,10 +1,10 @@
-import { Config } from './config';
-import { Track } from './track';
+import { ConfigModel } from './config-model';
+import { TrackModel } from './track-model';
 
-export interface Service {
-	config: Config;
+export interface PageService {
+	config: ConfigModel;
 
-	tracks: Track[];
+	tracks: TrackModel[];
 
 	checkUrl(url: string): boolean;
 

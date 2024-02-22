@@ -1,7 +1,7 @@
 import { ConfigService } from './common/config-service';
 import { MessageService } from './common/message-service';
 import { notExist } from './common/utils';
-import { Config } from './contracts/config';
+import { ConfigModel } from './contracts/config-model';
 import { MessageCode } from './contracts/message-code';
 
 const messageService: MessageService = new MessageService();
@@ -82,11 +82,11 @@ const registerKeepAwakeChange = () => {
 		currentKeepAwake = keepAwake;
 	};
 
-	configService.getAll().then(({ keepAwake }: Config) => {
+	configService.getAll().then(({ keepAwake }: ConfigModel) => {
 		update(keepAwake);
 	});
 
-	configService.addListener(({ keepAwake }: Config) => {
+	configService.addListener(({ keepAwake }: ConfigModel) => {
 		update(keepAwake);
 	});
 };

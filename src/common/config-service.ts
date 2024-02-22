@@ -1,4 +1,4 @@
-import { Config } from '../contracts/config';
+import { ConfigModel } from '../contracts/config-model';
 import { exist } from './utils';
 
 /**
@@ -10,7 +10,7 @@ export class ConfigService {
 	 *
 	 * @param callback - The callback function to handle the updated configuration.
 	 */
-	public addListener(callback: (newConfig: Config) => void): void {
+	public addListener(callback: (newConfig: ConfigModel) => void): void {
 		chrome.storage.local.onChanged.addListener(
 			(storageChanges: {
 				[key: string]: chrome.storage.StorageChange;
@@ -23,7 +23,7 @@ export class ConfigService {
 								? storageChanges[key].oldValue
 								: storageChanges[key].newValue,
 					}),
-					{} as Config
+					{} as ConfigModel
 				);
 
 				callback(this.getWithDefaults(currentConfig));
@@ -38,7 +38,7 @@ export class ConfigService {
 	 * @param value - The new value for the specified configuration setting.
 	 * @returns A promise that resolves when the update operation is complete.
 	 */
-	public async update<T>(key: keyof Config, value: T): Promise<void> {
+	public async update<T>(key: keyof ConfigModel, value: T): Promise<void> {
 		await chrome.storage.local.set({ [key]: value });
 	}
 
@@ -47,7 +47,7 @@ export class ConfigService {
 	 *
 	 * @returns A promise that resolves with the complete configuration object.
 	 */
-	public async getAll(): Promise<Config> {
+	public async getAll(): Promise<ConfigModel> {
 		const config = (await chrome.storage.local.get([
 			'autoplay',
 			'autoscroll',
@@ -55,7 +55,7 @@ export class ConfigService {
 			'playFirst',
 			'playbackStep',
 			'showGuide',
-		])) as Config;
+		])) as ConfigModel;
 
 		return this.getWithDefaults(config);
 	}
@@ -67,7 +67,7 @@ export class ConfigService {
 	 * @returns The processed configuration object with defaults applied.
 	 * @private
 	 */
-	private getWithDefaults(config: Config): Config {
+	private getWithDefaults(config: ConfigModel): ConfigModel {
 		config = {
 			...config,
 			autoplay: exist(config.autoplay) ? Boolean(config.autoplay) : true,

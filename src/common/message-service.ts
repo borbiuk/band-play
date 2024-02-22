@@ -1,4 +1,4 @@
-import { Message } from '../contracts/message';
+import { MessageModel } from '../contracts/message-model';
 import { notExist } from './utils';
 
 /**
@@ -14,7 +14,7 @@ export class MessageService {
 	 */
 	public async sendToContent<T>(
 		tabId: number,
-		message: Message<T>
+		message: MessageModel<T>
 	): Promise<void> {
 		return chrome.tabs.sendMessage(tabId, message);
 	}
@@ -25,7 +25,7 @@ export class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToBackground<T>(message: Message<T>): Promise<void> {
+	public async sendToBackground<T>(message: MessageModel<T>): Promise<void> {
 		return chrome.runtime.sendMessage(message);
 	}
 
@@ -36,12 +36,12 @@ export class MessageService {
 	 * @param errorHandler - Optional. A callback function to handle errors that may occur during message processing.
 	 */
 	public addListener<T>(
-		func: (message: Message<T>) => void | Promise<void>,
+		func: (message: MessageModel<T>) => void | Promise<void>,
 		errorHandler?: (error: Error) => void
 	): void {
 		chrome.runtime.onMessage.addListener(
 			(
-				message: Message<T>,
+				message: MessageModel<T>,
 				_sender: chrome.runtime.MessageSender,
 				_sendResponse: (response?: any) => void
 			) => {

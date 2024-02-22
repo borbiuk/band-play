@@ -1,15 +1,15 @@
 import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
-import { Config } from '../contracts/config';
+import { ConfigModel } from '../contracts/config-model';
 import { MessageCode } from '../contracts/message-code';
-import { Service } from '../contracts/service';
-import { Track } from '../contracts/track';
+import { PageService } from '../contracts/page-service';
+import { TrackModel } from '../contracts/track-model';
 
-export class Discover implements Service {
-	private readonly _messageService: MessageService = new MessageService();
+export class DiscoverPageService implements PageService {
+	private readonly messageService: MessageService = new MessageService();
 
-	config: Config;
-	tracks: Track[] = [];
+	config: ConfigModel;
+	tracks: TrackModel[] = [];
 
 	checkUrl(url: string): boolean {
 		return url.includes('/discover');
@@ -92,7 +92,7 @@ export class Discover implements Service {
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
 		if (exist(itemUrl)) {
-			this._messageService
+			this.messageService
 				.sendToBackground<string>({
 					code: MessageCode.CreateNewTab,
 					data: itemUrl,

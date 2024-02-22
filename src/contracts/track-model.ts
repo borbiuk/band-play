@@ -1,4 +1,4 @@
-export interface Track {
+export interface TrackModel {
 	id: string;
 	element: Element;
 }

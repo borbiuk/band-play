@@ -1,12 +1,12 @@
 import { MessageService } from '../common/message-service';
 import { exist, notExist } from '../common/utils';
-import { Config } from '../contracts/config';
+import { ConfigModel } from '../contracts/config-model';
 import { MessageCode } from '../contracts/message-code';
-import { Service } from '../contracts/service';
-import { Track } from '../contracts/track';
+import { PageService } from '../contracts/page-service';
+import { TrackModel } from '../contracts/track-model';
 
-export class Feed implements Service {
-	private readonly _messageService = new MessageService();
+export class FeedPageService implements PageService {
+	private readonly messageService = new MessageService();
 
 	// The ID of latest played track on the feed page.
 	private lastFeedPlayingTrackId: string;
@@ -14,8 +14,8 @@ export class Feed implements Service {
 	// Track ID on the feed page that was paused.
 	private feedPauseTrackId: string;
 
-	config: Config;
-	tracks: Track[] = [];
+	config: ConfigModel;
+	tracks: TrackModel[] = [];
 
 	checkUrl(url: string): boolean {
 		return url.endsWith('/feed') || url.includes('/feed?');
@@ -207,7 +207,7 @@ export class Feed implements Service {
 			.querySelector('.item-link')
 			.getAttribute('href');
 		if (exist(itemUrl)) {
-			this._messageService
+			this.messageService
 				.sendToBackground<string>({
 					code: MessageCode.CreateNewTab,
 					data: itemUrl,

@@ -1,4 +1,4 @@
-export interface Config {
+export interface ConfigModel {
 	// Enable autoplay on all pages.
 	autoplay: boolean;
 

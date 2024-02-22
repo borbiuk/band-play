@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
 import './guide.scss';
+import { createRoot } from 'react-dom/client';
 import { MessageService } from '../common/message-service';
 import { MessageCode } from '../contracts/message-code';
 import { Hotkey } from './hotkey';
+
+export const initGuide = () => {
+	const guideContainerId = 'band-play_guide-container';
+	const guideContainer = document.createElement('div');
+	guideContainer.id = guideContainerId;
+	document.body.append(guideContainer);
+
+	const root = createRoot(document.getElementById(guideContainerId));
+	root.render(
+		<React.StrictMode>
+			<Guide />
+		</React.StrictMode>
+	);
+}
 
 /**
  * Guide component representing the user guide for the Chrome extension.

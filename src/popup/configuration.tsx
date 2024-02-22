@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ConfigService } from '../common/config-service';
 import { notExist } from '../common/utils';
-import { Config } from '../contracts/config';
+import { ConfigModel } from '../contracts/config-model';
 import { Checkbox } from './checkbox';
 import { NumberInput } from './number-input';
 
@@ -10,11 +10,11 @@ import { NumberInput } from './number-input';
  */
 export const Configuration = () => {
 	const [tabId, setTabId] = useState(null as number);
-	const [currentConfig, setCurrentConfig] = useState(null as Config);
+	const [currentConfig, setCurrentConfig] = useState(null as ConfigModel);
 
 	const configService = new ConfigService();
 
-	const updateStorage = async (key: keyof Config, value: unknown) => {
+	const updateStorage = async (key: keyof ConfigModel, value: unknown) => {
 		await configService.update(key, value);
 	};
 
