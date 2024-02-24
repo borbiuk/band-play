@@ -120,7 +120,31 @@ export class CollectionPageService implements PageService {
 		}
 	}
 
-	addToWishlist(): void {}
+	addToWishlist(): void {
+		const nowPlayingId = this.getNowPlayingTrackId();
+		if (notExist(nowPlayingId)) {
+			return;
+		}
+
+		const buttonContainer = document.getElementById(
+			`collect-item_${nowPlayingId}`
+		);
+		if (notExist(buttonContainer)) {
+			return;
+		}
+
+		if (
+			buttonContainer.parentElement.parentElement.classList.contains(
+				'wishlisted'
+			)
+		) {
+			buttonContainer
+				.querySelector<HTMLElement>('.wishlisted-msg')
+				.click();
+		} else {
+			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
+		}
+	}
 
 	checkUrl(url: string) {
 		this.url = url;

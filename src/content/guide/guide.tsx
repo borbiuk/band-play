@@ -17,7 +17,7 @@ export const initGuide = () => {
 			<Guide />
 		</React.StrictMode>
 	);
-}
+};
 
 /**
  * Guide component representing the user guide for the Chrome extension.

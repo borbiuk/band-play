@@ -54,4 +54,4 @@ export const listenHotkeys = (serviceWorker: PageServiceWorker) => {
 		},
 		false
 	);
-}
+};
