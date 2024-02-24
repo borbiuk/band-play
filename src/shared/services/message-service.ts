@@ -1,5 +1,5 @@
-import { MessageModel } from '../contracts/message-model';
-import { notExist } from './utils';
+import { MessageModel } from '../models/message-model';
+import { notExist } from '../utils';
 
 /**
  * Service for handling messaging between different components of the Chrome extension.

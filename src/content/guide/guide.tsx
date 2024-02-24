@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './guide.scss';
 import { createRoot } from 'react-dom/client';
-import { MessageService } from '../common/message-service';
-import { MessageCode } from '../contracts/message-code';
+import { MessageCode } from '../../shared/enums/message-code';
+import { MessageService } from '../../shared/services/message-service';
 import { Hotkey } from './hotkey';
 
 export const initGuide = () => {

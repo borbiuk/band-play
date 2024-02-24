@@ -1,13 +1,13 @@
-import { ConfigService } from '../common/config-service';
-import { MessageService } from '../common/message-service';
-import { exist } from '../common/utils';
-import { MessageModel } from '../contracts/message-model';
-import { MessageCode } from '../contracts/message-code';
-import { PageService } from '../contracts/page-service';
-import { AlbumPageService } from './album-page-service';
-import { CollectionPageService } from './collection-page-service';
-import { DiscoverPageService } from './discover-page-service';
-import { FeedPageService } from './feed-page-service';
+import { MessageCode } from '../shared/enums/message-code';
+import { PageService } from '../shared/interfaces/page-service';
+import { MessageModel } from '../shared/models/message-model';
+import { ConfigService } from "../shared/services/config-service";
+import { MessageService } from '../shared/services/message-service';
+import { exist } from '../shared/utils';
+import { AlbumPageService } from './page-services/album-page-service';
+import { CollectionPageService } from './page-services/collection-page-service';
+import { DiscoverPageService } from './page-services/discover-page-service';
+import { FeedPageService } from './page-services/feed-page-service';
 
 export class PageServiceWorker {
 
@@ -95,8 +95,6 @@ export class PageServiceWorker {
 				if (message.code === MessageCode.UrlChanged) {
 					this.service = await this.currentService();
 					this.service.initTracks();
-
-					return;
 				}
 			},
 			(error: Error) => console.error(error)

@@ -1,5 +1,5 @@
-import { ConfigModel } from './config-model';
-import { TrackModel } from './track-model';
+import { ConfigModel } from '../models/config-model';
+import { TrackModel } from '../models/track-model';
 
 export interface PageService {
 	config: ConfigModel;

@@ -1,4 +1,4 @@
-import { isHotKey, notExist } from '../common/utils';
+import { isHotKey, notExist } from '../shared/utils';
 import { PageServiceWorker } from './page-service-worker';
 
 export const listenHotkeys = (serviceWorker: PageServiceWorker) => {

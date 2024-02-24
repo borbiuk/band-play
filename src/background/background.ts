@@ -1,13 +1,13 @@
-import { ConfigService } from './common/config-service';
-import { MessageService } from './common/message-service';
-import { notExist } from './common/utils';
-import { ConfigModel } from './contracts/config-model';
-import { MessageCode } from './contracts/message-code';
+import { MessageCode } from '../shared/enums/message-code';
+import { ConfigModel } from '../shared/models/config-model';
+import { ConfigService } from '../shared/services/config-service';
+import { MessageService } from '../shared/services/message-service';
+import { notExist } from '../shared/utils';
 
 const messageService: MessageService = new MessageService();
 const configService: ConfigService = new ConfigService();
 
-export const executeInCurrentTab = (
+const executeInCurrentTab = (
 	tabCallback: (tabId: number) => void | Promise<void>
 ) => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

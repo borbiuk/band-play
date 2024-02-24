@@ -1,4 +1,4 @@
-import { MessageCode } from './message-code';
+import { MessageCode } from '../enums/message-code';
 
 export interface MessageModel<T> {
 	code: MessageCode;

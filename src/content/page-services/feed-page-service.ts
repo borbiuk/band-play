@@ -1,9 +1,9 @@
-import { MessageService } from '../common/message-service';
-import { exist, notExist } from '../common/utils';
-import { ConfigModel } from '../contracts/config-model';
-import { MessageCode } from '../contracts/message-code';
-import { PageService } from '../contracts/page-service';
-import { TrackModel } from '../contracts/track-model';
+import { MessageCode } from '../../shared/enums/message-code';
+import { PageService } from '../../shared/interfaces/page-service';
+import { ConfigModel } from '../../shared/models/config-model';
+import { TrackModel } from '../../shared/models/track-model';
+import { MessageService } from '../../shared/services/message-service';
+import { exist, notExist } from '../../shared/utils';
 
 export class FeedPageService implements PageService {
 	private readonly messageService = new MessageService();
