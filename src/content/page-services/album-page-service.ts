@@ -1,15 +1,13 @@
 import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
-import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils';
+import { BasePageService } from './base/base-page-service';
 
-export class AlbumPageService implements PageService {
-	private readonly messageService: MessageService = new MessageService();
-
-	config: ConfigModel;
-	tracks: TrackModel[] = [];
+export class AlbumPageService extends BasePageService implements PageService {
+	constructor(protected messageService: MessageService) {
+		super(messageService);
+	}
 
 	playPercentage(percentage: number): void {
 		const control = document.querySelector('.progbar_empty');
@@ -72,8 +70,6 @@ export class AlbumPageService implements PageService {
 		return url.includes('/album/') || url.includes('/track/');
 	}
 
-	tryAutoplay() {}
-
 	playPause() {
 		document.querySelector<HTMLElement>('.playbutton')?.click();
 	}
@@ -86,8 +82,6 @@ export class AlbumPageService implements PageService {
 
 		document.querySelector<HTMLElement>('.prevbutton').click();
 	}
-
-	playNextTrackWithPercentage() {}
 
 	play(index: number) {
 		if (index < 0) {
@@ -116,8 +110,6 @@ export class AlbumPageService implements PageService {
 			document.getElementById('wishlisted-msg')?.click();
 		}
 	}
-
-	initTracks(): void {}
 
 	private convertTimeToSeconds(timeStr: string) {
 		if (notExist(timeStr)) {

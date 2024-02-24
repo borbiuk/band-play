@@ -1,21 +1,19 @@
 import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
-import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils';
+import { BasePageService } from './base/base-page-service';
 
-export class FeedPageService implements PageService {
-	private readonly messageService = new MessageService();
-
+export class FeedPageService extends BasePageService implements PageService {
 	// The ID of latest played track on the feed page.
 	private lastFeedPlayingTrackId: string;
 
 	// Track ID on the feed page that was paused.
 	private feedPauseTrackId: string;
 
-	config: ConfigModel;
-	tracks: TrackModel[] = [];
+	constructor(protected messageService: MessageService) {
+		super(messageService);
+	}
 
 	checkUrl(url: string): boolean {
 		return url.endsWith('/feed') || url.includes('/feed?');
@@ -178,8 +176,6 @@ export class FeedPageService implements PageService {
 		};
 	}
 
-	playNextTrackWithPercentage() {}
-
 	playPause() {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
 		if (exist(playingFeed)) {
@@ -192,10 +188,6 @@ export class FeedPageService implements PageService {
 			this.feedPauseTrackId = null;
 		}
 	}
-
-	playPercentage(_: number): void {}
-
-	move(_: boolean): void {}
 
 	open(): void {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
@@ -216,9 +208,5 @@ export class FeedPageService implements PageService {
 					console.error(e);
 				});
 		}
-	}
-
-	private getTrackIndex(trackId: string) {
-		return this.tracks.findIndex((x) => x.id === trackId);
 	}
 }

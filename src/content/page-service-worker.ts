@@ -14,10 +14,10 @@ export class PageServiceWorker {
 	private readonly messageService: MessageService = new MessageService();
 
 	private readonly services: PageService[] = [
-		new AlbumPageService(),
-		new DiscoverPageService(),
-		new FeedPageService(),
-		new CollectionPageService(),
+		new AlbumPageService(this.messageService),
+		new DiscoverPageService(this.messageService),
+		new FeedPageService(this.messageService),
+		new CollectionPageService(this.messageService),
 	];
 
 	public service: PageService = null;
@@ -88,11 +88,10 @@ export class PageServiceWorker {
 
 	private registerPageChange(): void {
 		this.messageService.addListener(
-			async (message: MessageModel<any>) => {
-				// clear data on URL change message
+			async (message: MessageModel<unknown>) => {
 				if (message.code === MessageCode.UrlChanged) {
 					this.service = await this.currentService();
-					this.service.initTracks();
+					this.service?.initTracks();
 				}
 			},
 			(error: Error) => console.error(error)

@@ -1,15 +1,13 @@
 import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
-import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils';
+import { BasePageService } from './base/base-page-service';
 
-export class DiscoverPageService implements PageService {
-	private readonly messageService: MessageService = new MessageService();
-
-	config: ConfigModel;
-	tracks: TrackModel[] = [];
+export class DiscoverPageService extends BasePageService implements PageService {
+	constructor(protected messageService: MessageService) {
+		super(messageService);
+	}
 
 	checkUrl(url: string): boolean {
 		return url.includes('/discover');
@@ -42,8 +40,6 @@ export class DiscoverPageService implements PageService {
 		}
 	}
 
-	addToWishlist(): void {}
-
 	playNextTrack(next: boolean) {
 		const current = document.querySelector(
 			'.swipe-carousel div button[aria-label="Pause"]'
@@ -74,8 +70,6 @@ export class DiscoverPageService implements PageService {
 		}
 	}
 
-	playNextTrackWithPercentage() {}
-
 	playPause() {
 		let button = document.querySelector('.play-circle-outline-icon');
 		if (notExist(button)) {
@@ -83,10 +77,6 @@ export class DiscoverPageService implements PageService {
 		}
 		button?.parentElement?.click();
 	}
-
-	playPercentage(_: number): void {}
-
-	move(_: boolean): void {}
 
 	open(): void {
 		const itemUrl =

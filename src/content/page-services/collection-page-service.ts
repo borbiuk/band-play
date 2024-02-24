@@ -1,18 +1,16 @@
 import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
-import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils';
+import { BasePageService } from './base/base-page-service';
 
 // Service to handle 'collection' and 'wishlist' pages.
-export class CollectionPageService implements PageService {
-	private readonly messageService: MessageService = new MessageService();
-
+export class CollectionPageService extends BasePageService implements PageService {
 	private url: string;
 
-	config: ConfigModel;
-	tracks: TrackModel[] = [];
+	constructor(protected messageService: MessageService) {
+		super(messageService);
+	}
 
 	playPercentage(percentage: number): void {
 		const control = document.querySelector('.progress-bar');
@@ -221,10 +219,6 @@ export class CollectionPageService implements PageService {
 				id: x.getAttribute('data-tralbumid'),
 				element: x,
 			}));
-	}
-
-	private getTrackIndex(trackId: string) {
-		return this.tracks.findIndex((x) => x.id === trackId);
 	}
 
 	private clickShowAllTracks() {
