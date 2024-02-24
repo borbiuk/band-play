@@ -43,7 +43,7 @@ export const Configuration = () => {
 
 	return (
 		<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 pt-5 shadow-md shadow-gray-300">
-			<span className="absolute left-1 z-20 -mt-9 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
+			<span className="absolute left-1 z-20 -mt-9 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
 				Configuration
 			</span>
 

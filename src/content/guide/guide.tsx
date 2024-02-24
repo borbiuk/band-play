@@ -42,7 +42,7 @@ export const Guide = () => {
 
 	return (
 		<div className={isDisplayed ? '' : 'hidden'}>
-			<div className="fixed top-1/2 left-1/2 m-8 flex -translate-x-1/2 -translate-y-1/2 transform flex-col rounded-xl border-2 shadow-2xl shadow-gray-700 z-[999] flex-0 bg-band-100 border-band-100 max-h-svw max-w-svw">
+			<div className="flex-0 max-h-svw max-w-svw fixed left-1/2 top-1/2 z-[999] m-8 flex -translate-x-1/2 -translate-y-1/2 transform flex-col rounded-xl border-2 border-band-100 bg-band-100 shadow-2xl shadow-gray-700">
 				{/* Header */}
 				<div className="flex w-full flex-col items-center gap-y-1 pt-3">
 					<img
@@ -57,7 +57,7 @@ export const Guide = () => {
 
 				{/* Close Button */}
 				<button
-					className="absolute top-1 right-1 h-6 w-6 rounded-xl border duration-200 border-band-100 hover:scale-110 hover:cursor-pointer"
+					className="absolute right-1 top-1 h-6 w-6 rounded-xl border border-band-100 duration-200 hover:scale-110 hover:cursor-pointer"
 					onClick={close}
 				>
 					<img
@@ -67,10 +67,10 @@ export const Guide = () => {
 				</button>
 
 				{/* Content */}
-				<div className="flex flex-row gap-x-2 gap-y-6 px-3 pt-4 pb-6 text-md lg:flex-col lg:pt-2">
+				<div className="text-md flex flex-row gap-x-2 gap-y-6 px-3 pb-6 pt-4 lg:flex-col lg:pt-2">
 					{/* Playlist control */}
-					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 shadow-md shadow-gray-300 duration-300 bg-band-200 hover:scale-101">
-						<span className="absolute left-1 z-20 -mt-7 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
+					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 bg-band-200 p-3 shadow-md shadow-gray-300 duration-300 hover:scale-101">
+						<span className="absolute left-1 z-20 -mt-7 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
 							Playlist control
 						</span>
 
@@ -92,8 +92,8 @@ export const Guide = () => {
 					</div>
 
 					{/* Playback control */}
-					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 shadow-md shadow-gray-300 duration-300 bg-band-200 hover:scale-101">
-						<span className="absolute left-1 z-20 -mt-7 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
+					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 bg-band-200 p-3 shadow-md shadow-gray-300 duration-300 hover:scale-101">
+						<span className="absolute left-1 z-20 -mt-7 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
 							Track playback control
 						</span>
 
@@ -120,8 +120,8 @@ export const Guide = () => {
 					</div>
 
 					{/* Other */}
-					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-3 shadow-md shadow-gray-300 duration-300 bg-band-200 hover:scale-101">
-						<span className="absolute left-1 z-20 -mt-7 rounded-xl text-base text-gray-500 backdrop-blur-sm p-0.5">
+					<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 bg-band-200 p-3 shadow-md shadow-gray-300 duration-300 hover:scale-101">
+						<span className="absolute left-1 z-20 -mt-7 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
 							Utilities
 						</span>
 

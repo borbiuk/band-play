@@ -49,7 +49,7 @@ export const NumberInput = ({
 		<div className="w-full">
 			<label
 				htmlFor={`${id}-number-input`}
-				className="mb-1 block cursor-pointer pl-7 text-sm text-gray-900 -ml-0.5"
+				className="-ml-0.5 mb-1 block cursor-pointer pl-7 text-sm text-gray-900"
 			>
 				{label}
 			</label>
@@ -57,7 +57,7 @@ export const NumberInput = ({
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="h-8 border p-2 outline-none duration-300 bg-band-300 border-band-200 rounded-s-lg hover:bg-band-400 hover:scale-110"
+					className="h-8 rounded-s-lg border border-band-200 bg-band-300 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleDecrement}
 				>
 					<svg
@@ -77,12 +77,12 @@ export const NumberInput = ({
 						min={min}
 						max={max}
 						value={value}
-						className="block h-full w-full border-y text-center text-base font-medium tabular-nums text-gray-900 outline-none bg-band-100 border-band-200 py-2.5"
+						className="block h-full w-full border-y border-band-200 bg-band-100 py-2.5 text-center text-base font-medium tabular-nums text-gray-900 outline-none"
 						placeholder={max}
 						onChange={handleChange}
 						required
 					/>
-					<span className="absolute right-2 bottom-1 pt-1 text-xs text-gray-500">
+					<span className="absolute bottom-1 right-2 pt-1 text-xs text-gray-500">
 						{suffix}
 					</span>
 				</div>
@@ -90,7 +90,7 @@ export const NumberInput = ({
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="h-8 border p-2 outline-none duration-300 bg-band-300 border-band-200 rounded-e-lg hover:bg-band-400 hover:scale-110"
+					className="h-8 rounded-e-lg border border-band-200 bg-band-300 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleIncrement}
 				>
 					<svg
