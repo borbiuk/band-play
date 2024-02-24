@@ -6,3 +6,5 @@
 # format files
 npm run format
 
+# create .zip file
+./zip.sh
