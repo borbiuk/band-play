@@ -1,5 +1,4 @@
 
-
 # JetBrains IDE
 .idea
 *.DotSettings.user
@@ -9,6 +8,7 @@
 *.zip
 dist/
 tmp/
+band-play-build*
 
 # logs
 npm-debug.log
