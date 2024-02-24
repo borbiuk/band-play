@@ -1,5 +1,5 @@
 import { MessageModel } from '../models/message-model';
-import { notExist } from '../utils';
+import { notExist } from '../utils/utils.common';
 
 /**
  * Service for handling messaging between different components of the Chrome extension.
@@ -51,8 +51,8 @@ export class MessageService {
 
 				try {
 					func(message);
-				} catch (e) {
-					errorHandler(e);
+				} catch (error) {
+					errorHandler(error);
 				}
 			}
 		);

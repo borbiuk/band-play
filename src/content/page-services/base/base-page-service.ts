@@ -1,53 +1,56 @@
+import { MessageCode } from '../../../shared/enums/message-code';
 import { PageService } from '../../../shared/interfaces/page-service';
 import { ConfigModel } from '../../../shared/models/config-model';
 import { TrackModel } from '../../../shared/models/track-model';
 import { MessageService } from '../../../shared/services/message-service';
+import { notExist } from '../../../shared/utils/utils.common';
 
 export abstract class BasePageService implements PageService {
-
 	config: ConfigModel;
 	tracks: TrackModel[] = [];
 
-	protected constructor(
-		protected readonly messageService: MessageService
-	) {
-	}
+	protected constructor(protected readonly messageService: MessageService) {}
 
-	addToWishlist(): void {
-	}
-
-	checkUrl(url: string): boolean {
+	isServiceUrl(url: string): boolean {
 		return false;
 	}
 
-	initTracks(): void {
-	}
+	playPause(): void {}
 
-	move(forward: boolean): void {
-	}
+	playNextTrack(next: boolean): void {}
 
-	open(): void {
-	}
+	playNextTrackWithPercentage(): void {}
 
-	play(index: number): void {
-	}
+	initTracks(): void {}
 
-	playNextTrack(next: boolean): void {
-	}
+	movePlayback(forward: boolean): void {}
 
-	playNextTrackWithPercentage(): void {
-	}
+	playTrackByIndex(index: number): void {}
 
-	playPause(): void {
-	}
+	setPlayback(percentage: number): void {}
 
-	playPercentage(percentage: number): void {
-	}
+	tryAutoplay(): void {}
 
-	tryAutoplay(): void {
-	}
-	
+	open(): void {}
+
+	addToWishlist(): void {}
+
 	protected getTrackIndex(trackId: string) {
-		return this.tracks.findIndex((x) => x.id === trackId);
+		return this.tracks.findIndex(({ id }: TrackModel) => id === trackId);
+	}
+
+	protected createNewTab(url: string): void {
+		if (notExist(url)) {
+			return;
+		}
+
+		this.messageService
+			.sendToBackground<string>({
+				code: MessageCode.CreateNewTab,
+				data: url,
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}
 }

@@ -1,30 +1,31 @@
 import { ConfigModel } from '../models/config-model';
 import { TrackModel } from '../models/track-model';
+import { PlaybackControl } from './playback-control';
+import { PlaylistControl } from './playlist-control';
 
-export interface PageService {
+export interface PageService extends PlaylistControl, PlaybackControl {
+	// Service config.
 	config: ConfigModel;
 
+	// Initialized tracks.
 	tracks: TrackModel[];
 
-	checkUrl(url: string): boolean;
+	// Check that Service should be used for received URL.
+	isServiceUrl(url: string): boolean;
 
+	// Save available tracks on current page.
 	initTracks(): void;
 
+	// Play next track if needed.
 	tryAutoplay(): void;
 
-	play(index: number): void;
+	/**
+	 * Utils:
+	 */
 
-	playNextTrack(next: boolean): void;
-
-	playNextTrackWithPercentage(): void;
-
-	playPause(): void;
-
-	playPercentage(percentage: number): void;
-
-	move(forward: boolean): void;
-
+	// Open current track in new browser Tab.
 	open(): void;
 
+	// Add or Remove current track from wishlist.
 	addToWishlist(): void;
 }

@@ -1,6 +1,6 @@
 export enum MessageCode {
-	UrlChanged = 'bandPlay-UrlChanged',
-	NewUpdateAvailable = 'bandPlay-NewUpdateAvailable',
 	CreateNewTab = 'bandPlay-CreateNewTab',
+	NewUpdateAvailable = 'bandPlay-NewUpdateAvailable',
 	ShowGuide = 'bandPlay-ShowGuide',
+	UrlChanged = 'bandPlay-UrlChanged',
 }

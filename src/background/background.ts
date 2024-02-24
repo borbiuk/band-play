@@ -2,7 +2,7 @@ import { MessageCode } from '../shared/enums/message-code';
 import { ConfigModel } from '../shared/models/config-model';
 import { ConfigService } from '../shared/services/config-service';
 import { MessageService } from '../shared/services/message-service';
-import { notExist } from '../shared/utils';
+import { notExist } from '../shared/utils/utils.common';
 
 const messageService: MessageService = new MessageService();
 const configService: ConfigService = new ConfigService();
@@ -91,15 +91,19 @@ const registerKeepAwakeChange = () => {
 	});
 };
 
-[
-	registerUrlChange,
-	registerMessagesHandling,
-	registerUpdateHandling,
-	registerKeepAwakeChange,
-].forEach((func) => {
-	try {
-		func();
-	} catch (e) {
-		console.error(e);
-	}
-});
+const start = (): void => {
+	[
+		registerUrlChange,
+		registerMessagesHandling,
+		registerUpdateHandling,
+		registerKeepAwakeChange,
+	].forEach((func) => {
+		try {
+			func();
+		} catch (e) {
+			console.error(e);
+		}
+	});
+};
+
+start();

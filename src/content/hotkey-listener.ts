@@ -1,26 +1,59 @@
-import { exist, isHotKey, notExist } from '../shared/utils';
+import { exist } from '../shared/utils/utils.common';
 import { PageServiceWorker } from './page-service-worker';
 
-const handleHotkey = ({ code, shiftKey }: KeyboardEvent, serviceWorker: PageServiceWorker) => {
+// Function to define that keyboard event should be handled as hotkey of extension.
+const isHotKey = (event: KeyboardEvent): boolean => {
+	const targetName = (event.target as HTMLElement)?.localName;
+	if (
+		['input', 'textarea'].includes(targetName) ||
+		event.ctrlKey ||
+		event.metaKey
+	) {
+		return false;
+	}
+
+	if (event.shiftKey) {
+		return event.code.startsWith('Digit');
+	} else {
+		return (
+			event.code.startsWith('Digit') ||
+			[
+				'Space',
+				'KeyN',
+				'KeyB',
+				'KeyM',
+				'KeyL',
+				'ArrowRight',
+				'ArrowLeft',
+				'KeyO',
+			].includes(event.code)
+		);
+	}
+};
+
+const handleHotkey = (
+	{ code, shiftKey }: KeyboardEvent,
+	serviceWorker: PageServiceWorker
+) => {
 	if (code === 'Space') {
 		// Play/Pause current track on the 'Space' keydown
-		serviceWorker.service.playPause();
+		serviceWorker.pageService.playPause();
 	} else if (code === 'KeyN') {
 		// Play the next track on the 'N' keydown
-		serviceWorker.service.playNextTrack(true);
+		serviceWorker.pageService.playNextTrack(true);
 	} else if (code === 'KeyB') {
 		// Play the next track on the 'N' keydown
-		serviceWorker.service.playNextTrack(false);
+		serviceWorker.pageService.playNextTrack(false);
 	} else if (code === 'KeyM') {
 		// Play the next track with currently played percentage on the 'M' keydown
-		serviceWorker.service.playNextTrackWithPercentage();
+		serviceWorker.pageService.playNextTrackWithPercentage();
 	} else if (code === 'KeyL') {
-		serviceWorker.service.addToWishlist();
+		serviceWorker.pageService.addToWishlist();
 	} else if (code.startsWith('Digit')) {
 		if (shiftKey) {
 			const index = Number(code.split('Digit')[1]) - 1;
 			if (index >= 0) {
-				serviceWorker.service.play(index);
+				serviceWorker.pageService.playTrackByIndex(index);
 			}
 
 			return;
@@ -28,21 +61,21 @@ const handleHotkey = ({ code, shiftKey }: KeyboardEvent, serviceWorker: PageServ
 
 		// Play the current track with percentage on the 'Digit' keydown
 		const percentage = Number(code.split('Digit')[1]) * 10;
-		serviceWorker.service.playPercentage(percentage);
+		serviceWorker.pageService.setPlayback(percentage);
 	} else if (code === 'ArrowRight') {
-		serviceWorker.service.move(true);
+		serviceWorker.pageService.movePlayback(true);
 	} else if (code === 'ArrowLeft') {
-		serviceWorker.service.move(false);
+		serviceWorker.pageService.movePlayback(false);
 	} else if (code === 'KeyO') {
-		serviceWorker.service.open();
+		serviceWorker.pageService.open();
 	}
-}
+};
 
 export const listenHotkeys = (serviceWorker: PageServiceWorker) => {
 	document.addEventListener(
 		'keydown',
 		(event: KeyboardEvent) => {
-			if (exist(serviceWorker.service) && isHotKey(event)) {
+			if (exist(serviceWorker.pageService) && isHotKey(event)) {
 				event.preventDefault();
 				handleHotkey(event, serviceWorker);
 			}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ConfigModel } from '../shared/models/config-model';
 import { ConfigService } from '../shared/services/config-service';
-import { notExist } from '../shared/utils';
+import { notExist } from '../shared/utils/utils.common';
 import { Checkbox } from './checkbox';
 import { NumberInput } from './number-input';
 

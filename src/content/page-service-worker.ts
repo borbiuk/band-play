@@ -3,24 +3,27 @@ import { PageService } from '../shared/interfaces/page-service';
 import { MessageModel } from '../shared/models/message-model';
 import { ConfigService } from '../shared/services/config-service';
 import { MessageService } from '../shared/services/message-service';
-import { exist } from '../shared/utils';
+import { exist, notExist } from '../shared/utils/utils.common';
 import { AlbumPageService } from './page-services/album-page-service';
 import { CollectionPageService } from './page-services/collection-page-service';
 import { DiscoverPageService } from './page-services/discover-page-service';
 import { FeedPageService } from './page-services/feed-page-service';
 
 export class PageServiceWorker {
+	private readonly autoplayDelay: number = 300;
+	private readonly initTracksDelay: number = 1_000;
+
 	private readonly configService: ConfigService = new ConfigService();
 	private readonly messageService: MessageService = new MessageService();
 
-	private readonly services: PageService[] = [
+	private readonly pageServices: PageService[] = [
 		new AlbumPageService(this.messageService),
 		new DiscoverPageService(this.messageService),
 		new FeedPageService(this.messageService),
 		new CollectionPageService(this.messageService),
 	];
 
-	public service: PageService = null;
+	public pageService: PageService = null;
 
 	public start(): void {
 		console.log('[Start]: Band Play');
@@ -31,7 +34,7 @@ export class PageServiceWorker {
 	}
 
 	private async startAsync(): Promise<void> {
-		this.service = await this.currentService();
+		this.pageService = await this.currentService();
 
 		this.serviceConfiguration();
 
@@ -44,7 +47,7 @@ export class PageServiceWorker {
 	private async currentService(): Promise<PageService> {
 		const url = window.location.href;
 
-		const service = this.services.find((x) => x.checkUrl(url));
+		const service = this.pageServices.find((x) => x.isServiceUrl(url));
 		if (exist(service)) {
 			service.tracks = [];
 			service.config = await this.configService.getAll();
@@ -55,43 +58,46 @@ export class PageServiceWorker {
 
 	private serviceConfiguration(): void {
 		this.configService.addListener((newConfig) => {
-			if (exist(this.service)) {
-				this.service.config = newConfig;
+			if (exist(this.pageService)) {
+				this.pageService.config = newConfig;
 			}
 		});
 	}
 
 	private registerAutoplay(): void {
 		setInterval(() => {
-			if (!this.service?.config.autoplay) {
+			if (
+				notExist(this.pageService) ||
+				!this.pageService.config.autoplay
+			) {
 				return;
 			}
 
 			try {
-				this.service?.tryAutoplay();
-			} catch (e) {
-				console.log(e);
+				this.pageService.tryAutoplay();
+			} catch (error) {
+				console.error(error);
 			}
-		}, 300);
+		}, this.autoplayDelay);
 	}
 
 	private registerTracksInitialization(): void {
-		this.service?.initTracks();
+		this.pageService?.initTracks();
 		setInterval(() => {
 			try {
-				this.service?.initTracks();
-			} catch (e) {
-				console.log(e);
+				this.pageService?.initTracks();
+			} catch (error) {
+				console.error(error);
 			}
-		}, 1_000);
+		}, this.initTracksDelay);
 	}
 
 	private registerPageChange(): void {
 		this.messageService.addListener(
 			async (message: MessageModel<unknown>) => {
 				if (message.code === MessageCode.UrlChanged) {
-					this.service = await this.currentService();
-					this.service?.initTracks();
+					this.pageService = await this.currentService();
+					this.pageService?.initTracks();
 				}
 			},
 			(error: Error) => console.error(error)

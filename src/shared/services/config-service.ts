@@ -1,5 +1,5 @@
 import { ConfigModel } from '../models/config-model';
-import { exist } from '../utils';
+import { exist } from '../utils/utils.common';
 
 /**
  * Service for managing and handling configuration settings stored in local storage.
