@@ -3,7 +3,7 @@ import './guide.scss';
 import { createRoot } from 'react-dom/client';
 import { MessageCode } from '../../shared/enums/message-code';
 import { MessageService } from '../../shared/services/message-service';
-import { Hotkey } from './hotkey';
+import { Hotkey } from './components/hotkey';
 
 export const initGuide = () => {
 	const guideContainerId = 'band-play_guide-container';

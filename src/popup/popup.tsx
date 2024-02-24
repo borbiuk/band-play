@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './popup.scss';
-import { Configuration } from './configuration';
-import { Footer } from './footer';
+import { Configuration } from './components/configuration';
+import { Footer } from './components/footer';
 
 /**
  * Popup component representing the user interface of the Chrome extension popup.
