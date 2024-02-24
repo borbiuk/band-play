@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+# update package.json version from ./public/manifest.json
+. "$(dirname -- "$0")/set-version.sh"
+
+# format files
+npm run format
+

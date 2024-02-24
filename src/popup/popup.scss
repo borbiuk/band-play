@@ -10,7 +10,7 @@ body {
 	background-color: var(--bandplay-10);
 	border-radius: 50%;
 	border: none;
-	font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -21,6 +21,6 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
 	-moz-appearance: textfield;
 }
