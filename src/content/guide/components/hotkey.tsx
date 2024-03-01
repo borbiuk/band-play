@@ -22,7 +22,7 @@ export const Hotkey = ({ fileName, title, description }) => {
 				<span className="text-sm font-medium text-gray-800">
 					{title}
 				</span>
-				<span className="text-xs font-normal text-gray-600">
+				<span className="text-xs font-normal text-gray-700">
 					{description}
 				</span>
 			</div>
