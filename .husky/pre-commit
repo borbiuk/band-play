@@ -6,5 +6,8 @@
 # format files
 npm run format
 
+# add prettier changes
+git add .
+
 # create .zip file
 ./zip.sh
