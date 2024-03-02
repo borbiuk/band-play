@@ -4,6 +4,8 @@ import { createRoot } from 'react-dom/client';
 import { MessageCode } from '../../shared/enums/message-code';
 import { MessageService } from '../../shared/services/message-service';
 import { Hotkey } from './components/hotkey';
+import { PagesNote } from './components/pages-note';
+import { Page } from './models/Page';
 
 export const initGuide = () => {
 	const guideContainerId = 'band-play_guide-container';
@@ -67,7 +69,7 @@ export const Guide = () => {
 				</button>
 
 				{/* Content */}
-				<div className="text-md mx-6 mb-9 flex flex-row gap-x-2 gap-y-6 pt-4 xl:flex-col xl:pt-2">
+				<div className="text-md mx-6 mb-2 flex flex-row gap-x-2 gap-y-6 pt-4 xl:mb-6 xl:flex-col xl:pt-2">
 					{/* Playlist control */}
 					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
 						<span className="text-base text-gray-700">
@@ -78,16 +80,29 @@ export const Guide = () => {
 							fileName="key-N.png"
 							title="Next Track"
 							description="Play the next track on feed, collection, wishlist, and album pages"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 						<Hotkey
 							fileName="key-M.png"
 							title="Next Track with Playback Save"
 							description="Similar to 'N' hotkey, but with the added feature of saving playback progress"
+							pages={[Page.Collection]}
 						/>
 						<Hotkey
 							fileName="key-B.png"
 							title="Previous Track"
 							description="Play the previous track, akin to the 'N' hotkey"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 					</div>
 
@@ -101,21 +116,25 @@ export const Guide = () => {
 							fileName="key-0.png"
 							title="Start from Begin"
 							description="Initiate playback of the current track from the beginning"
+							pages={[Page.Collection, Page.Album]}
 						/>
 						<Hotkey
 							fileName="key-9.png"
 							title="Start from 90%"
 							description="Begin playback from the 90% mark of the total track time. Use any digit key from 0 to 9 for different percentages"
+							pages={[Page.Collection, Page.Album]}
 						/>
 						<Hotkey
 							fileName="key-left.png"
 							title="Rewind"
 							description="Rewind the track by the specified 'Playback step' seconds (click on the extension icon)"
+							pages={[Page.Collection, Page.Album]}
 						/>
 						<Hotkey
 							fileName="key-right.png"
 							title="Fast Forward"
 							description="Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
+							pages={[Page.Collection, Page.Album]}
 						/>
 					</div>
 
@@ -129,13 +148,25 @@ export const Guide = () => {
 							fileName="key-O.png"
 							title="Open in New Tab"
 							description="Press 'O' to open the current track or album in a new browser tab for later listening"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 						<Hotkey
 							fileName="key-L.png"
 							title="Add/Remove from Wishlist"
 							description="Add or remove an album from your wishlist, or a track if you are on an album pagee"
+							pages={[Page.Collection, Page.Album, Page.Feed]}
 						/>
 					</div>
+				</div>
+
+				{/* Footer */}
+				<div className="mx-6 mb-9">
+					<PagesNote />
 				</div>
 			</div>
 		</div>
