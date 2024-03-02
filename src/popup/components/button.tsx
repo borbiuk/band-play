@@ -10,7 +10,7 @@ import React from 'react';
 export const Button = ({ text, icon, onClick }) => {
 	return (
 		<button
-			className="group flex h-8 w-full flex-row items-center gap-x-2 rounded-xl bg-band-300 px-2 duration-300 hover:scale-105 hover:cursor-pointer hover:bg-band-400"
+			className="group flex h-8 w-full flex-row items-center gap-x-2 rounded-xl bg-band-200 px-2 duration-300 hover:scale-105 hover:cursor-pointer hover:bg-band-400"
 			onClick={onClick}
 		>
 			<img

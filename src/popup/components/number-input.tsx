@@ -57,7 +57,7 @@ export const NumberInput = ({
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="h-8 rounded-s-lg border border-band-200 bg-band-300 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-8 rounded-s-lg border border-band-200 bg-band-200 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleDecrement}
 				>
 					<svg
@@ -90,7 +90,7 @@ export const NumberInput = ({
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="h-8 rounded-e-lg border border-band-200 bg-band-300 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-8 rounded-e-lg border border-band-200 bg-band-200 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleIncrement}
 				>
 					<svg

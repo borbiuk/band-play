@@ -42,7 +42,7 @@ export const Guide = () => {
 
 	return (
 		<div className={isDisplayed ? '' : 'hidden'}>
-			<div className="flex-0 max-h-svw max-w-svw fixed left-1/2 top-1/2 z-[999] flex -translate-x-1/2 -translate-y-1/2 transform flex-col rounded-xl shadow-2xl shadow-gray-700 backdrop-blur-md">
+			<div className="flex-0 max-h-svw max-w-svw fixed left-1/2 top-1/2 z-[999] flex -translate-x-1/2 -translate-y-1/2 transform select-none flex-col overflow-auto rounded-xl shadow-2xl shadow-gray-700 backdrop-blur-md">
 				{/* Header */}
 				<div className="flex w-full flex-col items-center gap-y-1 pb-3 pt-6">
 					<img
@@ -57,7 +57,7 @@ export const Guide = () => {
 
 				{/* Close Button */}
 				<button
-					className="absolute right-1.5 top-1.5 h-7 w-7 rounded-xl duration-200 hover:scale-110 hover:cursor-pointer"
+					className="absolute right-1.5 top-1.5 h-7 w-7 rounded-xl border-0 duration-200 hover:scale-110 hover:cursor-pointer"
 					onClick={close}
 				>
 					<img
@@ -69,7 +69,7 @@ export const Guide = () => {
 				{/* Content */}
 				<div className="text-md mx-6 mb-9 flex flex-row gap-x-2 gap-y-6 pt-4 xl:flex-col xl:pt-2">
 					{/* Playlist control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-500 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
 						<span className="text-base text-gray-700">
 							Playlist control
 						</span>
@@ -92,7 +92,7 @@ export const Guide = () => {
 					</div>
 
 					{/* Playback control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-500 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
 						<span className="text-base text-gray-700">
 							Track playback control
 						</span>
@@ -120,7 +120,7 @@ export const Guide = () => {
 					</div>
 
 					{/* Other */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-500 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
 						<span className="text-base text-gray-700">
 							Utilities
 						</span>

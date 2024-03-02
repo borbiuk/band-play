@@ -9,7 +9,7 @@ import { Footer } from './components/footer';
  */
 const Popup = () => {
 	return (
-		<div className="relative flex w-52 flex-col justify-center gap-y-6 overflow-hidden bg-band-100 p-3 pb-4 align-middle">
+		<div className="relative flex w-52 select-none flex-col justify-center gap-y-6 overflow-hidden bg-band-100/35 p-3 pb-4 align-middle">
 			{/* Header */}
 			<div className="flex w-full flex-col items-center gap-y-1">
 				<img
