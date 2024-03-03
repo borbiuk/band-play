@@ -7,11 +7,12 @@ export const AvailablePages = ({ pages }: { pages: Page[] }) => {
 		<div className="ml-1 flex flex-row">
 			{Object.keys(Page).map((page, index) =>
 				pages.includes(Page[page]) ? (
-					<div className={`-ml-1 z-${100 - index * 10}`}>
+					<div key={index} className={`-ml-1 z-${100 - index * 10}`}>
 						<PageMark page={Page[page]} />
 					</div>
 				) : (
 					<div
+						key={index}
 						className={`-ml-1 h-4 w-4 z-${100 - index * 10}`}
 					></div>
 				)
