@@ -1,4 +1,3 @@
-import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
 import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
@@ -20,7 +19,7 @@ export class CollectionPageService
 	isServiceUrl(url: string): boolean {
 		this.currentUrl = url;
 		const collectionPageRegex =
-			/^https:\/\/bandcamp\.com\/[a-zA-Z0-9]+(?:\/wishlist)?$/;
+			/^https:\/\/bandcamp\.com\/[a-zA-Z0-9-_]+(?:\/wishlist)?$/;
 		return collectionPageRegex.test(url.split('?')[0]);
 	}
 
