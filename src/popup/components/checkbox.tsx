@@ -1,14 +1,30 @@
 import React, { useEffect, useState } from 'react';
 
+export interface CheckBoxOptions {
+	// The unique identifier for the checkbox.
+	id: string;
+
+	// The label for the checkbox.
+	label: string;
+
+	// The default value for the checkbox.
+	defaultValue: boolean;
+
+	// The callback function to be executed when the value changes.
+	onChange: (id: string, isChecked: boolean) => void;
+}
+
 /**
  * Checkbox component for handling boolean input with a checkbox.
  *
- * @param {string} id - The unique identifier for the checkbox.
- * @param {string} label - The label for the checkbox.
- * @param {boolean} defaultValue - The default value for the checkbox.
- * @param {Function} onChange - The callback function to be executed when the value changes.
+ * @param {CheckBoxOptions} options - The options of component.
  */
-export const Checkbox = ({ id, label, defaultValue, onChange }) => {
+export const Checkbox = ({
+	id,
+	label,
+	defaultValue,
+	onChange,
+}: CheckBoxOptions) => {
 	const [isChecked, setIsChecked] = useState(defaultValue);
 
 	useEffect(() => {

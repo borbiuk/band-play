@@ -43,7 +43,7 @@ export class MessageService {
 			(
 				message: MessageModel<T>,
 				_sender: chrome.runtime.MessageSender,
-				_sendResponse: (response?: any) => void
+				_sendResponse: (response?: unknown) => void
 			) => {
 				if (notExist(message?.code)) {
 					return;

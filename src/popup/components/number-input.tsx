@@ -1,15 +1,32 @@
 import React, { useEffect, useState } from 'react';
 
+export interface NumberInputOptions {
+	// The unique identifier for the input.
+	id: string;
+
+	// The label for the input.
+	label: string;
+
+	// The default value for the input.
+	defaultValue: number;
+
+	// The minimum allowed value for the input.
+	min: number;
+
+	// The maximum allowed value for the input.
+	max: number;
+
+	// The suffix to be displayed next to the input value.
+	suffix: string;
+
+	// The callback function to be executed when the value changes.
+	onChange: (id: string, value: number) => void;
+}
+
 /**
  * NumberInput component for handling numeric input with increment and decrement buttons.
  *
- * @param {string} id - The unique identifier for the input.
- * @param {string} label - The label for the input.
- * @param {number} defaultValue - The default value for the input.
- * @param {number} min - The minimum allowed value for the input.
- * @param {number} max - The maximum allowed value for the input.
- * @param {string} suffix - The suffix to be displayed next to the input value.
- * @param {Function} onChange - The callback function to be executed when the value changes.
+ * @param {NumberInputOptions} options - The options of component.
  */
 export const NumberInput = ({
 	id,
@@ -17,9 +34,9 @@ export const NumberInput = ({
 	defaultValue,
 	min,
 	max,
-	suffix, // new prop for the suffix
+	suffix,
 	onChange,
-}) => {
+}: NumberInputOptions) => {
 	const [value, setValue] = useState(defaultValue);
 
 	useEffect(() => {
@@ -78,7 +95,7 @@ export const NumberInput = ({
 						max={max}
 						value={value}
 						className="block h-full w-full border-y border-band-200 bg-band-100 py-2.5 text-center text-base font-medium tabular-nums text-gray-900 outline-none"
-						placeholder={max}
+						placeholder={max.toString()}
 						onChange={handleChange}
 						required
 					/>
