@@ -10,14 +10,16 @@ export class CollectionPageService
 	extends BasePageService
 	implements PageService
 {
-	private currentUrl: string;
+	private isWishlist: boolean;
+	private collectionShowAllItemsClicked: boolean = false;
+	private wishlistShowAllItemsClicked: boolean = false;
 
 	constructor(protected messageService: MessageService) {
 		super(messageService);
 	}
 
 	isServiceUrl(url: string): boolean {
-		this.currentUrl = url;
+		this.isWishlist = url.includes('/wishlist');
 		const collectionPageRegex =
 			/^https:\/\/bandcamp\.com\/[a-zA-Z0-9-_]+(?:\/wishlist)?$/;
 		return collectionPageRegex.test(url.split('?')[0]);
@@ -104,9 +106,9 @@ export class CollectionPageService
 	}
 
 	initTracks(): void {
-		this.clickShowAllTracks();
+		this.clickShowAllItems();
 
-		const collectionId = this.currentUrl.includes('/wishlist')
+		const collectionId = this.isWishlist
 			? 'wishlist-grid'
 			: 'collection-grid';
 
@@ -216,15 +218,37 @@ export class CollectionPageService
 		return this.tracks[nowPlayingIndex + (next ? 1 : -1)];
 	}
 
-	private clickShowAllTracks(): boolean {
-		const showNextButton =
-			document.querySelectorAll<HTMLElement>('.show-more');
-		if (notExist(showNextButton)) {
-			return false;
+	private clickShowAllItems(): void {
+		if (
+			(this.isWishlist && this.wishlistShowAllItemsClicked) ||
+			(!this.isWishlist && this.collectionShowAllItemsClicked)
+		) {
+			return;
 		}
 
-		showNextButton.forEach((x) => x.click());
-		return true;
+		const buttonsList =
+			document.querySelectorAll<HTMLElement>('.show-more');
+		if (notExist(buttonsList)) {
+			return;
+		}
+
+		buttonsList.forEach((button) => {
+			if (exist(button.getAttribute('band-play-clicked'))) {
+				return;
+			}
+
+			button.addEventListener('click', (event: MouseEvent) =>
+				event.stopPropagation()
+			);
+			button.click();
+			button.setAttribute('band-play-clicked', '');
+
+			if (this.isWishlist) {
+				this.wishlistShowAllItemsClicked = true;
+			} else {
+				this.collectionShowAllItemsClicked = true;
+			}
+		});
 	}
 
 	// Function to calculate the playback percentage of the current track.

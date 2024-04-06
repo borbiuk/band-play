@@ -1,5 +1,6 @@
 import { MessageCode } from '../shared/enums/message-code';
 import { PageService } from '../shared/interfaces/page-service';
+import { ConfigModel } from '../shared/models/config-model';
 import { MessageModel } from '../shared/models/message-model';
 import { ConfigService } from '../shared/services/config-service';
 import { MessageService } from '../shared/services/message-service';
@@ -11,7 +12,7 @@ import { FeedPageService } from './page-services/feed-page-service';
 
 export class PageServiceWorker {
 	private readonly autoplayDelay: number = 300;
-	private readonly initTracksDelay: number = 1_000;
+	private readonly initTracksDelay: number = 700;
 
 	private readonly configService: ConfigService = new ConfigService();
 	private readonly messageService: MessageService = new MessageService();
@@ -57,7 +58,7 @@ export class PageServiceWorker {
 	}
 
 	private serviceConfiguration(): void {
-		this.configService.addListener((newConfig) => {
+		this.configService.addListener((newConfig: ConfigModel) => {
 			if (exist(this.pageService)) {
 				this.pageService.config = newConfig;
 			}
