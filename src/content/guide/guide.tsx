@@ -44,15 +44,15 @@ export const Guide = () => {
 
 	return (
 		<div className={isDisplayed ? '' : 'hidden'}>
-			<div className="flex-0 max-h-svw max-w-svw fixed left-1/2 top-1/2 z-[999] flex -translate-x-1/2 -translate-y-1/2 transform select-none flex-col overflow-auto rounded-xl shadow-2xl shadow-gray-700 backdrop-blur-md">
+			<div className="flex-0 max-w-svw fixed left-1/2 top-1/2 z-[999] m-4 flex max-h-screen -translate-x-1/2 -translate-y-1/2 transform select-none flex-col overflow-auto rounded-xl shadow-2xl shadow-gray-700 backdrop-blur-md">
 				{/* Header */}
-				<div className="flex w-full flex-col items-center gap-y-1 pb-3 pt-6">
+				<div className="flex w-full flex-col items-center gap-y-1 pb-2 pt-3 xl:pb-3 xl:pt-6">
 					<img
 						src={getSourceUrl('./assets/logo-128.png')}
 						alt="Bandplay logo"
-						className="h-16 w-16 rounded-full shadow-xl"
+						className="z-20 h-16 w-16 rounded-full shadow-xl"
 					/>
-					<span className="z-10 -mt-1 text-xl font-medium text-gray-900">
+					<span className="z-10 -mt-2.5 rounded-2xl bg-white/10 px-2 text-xl font-medium text-gray-900">
 						BandPlay
 					</span>
 				</div>
@@ -69,9 +69,9 @@ export const Guide = () => {
 				</button>
 
 				{/* Content */}
-				<div className="text-md mx-6 mb-2 flex flex-row gap-x-2 gap-y-6 pt-4 xl:mb-6 xl:flex-col xl:pt-2">
+				<div className="text-md mx-6 mb-4 flex flex-row gap-x-4 gap-y-6 xl:mb-6 xl:flex-col">
 					{/* Playlist control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
 						<span className="text-base text-gray-700">
 							Playlist control
 						</span>
@@ -107,7 +107,7 @@ export const Guide = () => {
 					</div>
 
 					{/* Playback control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
 						<span className="text-base text-gray-700">
 							Track playback control
 						</span>
@@ -139,7 +139,7 @@ export const Guide = () => {
 					</div>
 
 					{/* Other */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
 						<span className="text-base text-gray-700">
 							Utilities
 						</span>
@@ -165,7 +165,7 @@ export const Guide = () => {
 				</div>
 
 				{/* Footer */}
-				<div className="mx-6 mb-9">
+				<div className="mx-6 mb-6 xl:mb-9">
 					<PagesNote />
 				</div>
 			</div>
