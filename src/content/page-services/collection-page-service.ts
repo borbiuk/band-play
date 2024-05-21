@@ -26,6 +26,11 @@ export class CollectionPageService
 	}
 
 	playPause(): void {
+		if (notExist(this.getNowPlayingTrackId())) {
+			this.playTrackByIndex(0);
+			return;
+		}
+
 		document.querySelector<HTMLElement>('.playpause')?.click();
 	}
 

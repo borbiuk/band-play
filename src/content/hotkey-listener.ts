@@ -71,7 +71,7 @@ const handleHotkey = (
 	}
 };
 
-export const listenHotkeys = (serviceWorker: PageServiceWorker) => {
+export const listenHotkeys = (serviceWorker: PageServiceWorker): void => {
 	document.addEventListener(
 		'keydown',
 		(event: KeyboardEvent) => {
@@ -84,4 +84,22 @@ export const listenHotkeys = (serviceWorker: PageServiceWorker) => {
 		},
 		false
 	);
+};
+
+export const listenNavigator = (serviceWorker: PageServiceWorker): void => {
+	navigator.mediaSession.setActionHandler('play', () => {
+		serviceWorker.pageService.playPause();
+	});
+
+	navigator.mediaSession.setActionHandler('pause', () => {
+		serviceWorker.pageService.playPause();
+	});
+
+	navigator.mediaSession.setActionHandler('nexttrack', () => {
+		serviceWorker.pageService.playNextTrack(true);
+	});
+
+	navigator.mediaSession.setActionHandler('previoustrack', () => {
+		serviceWorker.pageService.playNextTrack(false);
+	});
 };

@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "4.0.16",
+	"version": "4.1.0",
 	"description": "Bandcamp Play",
 	"main": "index.js",
 	"scripts": {
@@ -22,12 +22,12 @@
 		"react-dom": "18.3.1"
 	},
 	"devDependencies": {
-		"@types/chrome": "0.0.267",
+		"@types/chrome": "0.0.268",
 		"@types/jest": "29.5.12",
-		"@types/react": "18.3.1",
+		"@types/react": "18.3.2",
 		"@types/react-dom": "18.3.0",
-		"@typescript-eslint/eslint-plugin": "7.8.0",
-		"@typescript-eslint/parser": "7.8.0",
+		"@typescript-eslint/eslint-plugin": "7.10.0",
+		"@typescript-eslint/parser": "7.10.0",
 		"autoprefixer": "10.4.19",
 		"copy-webpack-plugin": "12.0.2",
 		"css-loader": "7.1.1",
@@ -39,10 +39,10 @@
 		"husky": "9.0.11",
 		"postcss": "8.4.38",
 		"postcss-loader": "8.1.1",
-		"postcss-preset-env": "9.5.11",
+		"postcss-preset-env": "9.5.13",
 		"prettier": "3.2.5",
 		"prettier-plugin-tailwindcss": "0.5.14",
-		"sass": "1.77.0",
+		"sass": "1.77.2",
 		"sass-loader": "14.2.1",
 		"style-loader": "4.0.0",
 		"tailwindcss": "3.4.3",
