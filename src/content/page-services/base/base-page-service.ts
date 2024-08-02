@@ -15,19 +15,45 @@ export abstract class BasePageService implements PageService {
 		return false;
 	}
 
-	playPause(): void {}
+	playPause(): void {
+		this.audioOperator<void>((audio) => {
+			if (audio.paused) {
+				audio.play();
+			} else {
+				audio.pause();
+			}
+		});
+	}
 
 	playNextTrack(next: boolean): void {}
 
-	playNextTrackWithPercentage(): void {}
-
 	initTracks(): void {}
 
-	movePlayback(forward: boolean): void {}
+	movePlayback(forward: boolean): void {
+		this.audioOperator<void>((audio) => {
+			let nextPositionInSeconds =
+				audio.currentTime +
+				(forward
+					? this.config.playbackStep
+					: -this.config.playbackStep);
+			if (nextPositionInSeconds < 0) {
+				nextPositionInSeconds = 0;
+			} else if (nextPositionInSeconds > audio.duration) {
+				nextPositionInSeconds = audio.duration;
+			}
+
+			const percentage = (nextPositionInSeconds / audio.duration) * 100;
+			this.setPlayback(percentage);
+		});
+	}
 
 	playTrackByIndex(index: number): void {}
 
-	setPlayback(percentage: number): void {}
+	setPlayback(percentage: number): void {
+		this.audioOperator<void>((audio) => {
+			audio.currentTime = (percentage / 100) * audio.duration;
+		});
+	}
 
 	tryAutoplay(): void {}
 
@@ -52,5 +78,16 @@ export abstract class BasePageService implements PageService {
 			.catch((error) => {
 				console.error(error);
 			});
+	}
+
+	protected audioOperator<TResult>(
+		operator: (_: HTMLAudioElement) => TResult
+	): TResult {
+		const audio: HTMLAudioElement = document.querySelector('audio');
+		if (notExist(audio)) {
+			return undefined;
+		}
+
+		return operator(audio);
 	}
 }

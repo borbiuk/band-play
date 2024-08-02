@@ -2,7 +2,6 @@ import { PageService } from '../../shared/interfaces/page-service';
 import { TrackModel } from '../../shared/models/track-model';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
-import { convertTimeStringToSeconds } from '../../shared/utils/utils.time';
 import { BasePageService } from './base/base-page-service';
 
 // Service to handle 'collection' and 'wishlist' pages.
@@ -31,7 +30,7 @@ export class CollectionPageService
 			return;
 		}
 
-		document.querySelector<HTMLElement>('.playpause')?.click();
+		super.playPause();
 	}
 
 	playNextTrack(next: boolean): boolean {
@@ -52,15 +51,6 @@ export class CollectionPageService
 		return true;
 	}
 
-	playNextTrackWithPercentage(): void {
-		const percentage = this.calculateTimePercentage();
-		if (this.playNextTrack(true)) {
-			setTimeout(() => {
-				this.setPlayback(percentage);
-			}, 300);
-		}
-	}
-
 	playTrackByIndex(index: number): void {
 		if (index < 0 || index >= this.tracks.length) {
 			return;
@@ -74,33 +64,6 @@ export class CollectionPageService
 				behavior: 'smooth',
 			});
 		}
-	}
-
-	movePlayback(forward: boolean): void {
-		const percentage = this.calculateTimePercentage(
-			forward ? this.config.playbackStep : -this.config.playbackStep
-		);
-		this.setPlayback(percentage);
-	}
-
-	setPlayback(percentage: number): void {
-		const control = document.querySelector('.progress-bar');
-		if (notExist(control)) {
-			return;
-		}
-
-		const rect = control.getBoundingClientRect();
-		const x = rect.left + rect.width * (percentage / 100);
-		const clickEvent = new MouseEvent('click', {
-			bubbles: true,
-			cancelable: true,
-			view: window,
-			clientX: x,
-			clientY: rect.top + rect.height / 2, // Middle of the element vertically
-		});
-
-		// Dispatch the event to the seek control outer element
-		control.dispatchEvent(clickEvent);
 	}
 
 	tryAutoplay(): void {
@@ -254,28 +217,5 @@ export class CollectionPageService
 				this.collectionShowAllItemsClicked = true;
 			}
 		});
-	}
-
-	// Function to calculate the playback percentage of the current track.
-	private calculateTimePercentage(add = 0): number {
-		// Retrieve the time strings
-		const durationStr = document.querySelector(
-			'.pos-dur [data-bind="text: durationStr"]'
-		)?.textContent;
-		const positionStr = document.querySelector(
-			'.pos-dur [data-bind="text: positionStr"]'
-		)?.textContent;
-
-		// Convert time strings to seconds
-		const durationInSeconds = convertTimeStringToSeconds(durationStr);
-		let positionInSeconds = convertTimeStringToSeconds(positionStr) + add;
-		if (positionInSeconds < 0) {
-			positionInSeconds = 0;
-		} else if (positionInSeconds > durationInSeconds) {
-			positionInSeconds = durationInSeconds;
-		}
-
-		// Calculate the percentage
-		return (positionInSeconds / durationInSeconds) * 100;
 	}
 }

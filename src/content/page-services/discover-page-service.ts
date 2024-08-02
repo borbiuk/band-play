@@ -17,14 +17,6 @@ export class DiscoverPageService
 		return url.includes('/discover');
 	}
 
-	playPause(): void {
-		let button = document.querySelector('.play-circle-outline-icon');
-		if (notExist(button)) {
-			button = document.querySelector('.pause-circle-outline-icon');
-		}
-		button?.parentElement?.click();
-	}
-
 	playNextTrack(next: boolean): void {
 		const current = document.querySelector(
 			'.swipe-carousel div button[aria-label="Pause"]'

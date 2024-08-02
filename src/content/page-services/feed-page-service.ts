@@ -21,15 +21,20 @@ export class FeedPageService extends BasePageService implements PageService {
 
 	playPause(): void {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
-		if (exist(playingFeed)) {
-			playingFeed.querySelector<HTMLElement>('.play-button').click();
-			this.feedPauseTrackId = playingFeed.getAttribute('data-tralbumid');
-		} else if (exist(this.feedPauseTrackId)) {
-			this.tracks[this.getTrackIndex(this.feedPauseTrackId)].element
-				.querySelector<HTMLElement>('.play-button')
-				.click();
-			this.feedPauseTrackId = null;
-		}
+		const setPausedTrackId = () => {
+			if (exist(playingFeed)) {
+				this.feedPauseTrackId =
+					playingFeed.getAttribute('data-tralbumid');
+			} else if (exist(this.feedPauseTrackId)) {
+				this.feedPauseTrackId = null;
+			}
+		};
+		this.audioOperator((audio) => {
+			audio.removeEventListener('pause', setPausedTrackId);
+			audio.addEventListener('pause', setPausedTrackId);
+		});
+
+		super.playPause();
 	}
 
 	playNextTrack(next: boolean): void {
@@ -65,12 +70,14 @@ export class FeedPageService extends BasePageService implements PageService {
 					index()
 			].element.querySelector<HTMLElement>('.play-button');
 		nextPlayPauseButton.click();
+
 		if (this.config.autoscroll) {
 			nextPlayPauseButton.scrollIntoView({
 				block: 'center',
 				behavior: 'smooth',
 			});
 		}
+
 		nextPlayPauseButton.onclick = () => {
 			this.feedPauseTrackId =
 				this.tracks[

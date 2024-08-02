@@ -44,9 +44,6 @@ const handleHotkey = (
 	} else if (code === 'KeyB') {
 		// Play the next track on the 'N' keydown
 		serviceWorker.pageService.playNextTrack(false);
-	} else if (code === 'KeyM') {
-		// Play the next track with currently played percentage on the 'M' keydown
-		serviceWorker.pageService.playNextTrackWithPercentage();
 	} else if (code === 'KeyL') {
 		serviceWorker.pageService.addToWishlist();
 	} else if (code.startsWith('Digit')) {
