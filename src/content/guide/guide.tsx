@@ -44,7 +44,7 @@ export const Guide = () => {
 
 	return (
 		<div className={isDisplayed ? '' : 'hidden'}>
-			<div className="flex-0 max-w-svw fixed left-1/2 top-1/2 z-[999] m-4 flex max-h-screen -translate-x-1/2 -translate-y-1/2 transform select-none flex-col overflow-auto rounded-xl shadow-2xl shadow-gray-700 backdrop-blur-md">
+			<div className="flex-0 max-w-svw fixed left-1/2 top-1/2 z-[999] m-4 flex max-h-[90vh] -translate-x-1/2 -translate-y-1/2 scale-90 transform select-none flex-col overflow-auto rounded-xl bg-white/30 shadow-2xl shadow-gray-800 backdrop-blur-md">
 				{/* Header */}
 				<div className="flex w-full flex-col items-center gap-y-1 pb-2 pt-3 xl:pb-3 xl:pt-6">
 					<img
@@ -52,7 +52,7 @@ export const Guide = () => {
 						alt="Bandplay logo"
 						className="z-20 h-16 w-16 rounded-full shadow-xl"
 					/>
-					<span className="z-10 -mt-2.5 rounded-2xl bg-white/10 px-2 text-xl font-medium text-gray-900">
+					<span className="z-10 -mt-2.5 rounded-2xl px-2 text-xl font-medium text-gray-900">
 						BandPlay
 					</span>
 				</div>
@@ -71,8 +71,8 @@ export const Guide = () => {
 				{/* Content */}
 				<div className="text-md mx-6 mb-4 flex flex-row gap-x-4 gap-y-6 xl:mb-6 xl:flex-col">
 					{/* Playlist control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
-						<span className="text-base text-gray-700">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-400">
+						<span className="-mt-2 text-base tracking-wide text-gray-700">
 							Playlist control
 						</span>
 
@@ -88,12 +88,6 @@ export const Guide = () => {
 							]}
 						/>
 						<Hotkey
-							fileName="key-M.png"
-							title="Next Track with Playback Save"
-							description="Similar to 'N' hotkey, but with the added feature of saving playback progress"
-							pages={[Page.Collection]}
-						/>
-						<Hotkey
 							fileName="key-B.png"
 							title="Previous Track"
 							description="Play the previous track, akin to the 'N' hotkey"
@@ -107,40 +101,87 @@ export const Guide = () => {
 					</div>
 
 					{/* Playback control */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
-						<span className="text-base text-gray-700">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-400">
+						<span className="-mt-2 text-base tracking-wide text-gray-700">
 							Track playback control
 						</span>
 
+						{/* Set Playback */}
 						<Hotkey
 							fileName="key-0.png"
 							title="Start from Begin"
 							description="Initiate playback of the current track from the beginning"
-							pages={[Page.Collection, Page.Album]}
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 						<Hotkey
 							fileName="key-9.png"
 							title="Start from 90%"
 							description="Begin playback from the 90% mark of the total track time. Use any digit key from 0 to 9 for different percentages"
-							pages={[Page.Collection, Page.Album]}
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
+						/>
+
+						{/* Move Playback */}
+						<Hotkey
+							fileName="key-right.png"
+							title="Fast Forward"
+							description="Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 						<Hotkey
 							fileName="key-left.png"
 							title="Rewind"
 							description="Rewind the track by the specified 'Playback step' seconds (click on the extension icon)"
-							pages={[Page.Collection, Page.Album]}
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
+						/>
+
+						{/* Playback Speed */}
+						<Hotkey
+							fileName="key-up.png"
+							title="Increase Speed"
+							description="Increase speed of track playing"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 						<Hotkey
-							fileName="key-right.png"
-							title="Fast Forward"
-							description="Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
-							pages={[Page.Collection, Page.Album]}
+							fileName="key-down.png"
+							title="Decrease Speed"
+							description="Decrease speed of track playing"
+							pages={[
+								Page.Collection,
+								Page.Album,
+								Page.Feed,
+								Page.Discover,
+							]}
 						/>
 					</div>
 
 					{/* Other */}
-					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/75 p-3 shadow-md shadow-gray-400 duration-300 hover:scale-101 hover:shadow-xl">
-						<span className="text-base text-gray-700">
+					<div className="flex flex-col gap-y-2 rounded-xl bg-band-200/80 p-3 shadow-md shadow-gray-400">
+						<span className="-mt-2 text-base tracking-wide text-gray-700">
 							Utilities
 						</span>
 

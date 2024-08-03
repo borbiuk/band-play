@@ -1,11 +1,11 @@
 import { initGuide } from './guide/guide';
-import { listenHotkeys, listenNavigator } from './hotkey-listener';
-import { PageServiceWorker } from './page-service-worker';
+import { PageServiceWorker } from './services/page-service-worker';
+import { UserInputService } from './services/user-input-service';
 
 const serviceWorker: PageServiceWorker = new PageServiceWorker();
 serviceWorker.start();
 
-listenHotkeys(serviceWorker);
-listenNavigator(serviceWorker);
+const userInputService: UserInputService = new UserInputService();
+userInputService.start(serviceWorker);
 
 initGuide();

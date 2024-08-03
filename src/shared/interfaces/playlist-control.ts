@@ -1,7 +1,4 @@
 export interface PlaylistControl {
-	// Play or Pause current track.
-	playPause(): void;
-
 	// Play next track.
 	playNextTrack(next: boolean): void;
 

@@ -26,17 +26,17 @@ export const Hotkey = ({
 
 	return (
 		<div className="flex flex-row items-start justify-between gap-x-1 xl:gap-x-2">
-			<div className="flex min-w-44 flex-row items-start gap-x-1 lg:gap-x-4">
+			<div className="flex min-w-44 flex-row items-start gap-x-1 lg:gap-x-3.5">
 				<img
 					src={getKeyImageUrl(fileName)}
 					alt={fileName}
-					className="h-10 w-10"
+					className="h-11 w-11"
 				/>
 				<div className="flex flex-col">
-					<span className="text-sm font-medium text-gray-800">
+					<span className="text-base font-semibold text-band-900">
 						{title}
 					</span>
-					<span className="text-xs font-normal text-gray-700">
+					<span className="text-sm font-normal text-gray-800">
 						{description}
 					</span>
 				</div>

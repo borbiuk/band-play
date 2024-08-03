@@ -67,7 +67,10 @@ export class CollectionPageService
 	}
 
 	tryAutoplay(): void {
-		const progress = this.getPlayingTrackProgress();
+		const progress = this.audioOperator<number>((audio) => {
+			return (audio.currentTime / audio.duration) * 100;
+		});
+
 		if (exist(progress) && progress >= 99.5) {
 			this.playNextTrack(true);
 		}
@@ -146,13 +149,6 @@ export class CollectionPageService
 			.querySelector('div[data-collect-item]')
 			?.getAttribute('data-collect-item')
 			?.substring(1);
-	}
-
-	private getPlayingTrackProgress(): number {
-		const left =
-			document.querySelector<HTMLElement>('div.seek-control')?.style
-				?.left;
-		return notExist(left) ? null : parseFloat(left);
 	}
 
 	private getNextTrack(next: boolean): TrackModel {

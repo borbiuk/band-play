@@ -1,14 +1,14 @@
-import { MessageCode } from '../shared/enums/message-code';
-import { PageService } from '../shared/interfaces/page-service';
-import { ConfigModel } from '../shared/models/config-model';
-import { MessageModel } from '../shared/models/message-model';
-import { ConfigService } from '../shared/services/config-service';
-import { MessageService } from '../shared/services/message-service';
-import { exist, notExist } from '../shared/utils/utils.common';
-import { AlbumPageService } from './page-services/album-page-service';
-import { CollectionPageService } from './page-services/collection-page-service';
-import { DiscoverPageService } from './page-services/discover-page-service';
-import { FeedPageService } from './page-services/feed-page-service';
+import { MessageCode } from '../../shared/enums/message-code';
+import { PageService } from '../../shared/interfaces/page-service';
+import { ConfigModel } from '../../shared/models/config-model';
+import { MessageModel } from '../../shared/models/message-model';
+import { ConfigService } from '../../shared/services/config-service';
+import { MessageService } from '../../shared/services/message-service';
+import { exist, notExist } from '../../shared/utils/utils.common';
+import { AlbumPageService } from '../page-services/album-page-service';
+import { CollectionPageService } from '../page-services/collection-page-service';
+import { DiscoverPageService } from '../page-services/discover-page-service';
+import { FeedPageService } from '../page-services/feed-page-service';
 
 export class PageServiceWorker {
 	private readonly autoplayDelay: number = 300;

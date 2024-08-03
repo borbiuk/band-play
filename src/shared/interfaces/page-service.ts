@@ -3,7 +3,7 @@ import { TrackModel } from '../models/track-model';
 import { PlaybackControl } from './playback-control';
 import { PlaylistControl } from './playlist-control';
 
-export interface PageService extends PlaylistControl, PlaybackControl {
+export interface PageService extends PlaybackControl, PlaylistControl {
 	// Service config.
 	config: ConfigModel;
 

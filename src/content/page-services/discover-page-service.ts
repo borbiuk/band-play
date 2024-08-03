@@ -68,7 +68,10 @@ export class DiscoverPageService
 	}
 
 	tryAutoplay(): void {
-		const progress = this.getPlayingTrackProgress();
+		const progress = this.audioOperator<number>((audio) => {
+			return (audio.currentTime / audio.duration) * 100;
+		});
+
 		if (exist(progress) && progress >= 99.5) {
 			this.playNextTrack(true);
 		}
@@ -78,21 +81,5 @@ export class DiscoverPageService
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
 		this.createNewTab(itemUrl);
-	}
-
-	private getPlayingTrackProgress(): number {
-		// Retrieve the time strings
-		const positionStr = document.querySelector(
-			'.playback-time.current'
-		)?.textContent;
-		const durationStr = document.querySelector(
-			'.playback-time.total'
-		)?.textContent;
-
-		// Convert time strings to seconds
-		const positionInSeconds = convertTimeStringToSeconds(positionStr);
-		const durationInSeconds = convertTimeStringToSeconds(durationStr);
-
-		return (positionInSeconds / durationInSeconds) * 100;
 	}
 }

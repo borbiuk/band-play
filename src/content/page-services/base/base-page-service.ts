@@ -1,9 +1,10 @@
 import { MessageCode } from '../../../shared/enums/message-code';
+import { PlaybackSpeedAction } from '../../../shared/enums/playback-speed-action';
 import { PageService } from '../../../shared/interfaces/page-service';
 import { ConfigModel } from '../../../shared/models/config-model';
 import { TrackModel } from '../../../shared/models/track-model';
 import { MessageService } from '../../../shared/services/message-service';
-import { notExist } from '../../../shared/utils/utils.common';
+import { exist, notExist } from '../../../shared/utils/utils.common';
 
 export abstract class BasePageService implements PageService {
 	config: ConfigModel;
@@ -15,6 +16,14 @@ export abstract class BasePageService implements PageService {
 		return false;
 	}
 
+	initTracks(): void {}
+
+	tryAutoplay(): void {}
+
+	open(): void {}
+
+	addToWishlist(): void {}
+
 	playPause(): void {
 		this.audioOperator<void>((audio) => {
 			if (audio.paused) {
@@ -25,9 +34,11 @@ export abstract class BasePageService implements PageService {
 		});
 	}
 
-	playNextTrack(next: boolean): void {}
-
-	initTracks(): void {}
+	setPlayback(percentage: number): void {
+		this.audioOperator<void>((audio) => {
+			audio.currentTime = (percentage / 100) * audio.duration;
+		});
+	}
 
 	movePlayback(forward: boolean): void {
 		this.audioOperator<void>((audio) => {
@@ -47,19 +58,27 @@ export abstract class BasePageService implements PageService {
 		});
 	}
 
-	playTrackByIndex(index: number): void {}
-
-	setPlayback(percentage: number): void {
-		this.audioOperator<void>((audio) => {
-			audio.currentTime = (percentage / 100) * audio.duration;
+	speedPlayback(code: PlaybackSpeedAction): void {
+		this.audioOperator((audio) => {
+			if (code === PlaybackSpeedAction.Reset) {
+				audio.playbackRate = 1;
+			} else if (
+				code === PlaybackSpeedAction.Increase &&
+				audio.playbackRate < 1.4
+			) {
+				audio.playbackRate += 0.0303;
+			} else if (
+				code === PlaybackSpeedAction.Decrease &&
+				audio.playbackRate > 0.4
+			) {
+				audio.playbackRate -= 0.0303;
+			}
 		});
 	}
 
-	tryAutoplay(): void {}
+	playNextTrack(next: boolean): void {}
 
-	open(): void {}
-
-	addToWishlist(): void {}
+	playTrackByIndex(index: number): void {}
 
 	protected getTrackIndex(trackId: string) {
 		return this.tracks.findIndex(({ id }: TrackModel) => id === trackId);
@@ -81,11 +100,12 @@ export abstract class BasePageService implements PageService {
 	}
 
 	protected audioOperator<TResult>(
-		operator: (_: HTMLAudioElement) => TResult
+		operator: (audio: HTMLAudioElement) => TResult,
+		notFoundHandler?: () => TResult
 	): TResult {
 		const audio: HTMLAudioElement = document.querySelector('audio');
 		if (notExist(audio)) {
-			return undefined;
+			return exist(notFoundHandler) ? notFoundHandler() : undefined;
 		}
 
 		return operator(audio);

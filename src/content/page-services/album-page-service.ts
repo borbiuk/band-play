@@ -13,6 +13,10 @@ export class AlbumPageService extends BasePageService implements PageService {
 		return url.includes('/album/') || url.includes('/track/');
 	}
 
+	playPause(): void {
+		document.querySelector<HTMLElement>('.playbutton')?.click();
+	}
+
 	playNextTrack(next: boolean): void {
 		if (next) {
 			document.querySelector<HTMLElement>('.nextbutton').click();
