@@ -25,12 +25,16 @@ export class CollectionPageService
 	}
 
 	playPause(): void {
-		if (notExist(this.getNowPlayingTrackId())) {
-			this.playTrackByIndex(0);
-			return;
-		}
-
-		super.playPause();
+		this.audioOperator<void>(
+			(audio) => {
+				if (audio.paused) {
+					audio.play();
+				} else {
+					audio.pause();
+				}
+			},
+			() => this.playTrackByIndex(0)
+		);
 	}
 
 	playNextTrack(next: boolean): boolean {

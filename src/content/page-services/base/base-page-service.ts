@@ -104,7 +104,7 @@ export abstract class BasePageService implements PageService {
 		notFoundHandler?: () => TResult
 	): TResult {
 		const audio: HTMLAudioElement = document.querySelector('audio');
-		if (notExist(audio)) {
+		if (notExist(audio?.src)) {
 			return exist(notFoundHandler) ? notFoundHandler() : undefined;
 		}
 

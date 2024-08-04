@@ -14,7 +14,16 @@ export class AlbumPageService extends BasePageService implements PageService {
 	}
 
 	playPause(): void {
-		document.querySelector<HTMLElement>('.playbutton')?.click();
+		this.audioOperator<void>(
+			(audio) => {
+				if (audio.paused) {
+					audio.play();
+				} else {
+					audio.pause();
+				}
+			},
+			() => document.querySelector<HTMLElement>('.playbutton')?.click()
+		);
 	}
 
 	playNextTrack(next: boolean): void {
