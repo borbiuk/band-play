@@ -1,4 +1,5 @@
 import { MessageCode } from '../../../shared/enums/message-code';
+import { PlaybackPitchAction } from '../../../shared/enums/playback-pitch-action';
 import { PlaybackSpeedAction } from '../../../shared/enums/playback-speed-action';
 import { PageService } from '../../../shared/interfaces/page-service';
 import { ConfigModel } from '../../../shared/models/config-model';
@@ -62,17 +63,20 @@ export abstract class BasePageService implements PageService {
 		this.audioOperator((audio) => {
 			if (code === PlaybackSpeedAction.Reset) {
 				audio.playbackRate = 1;
-			} else if (
-				code === PlaybackSpeedAction.Increase &&
-				audio.playbackRate < 1.4
-			) {
-				audio.playbackRate += 0.0303;
-			} else if (
-				code === PlaybackSpeedAction.Decrease &&
-				audio.playbackRate > 0.4
-			) {
-				audio.playbackRate -= 0.0303;
+			} else if (code === PlaybackSpeedAction.Increase) {
+				audio.playbackRate += 0.01;
+			} else if (code === PlaybackSpeedAction.Decrease) {
+				audio.playbackRate -= 0.01;
 			}
+		});
+	}
+
+	switchPreservesPitch(code: PlaybackPitchAction): void {
+		this.audioOperator((audio) => {
+			audio.preservesPitch =
+				code === PlaybackPitchAction.Switch
+					? !audio.preservesPitch
+					: false;
 		});
 	}
 

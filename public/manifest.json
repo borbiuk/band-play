@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "5.1.1",
-	"description": "Automation of work with Bandcamp: autoplay, control by hotkeys and etc.",
+	"version": "5.1.2",
+	"description": "Automation of work with Bandcamp: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
 	"permissions": ["tabs", "storage", "power"],
 	"background": {
@@ -33,18 +33,19 @@
 	"web_accessible_resources": [
 		{
 			"resources": [
-				"assets/logo-128.png",
 				"assets/close.png",
 				"assets/keys/key-0.png",
 				"assets/keys/key-9.png",
 				"assets/keys/key-B.png",
+				"assets/keys/key-down.png",
+				"assets/keys/key-L.png",
+				"assets/keys/key-left.png",
 				"assets/keys/key-N.png",
 				"assets/keys/key-O.png",
-				"assets/keys/key-L.png",
-				"assets/keys/key-up.png",
-				"assets/keys/key-down.png",
+				"assets/keys/key-P.png",
 				"assets/keys/key-right.png",
-				"assets/keys/key-left.png"
+				"assets/keys/key-up.png",
+				"assets/logo-128.png"
 			],
 			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"]
 		}

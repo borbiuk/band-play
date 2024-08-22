@@ -1,4 +1,5 @@
 import { KeyCode } from '../../shared/enums/key-code';
+import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PlaybackSpeedAction } from '../../shared/enums/playback-speed-action';
 import { PageService } from '../../shared/interfaces/page-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
@@ -11,23 +12,23 @@ type KeyHandler = {
 
 export class UserInputService {
 	private readonly hotKeyHandlers: KeyHandler = {
-		[KeyCode.Space]: (service: PageService) => service.playPause(),
-		[KeyCode.KeyN]: (service: PageService) => service.playNextTrack(true),
-		[KeyCode.KeyB]: (service: PageService) => service.playNextTrack(false),
-		[KeyCode.KeyL]: (service: PageService) => service.addToWishlist(),
-		[KeyCode.KeyO]: (service: PageService) => service.open(),
 		[KeyCode.ArrowUp]: (service: PageService) =>
 			service.speedPlayback(PlaybackSpeedAction.Increase),
 		[KeyCode.ArrowDown]: (service: PageService) =>
 			service.speedPlayback(PlaybackSpeedAction.Decrease),
-		[KeyCode.ArrowRight]: (service: PageService) =>
-			service.movePlayback(true),
 		[KeyCode.ArrowLeft]: (service: PageService) =>
 			service.movePlayback(false),
-		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) => {
-			const percentage = parseDigitCode(event) * 10;
-			service.setPlayback(percentage);
-		},
+		[KeyCode.ArrowRight]: (service: PageService) =>
+			service.movePlayback(true),
+		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) =>
+			service.setPlayback(parseDigitCode(event) * 10),
+		[KeyCode.KeyB]: (service: PageService) => service.playNextTrack(false),
+		[KeyCode.KeyL]: (service: PageService) => service.addToWishlist(),
+		[KeyCode.KeyN]: (service: PageService) => service.playNextTrack(true),
+		[KeyCode.KeyO]: (service: PageService) => service.open(),
+		[KeyCode.KeyP]: (service: PageService) =>
+			service.switchPreservesPitch(PlaybackPitchAction.Switch),
+		[KeyCode.Space]: (service: PageService) => service.playPause(),
 	};
 
 	private readonly shiftHotKeyHandlers: KeyHandler = {
@@ -35,12 +36,10 @@ export class UserInputService {
 			service.speedPlayback(PlaybackSpeedAction.Reset),
 		[KeyCode.ArrowDown]: (service: PageService) =>
 			service.speedPlayback(PlaybackSpeedAction.Reset),
-		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) => {
-			const index = parseDigitCode(event) - 1;
-			if (index >= 0) {
-				service.playTrackByIndex(index);
-			}
-		},
+		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) =>
+			service.playTrackByIndex(parseDigitCode(event) - 1),
+		[KeyCode.KeyP]: (service: PageService) =>
+			service.switchPreservesPitch(PlaybackPitchAction.Reset),
 	};
 
 	constructor() {}
