@@ -113,23 +113,13 @@ export const Guide = () => {
 								fileName="key-0.png"
 								title="Start from Begin"
 								description="Initiate playback of the current track from the beginning"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 							<Hotkey
 								fileName="key-9.png"
 								title="Start from 90%"
 								description="Begin playback from the 90% mark of the total track time. Use any digit key from 0 to 9 for different percentages"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 
 							{/* Move Playback */}
@@ -137,23 +127,13 @@ export const Guide = () => {
 								fileName="key-right.png"
 								title="Fast Forward"
 								description="Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 							<Hotkey
 								fileName="key-left.png"
 								title="Rewind"
 								description="Rewind the track by the specified 'Playback step' seconds (click on the extension icon)"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 
 							{/* Playback Speed */}
@@ -161,23 +141,13 @@ export const Guide = () => {
 								fileName="key-up.png"
 								title="Increase Speed"
 								description="Increase the speed of the playback rate"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 							<Hotkey
 								fileName="key-down.png"
 								title="Decrease Speed"
 								description="Decrease the speed of the playback rate"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 
 							{/* Preserve Pitch */}
@@ -185,12 +155,7 @@ export const Guide = () => {
 								fileName="key-P.png"
 								title="Switch Pitch Preserving"
 								description="Switch the pitch adjustmed of the audio to compensate for changes to the playback rate"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
+								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 						</div>
 
@@ -215,7 +180,12 @@ export const Guide = () => {
 								fileName="key-L.png"
 								title="Add/Remove from Wishlist"
 								description="Add or remove an album from your wishlist, or a track if you are on an album pagee"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
+								pages={[
+									Page.Collection,
+									Page.Album,
+									Page.Feed,
+									Page.Discover,
+								]}
 							/>
 						</div>
 					</div>

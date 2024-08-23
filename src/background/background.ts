@@ -32,6 +32,14 @@ const registerUrlChange = () =>
 		messageService
 			.sendToContent(tabId, { code: MessageCode.UrlChanged })
 			.catch((e) => {
+				// skip error
+				if (
+					e.message ===
+					'Could not establish connection. Receiving end does not exist.'
+				) {
+					return;
+				}
+
 				console.error(e);
 			});
 	});

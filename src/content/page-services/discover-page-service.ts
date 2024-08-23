@@ -1,3 +1,4 @@
+import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PageService } from '../../shared/interfaces/page-service';
 import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
@@ -17,10 +18,19 @@ export class DiscoverPageService
 		return url.includes('/discover');
 	}
 
-	playNextTrack(next: boolean): void {
-		const current = document.querySelector(
-			'.swipe-carousel div button[aria-label="Pause"]'
-		).parentElement.parentElement.id;
+	override playPause() {
+		const button = document.querySelector<HTMLButtonElement>(
+			'.player-top > button.play-pause-button'
+		);
+		button?.click();
+	}
+
+	override playNextTrack(next: boolean): void {
+		const current = document
+			.querySelector('[aria-label="Pause"]')
+			.parentElement.parentElement.parentElement.getAttribute(
+				'data-test'
+			);
 		if (notExist(current)) {
 			return;
 		}
@@ -34,9 +44,10 @@ export class DiscoverPageService
 			return;
 		}
 
-		const nextTrackPlayButton = this.tracks[
-			nowPlayingIndex + (next ? 1 : -1)
-		].element.querySelector<HTMLElement>('div button[aria-label="Play"]');
+		const nextTrackPlayButton =
+			this.tracks[
+				nowPlayingIndex + (next ? 1 : -1)
+			].element.querySelector<HTMLButtonElement>('.play-pause-button');
 		nextTrackPlayButton.click();
 
 		if (this.config.autoscroll) {
@@ -47,39 +58,61 @@ export class DiscoverPageService
 		}
 	}
 
-	playTrackByIndex(index: number): void {
+	override playTrackByIndex(index: number): void {
 		if (index >= 0 && index < this.tracks.length) {
 			this.tracks[index].element
-				.querySelector<HTMLElement>('div button[aria-label="Play"]')
+				.querySelector<HTMLButtonElement>('.play-pause-button')
 				.click();
 		}
 	}
 
-	initTracks(): void {
-		const list = document.querySelectorAll('.swipe-carousel');
+	override initTracks(): void {
+		const list = document.querySelectorAll('.results-grid-item');
 		if (notExist(list) || list.length === this.tracks.length) {
 			return;
 		}
 
 		this.tracks = Array.from(list).map((x) => ({
-			id: x.id,
+			id: x.getAttribute('data-test'),
 			element: x,
 		}));
 	}
 
-	tryAutoplay(): void {
-		const progress = this.audioOperator<number>((audio) => {
-			return (audio.currentTime / audio.duration) * 100;
-		});
+	override tryAutoplay(): void {
+		const progress = this.getPlayingTrackProgress();
 
 		if (exist(progress) && progress >= 99.5) {
 			this.playNextTrack(true);
 		}
 	}
 
-	open(): void {
+	override open(): void {
 		const itemUrl =
-			document.querySelector<HTMLAnchorElement>('.go-to-album')?.href;
+			document.querySelector<HTMLAnchorElement>('.buy-button')?.href;
 		this.createNewTab(itemUrl);
+	}
+
+	override addToWishlist(): void {
+		document.querySelector<HTMLButtonElement>('.wishlist-button')?.click();
+	}
+
+	override switchPreservesPitch(_: PlaybackPitchAction): void {
+		return;
+	}
+
+	private getPlayingTrackProgress(): number {
+		// Retrieve the time strings
+		const positionStr = document.querySelector(
+			'.playback-time.current'
+		)?.textContent;
+		const durationStr = document.querySelector(
+			'.playback-time.total'
+		)?.textContent;
+
+		// Convert time strings to seconds
+		const positionInSeconds = convertTimeStringToSeconds(positionStr);
+		const durationInSeconds = convertTimeStringToSeconds(durationStr);
+
+		return (positionInSeconds / durationInSeconds) * 100;
 	}
 }
