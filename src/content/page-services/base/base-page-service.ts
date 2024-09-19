@@ -37,7 +37,9 @@ export abstract class BasePageService implements PageService {
 
 	setPlayback(percentage: number): void {
 		this.audioOperator<void>((audio) => {
-			audio.currentTime = (percentage / 100) * audio.duration;
+			if (!isFinite(audio.duration)) {
+				audio.currentTime = (percentage / 100) * audio.duration;
+			}
 		});
 	}
 

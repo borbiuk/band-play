@@ -45,7 +45,7 @@ export const Footer = () => {
 			<Button
 				onClick={openExtensionPage}
 				text="Rate extension"
-				icon="./../assets/rate.png"
+				icon="./../assets/rate.svg"
 			/>
 			<Button
 				onClick={openMyBandcamp}
@@ -55,7 +55,7 @@ export const Footer = () => {
 			<Button
 				onClick={showGuide}
 				text="Show Guide"
-				icon="./../assets/guide.png"
+				icon="./../assets/guide.svg"
 			/>
 		</div>
 	);

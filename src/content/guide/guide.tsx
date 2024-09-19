@@ -44,7 +44,7 @@ export const Guide = () => {
 
 	return (
 		<div className={isDisplayed ? '' : 'hidden'}>
-			<div className="flex-0 max-w-svw fixed left-1/2 top-1/2 z-[999] m-4 flex max-h-[90vh] -translate-x-1/2 -translate-y-1/2 scale-90 transform select-none flex-col overflow-auto rounded-xl bg-white/50 shadow-2xl shadow-gray-800">
+			<div className="flex-0 max-w-svw fixed left-1/3 top-1/2 z-[999] m-4 flex max-h-[90vh] -translate-x-1/3 -translate-y-1/2 scale-90 transform select-none flex-col overflow-auto rounded-xl bg-white/50 shadow-2xl shadow-gray-800">
 				<div className="z-10 flex flex-col">
 					{/* Header */}
 					<div className="flex w-full flex-col items-center pb-1.5 pt-2.5 xl:pb-2.5 xl:pt-4">
@@ -57,11 +57,11 @@ export const Guide = () => {
 
 					{/* Close Button */}
 					<button
-						className="absolute right-1.5 top-1.5 h-7 w-7 rounded-xl border-0 duration-200 hover:scale-110 hover:cursor-pointer"
+						className="absolute right-3 top-3 h-7 w-7 rounded-xl border-0 duration-200 hover:scale-110 hover:cursor-pointer"
 						onClick={close}
 					>
 						<img
-							src={getSourceUrl('./assets/close.png')}
+							src={getSourceUrl('./assets/close.svg')}
 							alt="close guide"
 						/>
 					</button>
@@ -79,20 +79,12 @@ export const Guide = () => {
 							</span>
 
 							<Hotkey
-								fileName="key-N.png"
-								title="Next Track"
-								description="Play the next track"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
+								icons={[
+									{ icon: 'key-N.svg' },
+									{ icon: 'key-B.svg' },
 								]}
-							/>
-							<Hotkey
-								fileName="key-B.png"
-								title="Previous Track"
-								description="Play the previous track"
+								title="Next / Previous Track"
+								description="Play the next or previous track"
 								pages={[
 									Page.Collection,
 									Page.Album,
@@ -110,53 +102,81 @@ export const Guide = () => {
 
 							{/* Set Playback */}
 							<Hotkey
-								fileName="key-0.png"
-								title="Start from Begin"
-								description="Initiate playback of the current track from the beginning"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
-							/>
-							<Hotkey
-								fileName="key-9.png"
-								title="Start from 90%"
-								description="Begin playback from the 90% mark of the total track time. Use any digit key from 0 to 9 for different percentages"
+								icons={[
+									{ icon: 'key-0.svg' },
+									{ icon: 'key-9.svg' },
+								]}
+								title="Start from %"
+								description="Initiate playback of the current track from (Number x 10)%"
 								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 
 							{/* Move Playback */}
 							<Hotkey
-								fileName="key-right.png"
-								title="Fast Forward"
-								description="Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
-							/>
-							<Hotkey
-								fileName="key-left.png"
-								title="Rewind"
-								description="Rewind the track by the specified 'Playback step' seconds (click on the extension icon)"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
-							/>
-
-							{/* Playback Speed */}
-							<Hotkey
-								fileName="key-up.png"
-								title="Increase Speed"
-								description="Increase the speed of the playback rate"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
-							/>
-							<Hotkey
-								fileName="key-down.png"
-								title="Decrease Speed"
-								description="Decrease the speed of the playback rate"
+								icons={[
+									{ icon: 'key-left.svg' },
+									{ icon: 'key-right.svg' },
+								]}
+								title="Rewind / Fast Forward"
+								description="Rewind or Fast forward the track by the designated 'Playback step' seconds (click on the extension icon)"
 								pages={[Page.Collection, Page.Album, Page.Feed]}
 							/>
 
 							{/* Preserve Pitch */}
-							<Hotkey
-								fileName="key-P.png"
-								title="Switch Pitch Preserving"
-								description="Switch the pitch adjustmed of the audio to compensate for changes to the playback rate"
-								pages={[Page.Collection, Page.Album, Page.Feed]}
-							/>
+							<div className="flex flex-row gap-x-4">
+								<Hotkey
+									icons={[
+										{ icon: 'key-up.svg' },
+										{ icon: 'key-down.svg' },
+									]}
+									title="Increase / Decrease Speed"
+									description="Increase or Decrease the speed of the playback rate"
+								/>
+
+								<Hotkey
+									icons={[
+										{
+											icon: 'key-Shift.svg',
+											delimiter: '+',
+										},
+										{ icon: 'key-up.svg' },
+										{ icon: 'key-down.svg' },
+									]}
+									title="Reset Track Speed"
+									description="Reset the speed of the playback rate to default"
+									pages={[
+										Page.Collection,
+										Page.Album,
+										Page.Feed,
+									]}
+								/>
+							</div>
+
+							{/* Preserve Pitch */}
+							<div className="flex flex-row gap-x-4">
+								<Hotkey
+									icons={[{ icon: 'key-P.svg' }]}
+									title="Switch Pitch Preserving"
+									description="Switch the pitch adjustmed of the audio to compensate for changes to the playback rate"
+								/>
+
+								<Hotkey
+									icons={[
+										{
+											icon: 'key-Shift.svg',
+											delimiter: '+',
+										},
+										{ icon: 'key-P.svg' },
+									]}
+									title="Reset Pitch Preserving"
+									description="Turn off the pitch adjustmed"
+									pages={[
+										Page.Collection,
+										Page.Album,
+										Page.Feed,
+									]}
+								/>
+							</div>
 						</div>
 
 						{/* Other */}
@@ -165,28 +185,24 @@ export const Guide = () => {
 								Utilities
 							</span>
 
-							<Hotkey
-								fileName="key-O.png"
-								title="Open in New Tab"
-								description="Press 'O' to open the current track or album in a new browser tab for later listening"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
-							/>
-							<Hotkey
-								fileName="key-L.png"
-								title="Add/Remove from Wishlist"
-								description="Add or remove an album from your wishlist, or a track if you are on an album pagee"
-								pages={[
-									Page.Collection,
-									Page.Album,
-									Page.Feed,
-									Page.Discover,
-								]}
-							/>
+							<div className="flex flex-row gap-x-4">
+								<Hotkey
+									icons={[{ icon: 'key-O.svg' }]}
+									title="Open in New Tab"
+									description="Open the current track or album in a new browser tab for later listening"
+								/>
+								<Hotkey
+									icons={[{ icon: 'key-L.svg' }]}
+									title="Add/Remove from Wishlist"
+									description="Add or remove an album from your wishlist, or a track if you are on an album pagee"
+									pages={[
+										Page.Collection,
+										Page.Album,
+										Page.Feed,
+										Page.Discover,
+									]}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
