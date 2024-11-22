@@ -15,11 +15,11 @@ const messageService = new MessageService();
 
 // setup code services:
 const serviceWorker = new PageServiceWorker(configService, messageService);
-const userInputService = new UserInputService(configService, serviceWorker);
+const userInputService = new UserInputService(configService);
 
 // run core services:
 serviceWorker.start();
-userInputService.start();
+userInputService.start(serviceWorker);
 
 // add Guide to the DOM
 initGuide();

@@ -10,21 +10,18 @@ import { ShortcutType } from '../shortcut/shortcut-type';
 import { PageServiceWorker } from './page-service-worker';
 
 export class UserInputService {
-	private readonly pageService: PageService;
+	constructor(private readonly configService: ConfigService) {}
 
-	constructor(
-		private readonly configService: ConfigService,
-		private serviceWorker: PageServiceWorker
-	) {
-		this.pageService = serviceWorker.pageService;
-	}
+	public start(serviceWorker: PageServiceWorker): void {
+		this.listenHotkeys(serviceWorker);
+		this.listenNavigator(serviceWorker);
 
-	public start(): void {
-		this.listenHotkeys();
-		this.listenNavigator();
+		const updateShortcutHandlers = (x: ConfigModel) => {
+			this.updateShortcutHandlers(x);
+		};
 
-		this.configService.getAll().then(this.updateShortcutHandlers);
-		this.configService.addListener(this.updateShortcutHandlers);
+		this.configService.getAll().then(updateShortcutHandlers);
+		this.configService.addListener(updateShortcutHandlers);
 	}
 
 	private updateShortcutHandlers(newConfig: ConfigModel) {
@@ -40,7 +37,7 @@ export class UserInputService {
 		});
 	}
 
-	private listenHotkeys(): void {
+	private listenHotkeys(serviceWorker: PageServiceWorker): void {
 		const keysPressed = new ShortcutSet();
 		document.addEventListener('keydown', (event: KeyboardEvent) => {
 			keysPressed.add(event.code);
@@ -63,13 +60,14 @@ export class UserInputService {
 				return;
 			}
 
-			this.handleShortcut(keysPressed, event);
+			this.handleShortcut(serviceWorker, keysPressed, event);
 
 			keysPressed.clear();
 		});
 	}
 
 	private handleShortcut(
+		serviceWorker: PageServiceWorker,
 		keysPressed: ShortcutSet,
 		event: KeyboardEvent
 	): void {
@@ -81,7 +79,7 @@ export class UserInputService {
 		}
 
 		event.preventDefault();
-		shortcut.handle(this.pageService, keysPressed);
+		shortcut.handle(serviceWorker.pageService, keysPressed);
 	}
 
 	private shortcutHandlers: ShortcutHandler[] = [
@@ -151,8 +149,8 @@ export class UserInputService {
 		),
 	];
 
-	private listenNavigator(): void {
-		const pageService: PageService = this.pageService;
+	private listenNavigator(serviceWorker: PageServiceWorker): void {
+		const pageService: PageService = serviceWorker.pageService;
 
 		navigator.mediaSession.setActionHandler('play', () => {
 			pageService.playPause();
