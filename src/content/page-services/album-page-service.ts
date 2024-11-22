@@ -50,13 +50,13 @@ export class AlbumPageService extends BasePageService implements PageService {
 		playButtons[index].querySelector('div').click();
 	}
 
-	open(): void {
+	open(active: boolean): void {
 		const itemUrl = document
 			.querySelector('.current_track .title')
 			?.querySelector('a')
 			?.getAttribute('href');
 		if (exist(itemUrl)) {
-			this.createNewTab(window.location.origin + itemUrl);
+			this.createNewTab(window.location.origin + itemUrl, active);
 		}
 	}
 

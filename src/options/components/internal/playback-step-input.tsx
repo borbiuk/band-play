@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-export interface NumberInputOptions {
+export interface PlaybackStepInputOptions {
 	// The unique identifier for the input.
 	id: string;
-
-	// The label for the input.
-	label: string;
 
 	// The default value for the input.
 	defaultValue: number;
@@ -26,17 +23,16 @@ export interface NumberInputOptions {
 /**
  * NumberInput component for handling numeric input with increment and decrement buttons.
  *
- * @param {NumberInputOptions} options - The options of component.
+ * @param {PlaybackStepInputOptions} options - The options of component.
  */
-export const NumberInput = ({
+export const PlaybackStepInput = ({
 	id,
-	label,
 	defaultValue,
 	min,
 	max,
 	suffix,
 	onChange,
-}: NumberInputOptions) => {
+}: PlaybackStepInputOptions) => {
 	const [value, setValue] = useState(defaultValue);
 
 	useEffect(() => {
@@ -58,23 +54,31 @@ export const NumberInput = ({
 		}
 	};
 
-	const handleDecrement = () => setValue(Math.max(min, value - 5));
+	const round = (value: number, direction: 'increment' | 'decrement') => {
+		const remainder = value % 5;
 
-	const handleIncrement = () => setValue(Math.min(max, value + 5));
+		if (remainder === 0) {
+			return value + (direction === 'increment' ? 5 : -5);
+		}
+
+		return direction === 'increment'
+			? value + (5 - remainder)
+			: value - remainder;
+	};
+
+	const handleIncrement = () =>
+		setValue(Math.min(max, round(value, 'increment')));
+	const handleDecrement = () =>
+		setValue(Math.max(min, round(value, 'decrement')));
 
 	return (
 		<div className="w-full">
-			<label
-				htmlFor={`${id}-number-input`}
-				className="-ml-0.5 mb-1 block cursor-pointer pl-7 text-sm text-gray-900"
-			>
-				{label}
-			</label>
 			<div className="relative flex items-center">
+				{/* Decrement button */}
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="h-8 rounded-s-lg border border-band-200 bg-band-200 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-7 rounded-s-lg border border-band-200 bg-band-200 p-1.5 pb-0 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleDecrement}
 				>
 					<svg
@@ -82,12 +86,14 @@ export const NumberInput = ({
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
-						viewBox="0 0 18 2"
+						viewBox="0 0 18 9"
 					>
 						<path stroke="currentColor" d="M1 1h16" />
 					</svg>
 				</button>
-				<div className="relative h-8 w-full">
+
+				{/* Input */}
+				<div className="relative h-7 w-full">
 					<input
 						type="number"
 						id={`${id}-number-input`}
@@ -104,10 +110,11 @@ export const NumberInput = ({
 					</span>
 				</div>
 
+				{/* Increment button */}
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="h-8 rounded-e-lg border border-band-200 bg-band-200 p-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-7 rounded-e-lg border border-band-200 bg-band-200 p-1.5 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleIncrement}
 				>
 					<svg

@@ -3,11 +3,12 @@ export enum KeyCode {
 	ArrowLeft = 'ArrowLeft',
 	ArrowRight = 'ArrowRight',
 	ArrowUp = 'ArrowUp',
-	Digit = 'Digit',
+	Digit = '1',
 	KeyB = 'KeyB',
 	KeyL = 'KeyL',
 	KeyN = 'KeyN',
 	KeyO = 'KeyO',
 	KeyP = 'KeyP',
 	Space = 'Space',
+	Shift = 'Shift',
 }

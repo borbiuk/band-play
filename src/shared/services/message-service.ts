@@ -1,4 +1,4 @@
-import { MessageModel } from '../models/message-model';
+import { MessageModel } from '../models/messages/message-model';
 import { notExist } from '../utils/utils.common';
 
 /**

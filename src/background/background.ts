@@ -1,5 +1,7 @@
 import { MessageCode } from '../shared/enums/message-code';
 import { ConfigModel } from '../shared/models/config-model';
+import { MessageModel } from '../shared/models/messages/message-model';
+import { NewTabMessage } from '../shared/models/messages/new-tab-message';
 import { ConfigService } from '../shared/services/config-service';
 import { MessageService } from '../shared/services/message-service';
 import { notExist } from '../shared/utils/utils.common';
@@ -46,14 +48,21 @@ const registerUrlChange = () =>
 
 // Subscribe on messages.
 const registerMessagesHandling = () =>
-	messageService.addListener((message) => {
-		// Open new tab without focus on it
-		if (message?.code === MessageCode.CreateNewTab) {
-			chrome.tabs
-				.create({ url: String(message.data), active: false })
-				.catch((e) => {
+	messageService.addListener((message: MessageModel<NewTabMessage>) => {
+		if (notExist(message?.code)) {
+			return;
+		}
+
+		const { code } = message;
+
+		switch (code) {
+			// Open new tab
+			case MessageCode.CreateNewTab:
+				const { url, active } = message.data as NewTabMessage;
+				chrome.tabs.create({ url: String(url), active }).catch((e) => {
 					console.error(e);
 				});
+				break;
 		}
 	});
 

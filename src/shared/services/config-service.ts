@@ -1,4 +1,6 @@
-import { ConfigModel } from '../models/config-model';
+import { ShortcutType } from '../../content/shortcut/shortcut-type';
+import { KeyCode } from '../enums/key-code';
+import { ConfigModel, ShortcutConfig } from '../models/config-model';
 import { exist } from '../utils/utils.common';
 
 /**
@@ -52,9 +54,9 @@ export class ConfigService {
 			'autoplay',
 			'autoscroll',
 			'keepAwake',
-			'playFirst',
 			'playbackStep',
 			'showGuide',
+			'shortcuts',
 		])) as ConfigModel;
 
 		return this.getWithDefaults(config);
@@ -77,9 +79,9 @@ export class ConfigService {
 			keepAwake: exist(config.keepAwake)
 				? Boolean(config.keepAwake)
 				: true,
-			playFirst: Boolean(config.playFirst),
 			playbackStep: Number(config.playbackStep),
 			showGuide: Boolean(config.showGuide),
+			shortcuts: this.mergeShortcuts(config.shortcuts),
 		};
 
 		if (isNaN(config.playbackStep)) {
@@ -87,5 +89,55 @@ export class ConfigService {
 		}
 
 		return config;
+	}
+
+	private mergeShortcuts(shortcuts: ShortcutConfig): ShortcutConfig {
+		const defaultShortcuts = this.defaultShortcuts();
+
+		if (exist(shortcuts)) {
+			Object.keys(shortcuts)
+				.filter(
+					(key) =>
+						exist(shortcuts[key]) &&
+						(JSON.parse(shortcuts[key]) as string[]).length > 0
+				)
+				.forEach((key) => {
+					defaultShortcuts[key] = shortcuts[key];
+				});
+		}
+
+		return defaultShortcuts;
+	}
+
+	private defaultShortcuts(): ShortcutConfig {
+		const shortcuts = {
+			[ShortcutType.PlaybackSpeedIncrease]: [KeyCode.ArrowUp],
+			[ShortcutType.PlaybackSpeedDecrease]: [KeyCode.ArrowDown],
+			[ShortcutType.PlaybackSpeedReset]: [
+				KeyCode.ArrowDown,
+				KeyCode.Shift,
+			],
+			[ShortcutType.AutoPitchSwitch]: [KeyCode.KeyP],
+			[ShortcutType.AutoPitchReset]: [KeyCode.KeyP, KeyCode.Shift],
+			[ShortcutType.MovePlaybackForward]: [KeyCode.ArrowRight],
+			[ShortcutType.MovePlaybackBackward]: [KeyCode.ArrowLeft],
+			[ShortcutType.SetPlaybackProgress]: [KeyCode.Digit],
+			[ShortcutType.PlayPause]: [KeyCode.Space],
+			[ShortcutType.PreviousTrack]: [KeyCode.KeyB],
+			[ShortcutType.NextTrack]: [KeyCode.KeyN],
+			[ShortcutType.PlayTrackByIndex]: [KeyCode.Digit, KeyCode.Shift],
+			[ShortcutType.OpenInNewTab]: [KeyCode.KeyO],
+			[ShortcutType.OpenInNewTabWithFocus]: [KeyCode.KeyO, KeyCode.Shift],
+			[ShortcutType.AddToWishlist]: [KeyCode.KeyL],
+		};
+
+		const result = {} as ShortcutConfig;
+
+		Object.keys(shortcuts).forEach((key) => {
+			const shortcutType = key as ShortcutType;
+			result[shortcutType] = JSON.stringify(shortcuts[shortcutType]);
+		});
+
+		return result;
 	}
 }

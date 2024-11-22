@@ -1,105 +1,173 @@
-import { KeyCode } from '../../shared/enums/key-code';
 import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PlaybackSpeedAction } from '../../shared/enums/playback-speed-action';
 import { PageService } from '../../shared/interfaces/page-service';
+import { ConfigModel } from '../../shared/models/config-model';
+import { ConfigService } from '../../shared/services/config-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
-import { parseDigitCode } from '../../shared/utils/utils.keyboard-event';
+import { ShortcutHandler } from '../shortcut/shortcut-handler';
+import { ShortcutSet } from '../shortcut/shortcut-set';
+import { ShortcutType } from '../shortcut/shortcut-type';
 import { PageServiceWorker } from './page-service-worker';
 
-type KeyHandler = {
-	[code in KeyCode]?: (service: PageService, event: KeyboardEvent) => void;
-};
-
 export class UserInputService {
-	private readonly hotKeyHandlers: KeyHandler = {
-		[KeyCode.ArrowUp]: (service: PageService) =>
-			service.speedPlayback(PlaybackSpeedAction.Increase),
-		[KeyCode.ArrowDown]: (service: PageService) =>
-			service.speedPlayback(PlaybackSpeedAction.Decrease),
-		[KeyCode.ArrowLeft]: (service: PageService) =>
-			service.movePlayback(false),
-		[KeyCode.ArrowRight]: (service: PageService) =>
-			service.movePlayback(true),
-		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) =>
-			service.setPlayback(parseDigitCode(event) * 10),
-		[KeyCode.KeyB]: (service: PageService) => service.playNextTrack(false),
-		[KeyCode.KeyL]: (service: PageService) => service.addToWishlist(),
-		[KeyCode.KeyN]: (service: PageService) => service.playNextTrack(true),
-		[KeyCode.KeyO]: (service: PageService) => service.open(),
-		[KeyCode.KeyP]: (service: PageService) =>
-			service.switchPreservesPitch(PlaybackPitchAction.Switch),
-		[KeyCode.Space]: (service: PageService) => service.playPause(),
-	};
+	private readonly pageService: PageService;
 
-	private readonly shiftHotKeyHandlers: KeyHandler = {
-		[KeyCode.ArrowUp]: (service: PageService) =>
-			service.speedPlayback(PlaybackSpeedAction.Reset),
-		[KeyCode.ArrowDown]: (service: PageService) =>
-			service.speedPlayback(PlaybackSpeedAction.Reset),
-		[KeyCode.Digit]: (service: PageService, event: KeyboardEvent) =>
-			service.playTrackByIndex(parseDigitCode(event) - 1),
-		[KeyCode.KeyP]: (service: PageService) =>
-			service.switchPreservesPitch(PlaybackPitchAction.Reset),
-	};
-
-	constructor() {}
-
-	public start(serviceWorker: PageServiceWorker): void {
-		this.listenHotkeys(serviceWorker);
-		this.listenNavigator(serviceWorker);
+	constructor(
+		private readonly configService: ConfigService,
+		private serviceWorker: PageServiceWorker
+	) {
+		this.pageService = serviceWorker.pageService;
 	}
 
-	private listenHotkeys(serviceWorker: PageServiceWorker): void {
-		document.addEventListener(
-			'keydown',
-			(event: KeyboardEvent) => {
-				if (notExist(serviceWorker.pageService)) {
-					return true;
-				}
+	public start(): void {
+		this.listenHotkeys();
+		this.listenNavigator();
 
-				const targetName = (event.target as HTMLElement)?.localName;
-				if (
-					['input', 'textarea'].includes(targetName) ||
-					event.ctrlKey ||
-					event.metaKey
-				) {
-					return true;
-				}
+		this.configService.getAll().then(this.updateShortcutHandlers);
+		this.configService.addListener(this.updateShortcutHandlers);
+	}
 
-				const key = event.code.startsWith(KeyCode.Digit)
-					? KeyCode.Digit
-					: event.code;
+	private updateShortcutHandlers(newConfig: ConfigModel) {
+		Object.keys(newConfig.shortcuts).forEach((key) => {
+			const shortcutHandler = this.shortcutHandlers.find(
+				({ type }) => type === key
+			);
+			if (exist(shortcutHandler)) {
+				shortcutHandler.combination = JSON.parse(
+					newConfig.shortcuts[key]
+				);
+			}
+		});
+	}
 
-				const hotKeyHandled = event.shiftKey
-					? this.shiftHotKeyHandlers[key]
-					: this.hotKeyHandlers[key];
+	private listenHotkeys(): void {
+		const keysPressed = new ShortcutSet();
+		document.addEventListener('keydown', (event: KeyboardEvent) => {
+			keysPressed.add(event.code);
 
-				if (exist(hotKeyHandled)) {
-					event.preventDefault();
-					hotKeyHandled(serviceWorker.pageService, event);
-				}
+			const isShortcut = this.shortcutHandlers.some(({ set }) =>
+				set.has(event.code)
+			);
 
-				return true;
-			},
-			false
+			if (isShortcut) {
+				event.preventDefault();
+			}
+		});
+		document.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (keysPressed.size === 0) {
+				return;
+			}
+
+			const targetName = (event.target as HTMLElement)?.localName;
+			if (['input', 'textarea'].includes(targetName)) {
+				return;
+			}
+
+			this.handleShortcut(keysPressed, event);
+
+			keysPressed.clear();
+		});
+	}
+
+	private handleShortcut(
+		keysPressed: ShortcutSet,
+		event: KeyboardEvent
+	): void {
+		const shortcut = this.shortcutHandlers.find((x) =>
+			x.set.equal(keysPressed)
 		);
+		if (notExist(shortcut)) {
+			return;
+		}
+
+		event.preventDefault();
+		shortcut.handle(this.pageService, keysPressed);
 	}
 
-	private listenNavigator(serviceWorker: PageServiceWorker): void {
+	private shortcutHandlers: ShortcutHandler[] = [
+		new ShortcutHandler(
+			ShortcutType.PlaybackSpeedIncrease,
+			(service: PageService) =>
+				service.speedPlayback(PlaybackSpeedAction.Increase)
+		),
+		new ShortcutHandler(
+			ShortcutType.PlaybackSpeedDecrease,
+			(service: PageService) =>
+				service.speedPlayback(PlaybackSpeedAction.Decrease)
+		),
+		new ShortcutHandler(
+			ShortcutType.PlaybackSpeedReset,
+			(service: PageService) =>
+				service.speedPlayback(PlaybackSpeedAction.Reset)
+		),
+		new ShortcutHandler(
+			ShortcutType.MovePlaybackBackward,
+			(service: PageService) => service.movePlayback(false)
+		),
+		new ShortcutHandler(
+			ShortcutType.MovePlaybackForward,
+			(service: PageService) => service.movePlayback(true)
+		),
+		new ShortcutHandler(ShortcutType.PlayPause, (service: PageService) =>
+			service.playPause()
+		),
+		new ShortcutHandler(
+			ShortcutType.PreviousTrack,
+			(service: PageService) => service.playNextTrack(false)
+		),
+		new ShortcutHandler(ShortcutType.NextTrack, (service: PageService) =>
+			service.playNextTrack(true)
+		),
+		new ShortcutHandler(
+			ShortcutType.AddToWishlist,
+			(service: PageService) => service.addToWishlist()
+		),
+		new ShortcutHandler(ShortcutType.OpenInNewTab, (service: PageService) =>
+			service.open(false)
+		),
+		new ShortcutHandler(
+			ShortcutType.OpenInNewTabWithFocus,
+			(service: PageService) => service.open(true)
+		),
+		new ShortcutHandler(
+			ShortcutType.SetPlaybackProgress,
+			(service: PageService, shortcut) =>
+				service.setPlayback(shortcut.digit * 10)
+		),
+		new ShortcutHandler(
+			ShortcutType.PlayTrackByIndex,
+			(service: PageService, shortcut) =>
+				service.playTrackByIndex(shortcut.digit - 1)
+		),
+		new ShortcutHandler(
+			ShortcutType.AutoPitchSwitch,
+			(service: PageService) =>
+				service.switchPreservesPitch(PlaybackPitchAction.Switch)
+		),
+		new ShortcutHandler(
+			ShortcutType.AutoPitchReset,
+			(service: PageService) =>
+				service.switchPreservesPitch(PlaybackPitchAction.Reset)
+		),
+	];
+
+	private listenNavigator(): void {
+		const pageService: PageService = this.pageService;
+
 		navigator.mediaSession.setActionHandler('play', () => {
-			serviceWorker.pageService.playPause();
+			pageService.playPause();
 		});
 
 		navigator.mediaSession.setActionHandler('pause', () => {
-			serviceWorker.pageService.playPause();
+			pageService.playPause();
 		});
 
 		navigator.mediaSession.setActionHandler('nexttrack', () => {
-			serviceWorker.pageService.playNextTrack(true);
+			pageService.playNextTrack(true);
 		});
 
 		navigator.mediaSession.setActionHandler('previoustrack', () => {
-			serviceWorker.pageService.playNextTrack(false);
+			pageService.playNextTrack(false);
 		});
 	}
 }

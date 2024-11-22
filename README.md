@@ -26,17 +26,21 @@ To use the extension, simply navigate to a supported pages:
 
 This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy control over music playback:
 
-|      Key      | Description                                               |
-| :-----------: | --------------------------------------------------------- |
-|    `Space`    | Pause/Play the current track                              |
-|      `N`      | Play the next Track                                       |
-|      `B`      | Play the previous Track                                   |
-|      `O`      | Open the current Track in new tab                         |
-|      `L`      | Add or Remove Track from wishlist                         |
-|     `0-9`     | Play the current track with progress `(Digit * 10)%` \*   |
-| `Shift`+`0-9` | Play the track by index                                   |
-|    `←` `→`    | Move track playback back or forward on `step` seconds     |
-|    `↑` `↓`    | Increase or decrease track playback speed on `3.03%` \*\* |
+|       Key       | Description                                                         |
+| :-------------: | ------------------------------------------------------------------- |
+|     `Space`     | Pause/Play the current track                                        |
+|       `N`       | Play the next Track                                                 |
+|       `B`       | Play the previous Track                                             |
+|       `O`       | Open the current Track in new tab                                   |
+|       `P`       | Enable or disable auto pitch (usable whe playback speed is changed) |
+|   `Shift`+`O`   | Reset auto pitch                                                    |
+|   `Shift`+`O`   | Open the current Track in new tab and focus on it                   |
+|       `L`       | Add or Remove Track from wishlist                                   |
+|      `0-9`      | Play the current track with progress `(Digit * 10)%` \*             |
+|  `Shift`+`0-9`  | Play the track by index                                             |
+|     `←` `→`     | Move track playback back or forward on `step` seconds               |
+|     `↑` `↓`     | Increase or decrease track playback speed on `3.03%` \*\*           |
+| `Shift`+`↑`/`↓` | Reset track playback speed                                          |
 
 1. \* For example, pressing key `3` will set the track playback to `30%` of all duration.
 2. \*\* the same as one rotation of a vinyl per minute.
@@ -66,7 +70,7 @@ Please note that customization of hotkeys is not available in the current versio
         -   `page-services/` Contains services for handling different pages of site.
         -   `services/` Contains core services.
         -   `content.ts`: The TypeScript file for content script (running on each site page).
-    -   `popup/`: Contains extension pop-up React component.
+    -   `options/`: Contains extension pop-up React component.
     -   `shared/`: Contains shared models and utils
 -   `webpack/`: Configuration of webpack for different type od builds.
 -   `zip.sh`: A script for creating a `.zip` file with build for publishing.

@@ -105,7 +105,7 @@ export class CollectionPageService
 			}));
 	}
 
-	open(): void {
+	open(active: boolean): void {
 		const nowPlayingId = this.getNowPlayingTrackId();
 		if (notExist(nowPlayingId)) {
 			return;
@@ -119,7 +119,7 @@ export class CollectionPageService
 		const itemUrl = this.tracks[nowPlayingIndex].element
 			.querySelector('.item-link')
 			.getAttribute('href');
-		this.createNewTab(itemUrl);
+		this.createNewTab(itemUrl, active);
 	}
 
 	addToWishlist(): void {
@@ -158,9 +158,7 @@ export class CollectionPageService
 	private getNextTrack(next: boolean): TrackModel {
 		const nowPlayingId = this.getNowPlayingTrackId();
 		if (notExist(nowPlayingId)) {
-			return this.config.playFirst && this.tracks.length > 0
-				? this.tracks[0]
-				: null;
+			return this.tracks.length > 0 ? this.tracks[0] : null;
 		}
 
 		let nowPlayingIndex = this.getTrackIndex(nowPlayingId);
@@ -174,9 +172,7 @@ export class CollectionPageService
 			nowPlayingIndex === -1 ||
 			nowPlayingIndex === this.tracks.length - 1
 		) {
-			return this.config.playFirst && this.tracks.length > 0
-				? this.tracks[0]
-				: null;
+			return this.tracks.length > 0 ? this.tracks[0] : null;
 		}
 
 		if (!next && nowPlayingIndex === 0) {

@@ -18,14 +18,14 @@ export class DiscoverPageService
 		return url.includes('/discover');
 	}
 
-	override playPause() {
+	playPause() {
 		const button = document.querySelector<HTMLButtonElement>(
 			'.player-top > button.play-pause-button'
 		);
 		button?.click();
 	}
 
-	override playNextTrack(next: boolean): void {
+	playNextTrack(next: boolean): void {
 		const current = document
 			.querySelector('[aria-label="Pause"]')
 			.parentElement.parentElement.parentElement.getAttribute(
@@ -58,7 +58,7 @@ export class DiscoverPageService
 		}
 	}
 
-	override playTrackByIndex(index: number): void {
+	playTrackByIndex(index: number): void {
 		if (index >= 0 && index < this.tracks.length) {
 			this.tracks[index].element
 				.querySelector<HTMLButtonElement>('.play-pause-button')
@@ -66,7 +66,7 @@ export class DiscoverPageService
 		}
 	}
 
-	override initTracks(): void {
+	initTracks(): void {
 		const list = document.querySelectorAll('.results-grid-item');
 		if (notExist(list) || list.length === this.tracks.length) {
 			return;
@@ -78,7 +78,7 @@ export class DiscoverPageService
 		}));
 	}
 
-	override tryAutoplay(): void {
+	tryAutoplay(): void {
 		const progress = this.getPlayingTrackProgress();
 
 		if (exist(progress) && progress >= 99.5) {
@@ -86,17 +86,17 @@ export class DiscoverPageService
 		}
 	}
 
-	override open(): void {
+	open(active: boolean): void {
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.buy-button')?.href;
-		this.createNewTab(itemUrl);
+		this.createNewTab(itemUrl, active);
 	}
 
-	override addToWishlist(): void {
+	addToWishlist(): void {
 		document.querySelector<HTMLButtonElement>('.wishlist-button')?.click();
 	}
 
-	override switchPreservesPitch(_: PlaybackPitchAction): void {
+	switchPreservesPitch(_: PlaybackPitchAction): void {
 		return;
 	}
 

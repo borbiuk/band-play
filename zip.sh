@@ -44,8 +44,8 @@ include_files=(
 	"dist/background.js"
 	"dist/content.js"
 	"dist/manifest.json"
-	"dist/popup.html"
-	"dist/popup.js"
+	"dist/options.html"
+	"dist/options.js"
 	"dist/vendor.js"
 )
 

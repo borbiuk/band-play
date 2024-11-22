@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	display: block;
+	background-color: var(--bandplay-10);
+	border-radius: 50%;
+	border: none;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+	-moz-appearance: textfield;
+}
+
+select {
+	appearance: none; /* Remove the default styling */
+	-webkit-appearance: none; /* For Safari */
+	background-color: white; /* Background color of the select */
+	border: 1px solid #ccc; /* Border styling */
+	padding-right: 20px; /* Extra padding for the arrow space */
+	font-size: 16px; /* Adjust text size */
+
+	/* Add a custom arrow icon */
+	background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+	background-repeat: no-repeat;
+	background-position: right 6px center; /* Position the arrow */
+	background-size: 20px; /* Size of the arrow */
+}
+
+select:focus {
+	outline: none; /* Remove default focus styles */
+	border-color: #007bff; /* Add a custom border color on focus */
+}

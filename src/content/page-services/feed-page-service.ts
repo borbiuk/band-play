@@ -56,9 +56,7 @@ export class FeedPageService extends BasePageService implements PageService {
 				});
 			}
 			playPauseButton.onclick = () => {
-				this.feedPauseTrackId = this.config.playFirst
-					? this.tracks[0].id
-					: null;
+				this.feedPauseTrackId = this.tracks[0].id;
 				this.lastFeedPlayingTrackId = null;
 			};
 			return;
@@ -171,7 +169,7 @@ export class FeedPageService extends BasePageService implements PageService {
 		}
 	}
 
-	open(): void {
+	open(active: boolean): void {
 		const playingFeed = document.querySelector('[data-tralbumid].playing');
 		if (notExist(playingFeed)) {
 			return;
@@ -180,7 +178,7 @@ export class FeedPageService extends BasePageService implements PageService {
 		const itemUrl = playingFeed
 			.querySelector('.item-link')
 			.getAttribute('href');
-		this.createNewTab(itemUrl);
+		this.createNewTab(itemUrl, active);
 	}
 
 	addToWishlist(): void {

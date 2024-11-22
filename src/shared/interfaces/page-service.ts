@@ -24,7 +24,7 @@ export interface PageService extends PlaybackControl, PlaylistControl {
 	 */
 
 	// Open current track in new browser Tab.
-	open(): void;
+	open(active: boolean): void;
 
 	// Add or Remove current track from wishlist.
 	addToWishlist(): void;

@@ -3,6 +3,7 @@ import { PlaybackPitchAction } from '../../../shared/enums/playback-pitch-action
 import { PlaybackSpeedAction } from '../../../shared/enums/playback-speed-action';
 import { PageService } from '../../../shared/interfaces/page-service';
 import { ConfigModel } from '../../../shared/models/config-model';
+import { NewTabMessage } from '../../../shared/models/messages/new-tab-message';
 import { TrackModel } from '../../../shared/models/track-model';
 import { MessageService } from '../../../shared/services/message-service';
 import { exist, notExist } from '../../../shared/utils/utils.common';
@@ -21,7 +22,7 @@ export abstract class BasePageService implements PageService {
 
 	tryAutoplay(): void {}
 
-	open(): void {}
+	open(focus: boolean): void {}
 
 	addToWishlist(): void {}
 
@@ -88,15 +89,18 @@ export abstract class BasePageService implements PageService {
 		return this.tracks.findIndex(({ id }: TrackModel) => id === trackId);
 	}
 
-	protected createNewTab(url: string): void {
+	protected createNewTab(url: string, active: boolean): void {
 		if (notExist(url)) {
 			return;
 		}
 
 		this.messageService
-			.sendToBackground<string>({
+			.sendToBackground<NewTabMessage>({
 				code: MessageCode.CreateNewTab,
-				data: url,
+				data: {
+					url,
+					active,
+				},
 			})
 			.catch((error) => {
 				console.error(error);
