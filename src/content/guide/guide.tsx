@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './guide.scss';
 import { createRoot } from 'react-dom/client';
 import { MessageCode } from '../../shared/enums/message-code';
-import { MessageService } from '../../shared/services/message-service';
+import { MessageModel } from '../../shared/models/messages/message-model';
+import messageService from '../../shared/services/message-service';
 import { Hotkey } from './components/hotkey';
 import { PagesNote } from './components/pages-note';
 import { Page } from './models/Page';
@@ -28,8 +29,7 @@ export const Guide = () => {
 	const [isDisplayed, setIsDisplayed] = useState(false);
 
 	// open guide when on pop-up button click.
-	const messageService = new MessageService();
-	messageService.addListener((message) => {
+	messageService.addListener((message: MessageModel<void>) => {
 		if (message.code === MessageCode.ShowGuide) {
 			setIsDisplayed(true);
 		}

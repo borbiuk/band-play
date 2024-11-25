@@ -1,6 +1,5 @@
 import { PageService } from '../../shared/interfaces/page-service';
 import { TrackModel } from '../../shared/models/track-model';
-import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { BasePageService } from './base/base-page-service';
 
@@ -13,8 +12,8 @@ export class CollectionPageService
 	private collectionShowAllItemsClicked: boolean = false;
 	private wishlistShowAllItemsClicked: boolean = false;
 
-	constructor(protected messageService: MessageService) {
-		super(messageService);
+	constructor() {
+		super();
 	}
 
 	isServiceUrl(url: string): boolean {

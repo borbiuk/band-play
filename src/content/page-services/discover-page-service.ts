@@ -1,6 +1,5 @@
 import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PageService } from '../../shared/interfaces/page-service';
-import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { convertTimeStringToSeconds } from '../../shared/utils/utils.time';
 import { BasePageService } from './base/base-page-service';
@@ -10,8 +9,8 @@ export class DiscoverPageService
 	extends BasePageService
 	implements PageService
 {
-	constructor(protected messageService: MessageService) {
-		super(messageService);
+	constructor() {
+		super();
 	}
 
 	isServiceUrl(url: string): boolean {

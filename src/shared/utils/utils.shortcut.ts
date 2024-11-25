@@ -1,4 +1,5 @@
 import { KeyCode } from '../enums/key-code';
+import { isNumeric } from './utils.common';
 
 export const mapToString = (value: string): string => {
 	value = value.toLowerCase();
@@ -30,7 +31,7 @@ export const mapToHumanString = (value: string) => {
 		return value.split('Key')[1];
 	}
 
-	if (value.includes('Digit')) {
+	if (value.includes('Digit') || isNumeric(value)) {
 		return 'Digit';
 	}
 

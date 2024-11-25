@@ -1,5 +1,4 @@
 import { PageService } from '../../shared/interfaces/page-service';
-import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { BasePageService } from './base/base-page-service';
 
@@ -11,8 +10,8 @@ export class FeedPageService extends BasePageService implements PageService {
 	// Track ID on the feed page that was paused.
 	private feedPauseTrackId: string;
 
-	constructor(protected messageService: MessageService) {
-		super(messageService);
+	constructor() {
+		super();
 	}
 
 	isServiceUrl(url: string): boolean {

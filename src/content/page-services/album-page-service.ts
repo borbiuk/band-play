@@ -1,12 +1,11 @@
 import { PageService } from '../../shared/interfaces/page-service';
-import { MessageService } from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { BasePageService } from './base/base-page-service';
 
 // Service to handle 'album' and 'track' pages.
 export class AlbumPageService extends BasePageService implements PageService {
-	constructor(protected messageService: MessageService) {
-		super(messageService);
+	constructor() {
+		super();
 	}
 
 	isServiceUrl(url: string): boolean {

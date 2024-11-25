@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageCode } from '../../shared/enums/message-code';
-import { MessageService } from '../../shared/services/message-service';
+import messageService from '../../shared/services/message-service';
 import { Button } from './internal/button';
 
 export const Footer = () => {
@@ -16,7 +16,6 @@ export const Footer = () => {
 			'_blank'
 		);
 
-	const messageService: MessageService = new MessageService();
 	const showGuide = async (): Promise<void> => {
 		chrome.tabs
 			.query({ active: true, currentWindow: true })

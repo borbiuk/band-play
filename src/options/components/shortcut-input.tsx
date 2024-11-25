@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ShortcutType } from '../../content/shortcut/shortcut-type';
 import { ConfigModel, ShortcutConfig } from '../../shared/models/config-model';
-import { ConfigService } from '../../shared/services/config-service';
+import configService from '../../shared/services/config-service';
 import { exist } from '../../shared/utils/utils.common';
 import { mapToHumanString } from '../../shared/utils/utils.shortcut';
 import { AnimatedButton } from './internal/animation-button';
@@ -12,7 +12,6 @@ export const ShortcutInput = () => {
 	const [shortcutValue, setShortcutValue] = useState<string>('');
 	const [shortcutKeys, setShortcutKeys] = useState<Set<string>>(new Set());
 
-	const configService: ConfigService = useRef(new ConfigService()).current;
 	const currentKeys: Set<string> = useRef<Set<string>>(new Set()).current;
 
 	let saveShortcutTimeout: NodeJS.Timeout =

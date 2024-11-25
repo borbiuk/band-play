@@ -2,8 +2,8 @@ import { MessageCode } from '../../shared/enums/message-code';
 import { PageService } from '../../shared/interfaces/page-service';
 import { ConfigModel } from '../../shared/models/config-model';
 import { MessageModel } from '../../shared/models/messages/message-model';
-import { ConfigService } from '../../shared/services/config-service';
-import { MessageService } from '../../shared/services/message-service';
+import configService from '../../shared/services/config-service';
+import messageService from '../../shared/services/message-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { AlbumPageService } from '../page-services/album-page-service';
 import { CollectionPageService } from '../page-services/collection-page-service';
@@ -15,18 +15,15 @@ export class PageServiceWorker {
 	private readonly initTracksDelay: number = 700;
 
 	private readonly pageServices: PageService[] = [
-		new AlbumPageService(this.messageService),
-		new DiscoverPageService(this.messageService),
-		new FeedPageService(this.messageService),
-		new CollectionPageService(this.messageService),
+		new AlbumPageService(),
+		new DiscoverPageService(),
+		new FeedPageService(),
+		new CollectionPageService(),
 	];
 
 	public pageService: PageService = null;
 
-	constructor(
-		private readonly configService: ConfigService,
-		private readonly messageService: MessageService
-	) {}
+	constructor() {}
 
 	public start(): void {
 		console.log('[Start]: Band Play');
@@ -53,14 +50,14 @@ export class PageServiceWorker {
 		const service = this.pageServices.find((x) => x.isServiceUrl(url));
 		if (exist(service)) {
 			service.tracks = [];
-			service.config = await this.configService.getAll();
+			service.config = await configService.getAll();
 		}
 
 		return service;
 	}
 
 	private serviceConfiguration(): void {
-		this.configService.addListener((newConfig: ConfigModel) => {
+		configService.addListener((newConfig: ConfigModel) => {
 			if (exist(this.pageService)) {
 				this.pageService.config = newConfig;
 			}
@@ -96,7 +93,7 @@ export class PageServiceWorker {
 	}
 
 	private registerPageChange(): void {
-		this.messageService.addListener(
+		messageService.addListener(
 			async (message: MessageModel<unknown>) => {
 				if (message.code === MessageCode.UrlChanged) {
 					this.pageService = await this.currentService();

@@ -6,7 +6,7 @@ import { exist } from '../utils/utils.common';
 /**
  * Service for managing and handling configuration settings stored in local storage.
  */
-export class ConfigService {
+class ConfigService {
 	/**
 	 * Adds a listener for changes to the local storage, specifically designed for tracking changes in configuration settings.
 	 *
@@ -141,3 +141,6 @@ export class ConfigService {
 		return result;
 	}
 }
+
+const service = new ConfigService();
+export default service;

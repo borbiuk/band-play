@@ -2,7 +2,7 @@ import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PlaybackSpeedAction } from '../../shared/enums/playback-speed-action';
 import { PageService } from '../../shared/interfaces/page-service';
 import { ConfigModel } from '../../shared/models/config-model';
-import { ConfigService } from '../../shared/services/config-service';
+import configService from '../../shared/services/config-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
 import { ShortcutSet } from '../shortcut/shortcut-set';
@@ -10,7 +10,7 @@ import { ShortcutType } from '../shortcut/shortcut-type';
 import { PageServiceWorker } from './page-service-worker';
 
 export class UserInputService {
-	constructor(private readonly configService: ConfigService) {}
+	constructor() {}
 
 	public start(serviceWorker: PageServiceWorker): void {
 		this.listenHotkeys(serviceWorker);
@@ -20,8 +20,8 @@ export class UserInputService {
 			this.updateShortcutHandlers(x);
 		};
 
-		this.configService.getAll().then(updateShortcutHandlers);
-		this.configService.addListener(updateShortcutHandlers);
+		configService.getAll().then(updateShortcutHandlers);
+		configService.addListener(updateShortcutHandlers);
 	}
 
 	private updateShortcutHandlers(newConfig: ConfigModel) {
@@ -40,15 +40,21 @@ export class UserInputService {
 	private listenHotkeys(serviceWorker: PageServiceWorker): void {
 		const keysPressed = new ShortcutSet();
 		document.addEventListener('keydown', (event: KeyboardEvent) => {
-			keysPressed.add(event.code);
+			const targetName = (event.target as HTMLElement)?.localName;
+			if (['input', 'textarea'].includes(targetName)) {
+				return;
+			}
 
 			const isShortcut = this.shortcutHandlers.some(({ set }) =>
 				set.has(event.code)
 			);
-
-			if (isShortcut) {
-				event.preventDefault();
+			if (!isShortcut) {
+				return;
 			}
+
+			event.preventDefault();
+
+			keysPressed.add(event.code);
 		});
 		document.addEventListener('keyup', (event: KeyboardEvent) => {
 			if (keysPressed.size === 0) {
@@ -60,8 +66,9 @@ export class UserInputService {
 				return;
 			}
 
-			this.handleShortcut(serviceWorker, keysPressed, event);
+			event.preventDefault();
 
+			this.handleShortcut(serviceWorker, keysPressed, event);
 			keysPressed.clear();
 		});
 	}

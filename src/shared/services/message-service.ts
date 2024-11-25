@@ -4,7 +4,7 @@ import { notExist } from '../utils/utils.common';
 /**
  * Service for handling messaging between different components of the Chrome extension.
  */
-export class MessageService {
+class MessageService {
 	/**
 	 * Sends a message to the content script running in a specific tab.
 	 *
@@ -58,3 +58,7 @@ export class MessageService {
 		);
 	}
 }
+
+const messageService = new MessageService();
+
+export default messageService;

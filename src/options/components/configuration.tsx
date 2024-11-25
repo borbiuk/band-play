@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ConfigModel } from '../../shared/models/config-model';
-import { ConfigService } from '../../shared/services/config-service';
+import configService from '../../shared/services/config-service';
 import { notExist } from '../../shared/utils/utils.common';
 import { Checkbox } from './internal/checkbox';
 import { PlaybackStepInput } from './internal/playback-step-input';
@@ -11,8 +11,6 @@ import { PlaybackStepInput } from './internal/playback-step-input';
 export const Configuration = () => {
 	const [tabId, setTabId] = useState(null as number);
 	const [currentConfig, setCurrentConfig] = useState(null as ConfigModel);
-
-	const configService: ConfigService = new ConfigService();
 
 	const updateStorage = async (key: keyof ConfigModel, value: unknown) => {
 		await configService.update(key, value);

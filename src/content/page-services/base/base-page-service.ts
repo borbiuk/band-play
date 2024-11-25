@@ -5,14 +5,14 @@ import { PageService } from '../../../shared/interfaces/page-service';
 import { ConfigModel } from '../../../shared/models/config-model';
 import { NewTabMessage } from '../../../shared/models/messages/new-tab-message';
 import { TrackModel } from '../../../shared/models/track-model';
-import { MessageService } from '../../../shared/services/message-service';
+import messageService from '../../../shared/services/message-service';
 import { exist, notExist } from '../../../shared/utils/utils.common';
 
 export abstract class BasePageService implements PageService {
 	config: ConfigModel;
 	tracks: TrackModel[] = [];
 
-	protected constructor(protected readonly messageService: MessageService) {}
+	protected constructor() {}
 
 	isServiceUrl(url: string): boolean {
 		return false;
@@ -94,7 +94,7 @@ export abstract class BasePageService implements PageService {
 			return;
 		}
 
-		this.messageService
+		messageService
 			.sendToBackground<NewTabMessage>({
 				code: MessageCode.CreateNewTab,
 				data: {
