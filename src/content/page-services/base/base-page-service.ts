@@ -36,13 +36,13 @@ export abstract class BasePageService implements PageService {
 		});
 	}
 
-	setPlayback(percentage: number): void {
+	seekToPercentage(percentage: number): void {
 		this.audioOperator<void>((audio) => {
 			audio.currentTime = (percentage / 100) * audio.duration;
 		});
 	}
 
-	movePlayback(forward: boolean): void {
+	seekForward(forward: boolean): void {
 		this.audioOperator<void>((audio) => {
 			let nextPositionInSeconds =
 				audio.currentTime +
@@ -56,7 +56,7 @@ export abstract class BasePageService implements PageService {
 			}
 
 			const percentage = (nextPositionInSeconds / audio.duration) * 100;
-			this.setPlayback(percentage);
+			this.seekToPercentage(percentage);
 		});
 	}
 
@@ -85,6 +85,18 @@ export abstract class BasePageService implements PageService {
 
 	playTrackByIndex(index: number): void {}
 
+	audioOperator<TResult>(
+		operator: (audio: HTMLAudioElement) => TResult,
+		notFoundHandler?: () => TResult
+	): TResult {
+		const audio: HTMLAudioElement = document.querySelector('audio');
+		if (notExist(audio?.src)) {
+			return exist(notFoundHandler) ? notFoundHandler() : undefined;
+		}
+
+		return operator(audio);
+	}
+
 	protected getTrackIndex(trackId: string) {
 		return this.tracks.findIndex(({ id }: TrackModel) => id === trackId);
 	}
@@ -105,17 +117,5 @@ export abstract class BasePageService implements PageService {
 			.catch((error) => {
 				console.error(error);
 			});
-	}
-
-	protected audioOperator<TResult>(
-		operator: (audio: HTMLAudioElement) => TResult,
-		notFoundHandler?: () => TResult
-	): TResult {
-		const audio: HTMLAudioElement = document.querySelector('audio');
-		if (notExist(audio?.src)) {
-			return exist(notFoundHandler) ? notFoundHandler() : undefined;
-		}
-
-		return operator(audio);
 	}
 }

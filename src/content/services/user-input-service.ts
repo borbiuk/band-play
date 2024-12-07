@@ -105,13 +105,11 @@ export class UserInputService {
 			(service: PageService) =>
 				service.speedPlayback(PlaybackSpeedAction.Reset)
 		),
-		new ShortcutHandler(
-			ShortcutType.MovePlaybackBackward,
-			(service: PageService) => service.movePlayback(false)
+		new ShortcutHandler(ShortcutType.SeekBackward, (service: PageService) =>
+			service.seekForward(false)
 		),
-		new ShortcutHandler(
-			ShortcutType.MovePlaybackForward,
-			(service: PageService) => service.movePlayback(true)
+		new ShortcutHandler(ShortcutType.SeekForward, (service: PageService) =>
+			service.seekForward(true)
 		),
 		new ShortcutHandler(ShortcutType.PlayPause, (service: PageService) =>
 			service.playPause()
@@ -135,9 +133,9 @@ export class UserInputService {
 			(service: PageService) => service.open(true)
 		),
 		new ShortcutHandler(
-			ShortcutType.SetPlaybackProgress,
+			ShortcutType.SeekToPercentage,
 			(service: PageService, shortcut) =>
-				service.setPlayback(shortcut.digit * 10)
+				service.seekToPercentage(shortcut.digit * 10)
 		),
 		new ShortcutHandler(
 			ShortcutType.PlayTrackByIndex,
@@ -157,22 +155,44 @@ export class UserInputService {
 	];
 
 	private listenNavigator(serviceWorker: PageServiceWorker): void {
-		const pageService: PageService = serviceWorker.pageService;
+		const { mediaSession } = navigator;
 
-		navigator.mediaSession.setActionHandler('play', () => {
-			pageService.playPause();
+		// Playlist control:
+		mediaSession.setActionHandler('nexttrack', () => {
+			serviceWorker.pageService.playNextTrack(true);
+		});
+		mediaSession.setActionHandler('previoustrack', () => {
+			serviceWorker.pageService.playNextTrack(false);
 		});
 
-		navigator.mediaSession.setActionHandler('pause', () => {
-			pageService.playPause();
+		// Playback control:
+		mediaSession.setActionHandler('seekforward', () => {
+			serviceWorker.pageService.seekForward(true);
 		});
-
-		navigator.mediaSession.setActionHandler('nexttrack', () => {
-			pageService.playNextTrack(true);
+		mediaSession.setActionHandler('seekbackward', () => {
+			serviceWorker.pageService.seekForward(false);
 		});
+		mediaSession.setActionHandler(
+			'seekto',
+			(details: MediaSessionActionDetails) => {
+				serviceWorker.pageService.audioOperator(
+					(audio: HTMLAudioElement) => {
+						if (details.fastSeek) {
+							audio.fastSeek(details.seekTime);
+						} else {
+							audio.currentTime = details.seekTime;
+						}
+					}
+				);
+			}
+		);
 
-		navigator.mediaSession.setActionHandler('previoustrack', () => {
-			pageService.playNextTrack(false);
+		// Play/Pause:
+		mediaSession.setActionHandler('play', () => {
+			serviceWorker.pageService.playPause();
+		});
+		mediaSession.setActionHandler('pause', () => {
+			serviceWorker.pageService.playPause();
 		});
 	}
 }

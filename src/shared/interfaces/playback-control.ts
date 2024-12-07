@@ -6,14 +6,20 @@ export interface PlaybackControl {
 	playPause(): void;
 
 	// Move the current track playback back or forward.
-	movePlayback(forward: boolean): void;
+	seekForward(forward: boolean): void;
 
 	// Set percentage of the current track playback.
-	setPlayback(percentage: number): void;
+	seekToPercentage(percentage: number): void;
 
 	// Increase or decrease a speed of the current track.
 	speedPlayback(code: PlaybackSpeedAction): void;
 
 	// Switch pitch preserving.
 	switchPreservesPitch(code: PlaybackPitchAction): void;
+
+	// Perform operation with current audio element.
+	audioOperator<TResult>(
+		operator: (audio: HTMLAudioElement) => TResult,
+		notFoundHandler?: () => TResult
+	): TResult;
 }

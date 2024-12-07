@@ -6,10 +6,10 @@ export enum ShortcutType {
 	AutoPitchSwitch = 'Switch Auto-Pitch',
 	AutoPitchReset = 'Reset Auto-Pitch',
 
-	MovePlaybackForward = 'Move playback forward',
-	MovePlaybackBackward = 'Move playback backward',
+	SeekForward = 'Seek forward',
+	SeekBackward = 'Seek backward',
 
-	SetPlaybackProgress = 'Set playback progress',
+	SeekToPercentage = 'Set playback progress',
 
 	PlayPause = 'Play/Pause',
 	PreviousTrack = 'Play previous track',
