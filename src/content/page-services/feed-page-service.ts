@@ -152,6 +152,12 @@ export class FeedPageService extends BasePageService implements PageService {
 			return;
 		}
 
+		if (this.config.loopTrack) {
+			const trackIndex = this.getTrackIndex(this.lastFeedPlayingTrackId);
+			this.playTrackByIndex(trackIndex);
+			return;
+		}
+
 		this.lastFeedPlayingTrackId =
 			this.tracks[this.getTrackIndex(this.lastFeedPlayingTrackId) + 1].id;
 		const playPauseButton =

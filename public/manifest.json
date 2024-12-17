@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "6.0.3",
+	"version": "6.0.4",
 	"description": "Automation of work with Bandcamp: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
 	"permissions": ["tabs", "storage", "power"],
@@ -45,6 +45,7 @@
 				"assets/keys/key-P.png",
 				"assets/keys/key-right.png",
 				"assets/keys/key-up.png",
+				"assets/keys/key-V.png",
 				"assets/logo-128.png"
 			],
 			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"]

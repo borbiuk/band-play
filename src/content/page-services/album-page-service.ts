@@ -49,6 +49,20 @@ export class AlbumPageService extends BasePageService implements PageService {
 		playButtons[index].querySelector('div').click();
 	}
 
+	tryAutoplay(): void {
+		if (!this.config.loopTrack) {
+			return;
+		}
+
+		const progress = this.audioOperator<number>(
+			(audio) => (audio.currentTime / audio.duration) * 100
+		);
+
+		if (this.autoplayNeeded(progress)) {
+			this.seekToPercentage(0);
+		}
+	}
+
 	open(active: boolean): void {
 		const itemUrl = document
 			.querySelector('.current_track .title')

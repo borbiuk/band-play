@@ -1,6 +1,6 @@
 import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PageService } from '../../shared/interfaces/page-service';
-import { exist, notExist } from '../../shared/utils/utils.common';
+import { notExist } from '../../shared/utils/utils.common';
 import { convertTimeStringToSeconds } from '../../shared/utils/utils.time';
 import { BasePageService } from './base/base-page-service';
 
@@ -79,10 +79,16 @@ export class DiscoverPageService
 
 	tryAutoplay(): void {
 		const progress = this.getPlayingTrackProgress();
-
-		if (exist(progress) && progress >= 99.5) {
-			this.playNextTrack(true);
+		if (!this.autoplayNeeded(progress)) {
+			return;
 		}
+
+		if (this.config.loopTrack) {
+			this.seekToPercentage(0);
+			return;
+		}
+
+		this.playNextTrack(true);
 	}
 
 	open(active: boolean): void {

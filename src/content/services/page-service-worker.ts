@@ -11,7 +11,7 @@ import { DiscoverPageService } from '../page-services/discover-page-service';
 import { FeedPageService } from '../page-services/feed-page-service';
 
 export class PageServiceWorker {
-	private readonly autoplayDelay: number = 300;
+	private readonly autoplayDelay: number = 250;
 	private readonly initTracksDelay: number = 700;
 
 	private readonly pageServices: PageService[] = [
@@ -36,35 +36,22 @@ export class PageServiceWorker {
 	private async startAsync(): Promise<void> {
 		this.pageService = await this.currentService();
 
-		this.serviceConfiguration();
+		// Register URL changes listener
+		messageService.addListener(
+			async (message: MessageModel<unknown>) => {
+				if (message.code === MessageCode.UrlChanged) {
+					this.pageService = await this.currentService();
+				}
+			},
+			(error: Error) => console.error(error)
+		);
 
-		this.registerAutoplay();
-		this.registerTracksInitialization();
-		this.registerPageChange();
-	}
-
-	// Get the object to handle current page functionality.
-	private async currentService(): Promise<PageService> {
-		const url = window.location.href;
-
-		const service = this.pageServices.find((x) => x.isServiceUrl(url));
-		if (exist(service)) {
-			service.tracks = [];
-			service.config = await configService.getAll();
-		}
-
-		return service;
-	}
-
-	private serviceConfiguration(): void {
+		// Add config changes listener
 		configService.addListener((newConfig: ConfigModel) => {
-			if (exist(this.pageService)) {
-				this.pageService.config = newConfig;
-			}
+			this.pageService.config = newConfig;
 		});
-	}
 
-	private registerAutoplay(): void {
+		// Register autoplay
 		setInterval(() => {
 			if (
 				notExist(this.pageService) ||
@@ -79,10 +66,8 @@ export class PageServiceWorker {
 				console.error(error);
 			}
 		}, this.autoplayDelay);
-	}
 
-	private registerTracksInitialization(): void {
-		this.pageService?.initTracks();
+		// Register track initialization
 		setInterval(() => {
 			try {
 				this.pageService?.initTracks();
@@ -92,15 +77,19 @@ export class PageServiceWorker {
 		}, this.initTracksDelay);
 	}
 
-	private registerPageChange(): void {
-		messageService.addListener(
-			async (message: MessageModel<unknown>) => {
-				if (message.code === MessageCode.UrlChanged) {
-					this.pageService = await this.currentService();
-					this.pageService?.initTracks();
-				}
-			},
-			(error: Error) => console.error(error)
+	// Get the service to handle current page functionality.
+	private async currentService(): Promise<PageService> {
+		const url = window.location.href;
+
+		const service: PageService = this.pageServices.find((x) =>
+			x.isServiceUrl(url)
 		);
+		if (exist(service)) {
+			service.tracks = [];
+			service.config = await configService.getAll();
+			service.initTracks();
+		}
+
+		return service;
 	}
 }

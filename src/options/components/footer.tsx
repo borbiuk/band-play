@@ -17,13 +17,9 @@ export const Footer = () => {
 		);
 
 	const showGuide = async (): Promise<void> => {
-		chrome.tabs
-			.query({ active: true, currentWindow: true })
-			.then(async (tabs) => {
-				await messageService.sendToContent(tabs[0].id, {
-					code: MessageCode.ShowGuide,
-				});
-			});
+		await messageService.sendToActiveContent({
+			code: MessageCode.ShowGuide,
+		});
 	};
 
 	const openMyBandcamp = () =>

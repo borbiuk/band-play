@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
+import { ConfigModel } from '../../../shared/models/config-model';
 
 export interface CheckBoxOptions {
 	// The unique identifier for the checkbox.
-	id: string;
+	id: keyof ConfigModel;
 
 	// The label for the checkbox.
 	label: string;
@@ -39,7 +40,7 @@ export const Checkbox = ({
 	return (
 		<div>
 			<label
-				className="inline-flex h-6 w-full cursor-pointer items-center rounded-full"
+				className="inline-flex h-6 w-full cursor-pointer items-center rounded-full hover:cursor-pointer"
 				htmlFor={id}
 				data-tooltip-id={id}
 			>
@@ -73,7 +74,7 @@ export const Checkbox = ({
 				place="top"
 				opacity={1}
 				offset={1}
-				delayShow={100}
+				delayShow={200}
 			>
 				<span className="text-xs text-gray-900">{tooltip}</span>
 			</Tooltip>

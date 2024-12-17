@@ -20,6 +20,22 @@ class MessageService {
 	}
 
 	/**
+	 * Sends a message to the content script running in a active tab.
+	 *
+	 * @param message - The message to be sent.
+	 * @returns A promise that resolves when the message has been sent.
+	 */
+	public async sendToActiveContent<T>(
+		message: MessageModel<T>
+	): Promise<void> {
+		return chrome.tabs
+			.query({ active: true, currentWindow: true })
+			.then(async (tabs) => {
+				await this.sendToContent(tabs[0].id, message);
+			});
+	}
+
+	/**
 	 * Sends a message to the background script of the extension.
 	 *
 	 * @param message - The message to be sent.

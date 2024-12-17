@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './guide.scss';
 import { createRoot } from 'react-dom/client';
+import { Tooltip } from 'react-tooltip';
 import { MessageCode } from '../../shared/enums/message-code';
 import { MessageModel } from '../../shared/models/messages/message-model';
 import messageService from '../../shared/services/message-service';
@@ -26,6 +27,8 @@ export const initGuide = () => {
  * Guide component representing the user guide for the Chrome extension.
  */
 export const Guide = () => {
+	const closeButtonId: string = 'close-button';
+
 	const [isDisplayed, setIsDisplayed] = useState(false);
 
 	// open guide when on pop-up button click.
@@ -47,24 +50,38 @@ export const Guide = () => {
 			<div className="flex-0 max-w-svw fixed left-1/2 top-1/2 z-[999] m-4 flex max-h-[90vh] -translate-x-1/2 -translate-y-1/2 scale-90 transform select-none flex-col overflow-auto rounded-xl bg-white/50 shadow-2xl shadow-gray-800">
 				<div className="z-10 flex flex-col">
 					{/* Header */}
-					<div className="flex w-full flex-col items-center pb-1.5 pt-2.5 xl:pb-2.5 xl:pt-4">
+					<div className="sticky top-0 flex w-full flex-col items-center pb-1.5 pt-2.5 xl:pb-2.5 xl:pt-4">
 						<img
 							src={getSourceUrl('./assets/logo-128.png')}
 							alt="Bandplay logo"
-							className="z-20 h-16 w-16 rounded-full shadow-xl"
+							className="z-20 h-16 w-16 rounded-full shadow-2xl"
 						/>
-					</div>
 
-					{/* Close Button */}
-					<button
-						className="absolute right-1.5 top-1.5 h-7 w-7 rounded-xl border-0 duration-200 hover:scale-110 hover:cursor-pointer"
-						onClick={close}
-					>
-						<img
-							src={getSourceUrl('./assets/close.png')}
-							alt="close guide"
-						/>
-					</button>
+						{/* Close Button */}
+						<button
+							data-tooltip-id={closeButtonId}
+							className="absolute right-1.5 top-1.5 h-7 w-7 rounded-xl border-0 duration-200 hover:scale-110 hover:cursor-pointer"
+							onClick={close}
+						>
+							<img
+								src={getSourceUrl('./assets/close.png')}
+								alt="close guide"
+							/>
+						</button>
+						<Tooltip
+							id={closeButtonId}
+							className="max-w-40"
+							variant="light"
+							place="top"
+							opacity={1}
+							offset={1}
+							delayShow={200}
+						>
+							<span className="text-xs text-gray-900">
+								Close Guide
+							</span>
+						</Tooltip>
+					</div>
 
 					<div className="mx-6 mb-4">
 						<PagesNote />
@@ -93,6 +110,17 @@ export const Guide = () => {
 								fileName="key-B.png"
 								title="Previous Track"
 								description="Play the previous track"
+								pages={[
+									Page.Collection,
+									Page.Album,
+									Page.Feed,
+									Page.Discover,
+								]}
+							/>
+							<Hotkey
+								fileName="key-V.png"
+								title="Loop Track"
+								description="Loop the current track"
 								pages={[
 									Page.Collection,
 									Page.Album,

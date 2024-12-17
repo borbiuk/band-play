@@ -17,8 +17,7 @@ export interface ConfigModel {
 	// Step of track moving in seconds.
 	playbackStep: number;
 
-	// Define if guid is showing.
-	showGuide: boolean;
+	loopTrack: boolean;
 
 	shortcuts: ShortcutConfig;
 }

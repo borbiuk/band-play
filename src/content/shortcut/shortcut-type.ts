@@ -15,6 +15,7 @@ export enum ShortcutType {
 	PreviousTrack = 'Play previous track',
 	NextTrack = 'Play next track',
 	PlayTrackByIndex = 'Play track by index',
+	LoopTrack = 'Loop track',
 
 	OpenInNewTab = 'Open in new tab',
 	OpenInNewTabWithFocus = 'Open in new tab with focus',

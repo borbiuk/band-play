@@ -97,6 +97,10 @@ export abstract class BasePageService implements PageService {
 		return operator(audio);
 	}
 
+	protected autoplayNeeded(progress: number): boolean {
+		return exist(progress) && progress >= 99.5;
+	}
+
 	protected getTrackIndex(trackId: string) {
 		return this.tracks.findIndex(({ id }: TrackModel) => id === trackId);
 	}

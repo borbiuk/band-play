@@ -1,7 +1,7 @@
 import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
 import { PlaybackSpeedAction } from '../../shared/enums/playback-speed-action';
 import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
+import { ConfigModel, ShortcutConfig } from '../../shared/models/config-model';
 import configService from '../../shared/services/config-service';
 import { exist, notExist } from '../../shared/utils/utils.common';
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
@@ -16,23 +16,25 @@ export class UserInputService {
 		this.listenHotkeys(serviceWorker);
 		this.listenNavigator(serviceWorker);
 
-		const updateShortcutHandlers = (x: ConfigModel) => {
+		const updateShortcutHandlers = (x: ShortcutConfig) => {
 			this.updateShortcutHandlers(x);
 		};
 
-		configService.getAll().then(updateShortcutHandlers);
-		configService.addListener(updateShortcutHandlers);
+		configService
+			.get<ShortcutConfig>('shortcuts')
+			.then(updateShortcutHandlers);
+		configService.addListener(({ shortcuts }: ConfigModel) =>
+			updateShortcutHandlers(shortcuts)
+		);
 	}
 
-	private updateShortcutHandlers(newConfig: ConfigModel) {
-		Object.keys(newConfig.shortcuts).forEach((key) => {
+	private updateShortcutHandlers(shortcuts: ShortcutConfig) {
+		Object.keys(shortcuts).forEach((key) => {
 			const shortcutHandler = this.shortcutHandlers.find(
 				({ type }) => type === key
 			);
 			if (exist(shortcutHandler)) {
-				shortcutHandler.combination = JSON.parse(
-					newConfig.shortcuts[key]
-				);
+				shortcutHandler.combination = JSON.parse(shortcuts[key]);
 			}
 		});
 	}
@@ -78,6 +80,10 @@ export class UserInputService {
 		keysPressed: ShortcutSet,
 		event: KeyboardEvent
 	): void {
+		if (notExist(serviceWorker.pageService)) {
+			return;
+		}
+
 		const shortcut = this.shortcutHandlers.find((x) =>
 			x.set.equal(keysPressed)
 		);
@@ -141,6 +147,9 @@ export class UserInputService {
 			ShortcutType.PlayTrackByIndex,
 			(service: PageService, shortcut) =>
 				service.playTrackByIndex(shortcut.digit - 1)
+		),
+		new ShortcutHandler(ShortcutType.LoopTrack, (service: PageService) =>
+			configService.update('loopTrack', !service.config.loopTrack)
 		),
 		new ShortcutHandler(
 			ShortcutType.AutoPitchSwitch,

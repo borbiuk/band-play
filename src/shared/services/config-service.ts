@@ -55,11 +55,22 @@ class ConfigService {
 			'autoscroll',
 			'keepAwake',
 			'playbackStep',
-			'showGuide',
+			'loopTrack',
 			'shortcuts',
 		])) as ConfigModel;
 
 		return this.getWithDefaults(config);
+	}
+
+	/**
+	 * Retrieves configuration settings from local storage by key.
+	 *
+	 * @returns A promise that resolves with the complete configuration object.
+	 */
+	public async get<T>(key: keyof ConfigModel): Promise<T> {
+		const config = (await chrome.storage.local.get([key])) as ConfigModel;
+
+		return this.getWithDefaults(config)[key] as T;
 	}
 
 	/**
@@ -80,7 +91,9 @@ class ConfigService {
 				? Boolean(config.keepAwake)
 				: true,
 			playbackStep: Number(config.playbackStep),
-			showGuide: Boolean(config.showGuide),
+			loopTrack: exist(config.loopTrack)
+				? Boolean(config.loopTrack)
+				: false,
 			shortcuts: this.mergeShortcuts(config.shortcuts),
 		};
 
@@ -126,6 +139,7 @@ class ConfigService {
 			[ShortcutType.PreviousTrack]: [KeyCode.KeyB],
 			[ShortcutType.NextTrack]: [KeyCode.KeyN],
 			[ShortcutType.PlayTrackByIndex]: [KeyCode.Digit, KeyCode.Shift],
+			[ShortcutType.LoopTrack]: [KeyCode.KeyV],
 			[ShortcutType.OpenInNewTab]: [KeyCode.KeyO],
 			[ShortcutType.OpenInNewTabWithFocus]: [KeyCode.KeyO, KeyCode.Shift],
 			[ShortcutType.AddToWishlist]: [KeyCode.KeyL],

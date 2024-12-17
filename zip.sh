@@ -36,6 +36,7 @@ include_files=(
 	"dist/assets/keys/key-P.png"
 	"dist/assets/keys/key-right.png"
 	"dist/assets/keys/key-up.png"
+	"dist/assets/keys/key-V.png"
 	"dist/assets/logo-16.png"
 	"dist/assets/logo-32.png"
 	"dist/assets/logo-48.png"

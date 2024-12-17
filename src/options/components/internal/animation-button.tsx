@@ -17,7 +17,7 @@ export const AnimatedButton = ({ label, onClick }) => {
 				isLoading
 					? 'bg-band-500 text-gray-100 hover:bg-band-500'
 					: 'bg-band-200 text-black'
-			} transition-all ease-in-out hover:scale-105 hover:bg-band-400`}
+			} transition-all ease-in-out hover:scale-105 hover:cursor-pointer hover:bg-band-400`}
 			onClick={handleClick}
 		>
 			{/* Text */}

@@ -70,13 +70,19 @@ export class CollectionPageService
 	}
 
 	tryAutoplay(): void {
-		const progress = this.audioOperator<number>((audio) => {
-			return (audio.currentTime / audio.duration) * 100;
-		});
-
-		if (exist(progress) && progress >= 99.5) {
-			this.playNextTrack(true);
+		const progress = this.audioOperator<number>(
+			(audio) => (audio.currentTime / audio.duration) * 100
+		);
+		if (!this.autoplayNeeded(progress)) {
+			return;
 		}
+
+		if (this.config.loopTrack) {
+			this.seekToPercentage(0);
+			return;
+		}
+
+		this.playNextTrack(true);
 	}
 
 	initTracks(): void {

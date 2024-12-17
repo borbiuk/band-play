@@ -1,5 +1,4 @@
 import { MessageCode } from '../shared/enums/message-code';
-import { ConfigModel } from '../shared/models/config-model';
 import { MessageModel } from '../shared/models/messages/message-model';
 import { NewTabMessage } from '../shared/models/messages/new-tab-message';
 import configService from '../shared/services/config-service';
@@ -96,13 +95,7 @@ const registerKeepAwakeChange = () => {
 		currentKeepAwake = keepAwake;
 	};
 
-	configService.getAll().then(({ keepAwake }: ConfigModel) => {
-		update(keepAwake);
-	});
-
-	configService.addListener(({ keepAwake }: ConfigModel) => {
-		update(keepAwake);
-	});
+	configService.get<boolean>('keepAwake').then(update);
 };
 
 const start = (): void => {
