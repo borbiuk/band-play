@@ -17,10 +17,10 @@ for more details.
 
 To use the extension, simply navigate to a supported pages:
 
--   Feed
--   Discover
--   Collection/Wishlist
--   Album/Track
+- Feed
+- Discover
+- Collection/Wishlist
+- Album/Track
 
 ### ⌨️ Hotkeys
 
@@ -62,18 +62,18 @@ Please note that customization of hotkeys is not available in the current versio
 
 ### 📁 File Structure
 
--   `public/`: Contains `manifest.json`, images and icons used by the extension.
--   `src/`:
-    -   `background/background.ts`: Contains the TypeScript files for background script (single instance for Chrome).
-    -   `content/`:
-        -   `guide/`: Contains Guide React component.
-        -   `page-services/` Contains services for handling different pages of site.
-        -   `services/` Contains core services.
-        -   `content.ts`: The TypeScript file for content script (running on each site page).
-    -   `options/`: Contains extension pop-up React component.
-    -   `shared/`: Contains shared models and utils
--   `webpack/`: Configuration of webpack for different type od builds.
--   `zip.sh`: A script for creating a `.zip` file with build for publishing.
+- `public/`: Contains `manifest.json`, images and icons used by the extension.
+- `src/`:
+    - `background/background.ts`: Contains the TypeScript files for background script (single instance for Chrome).
+    - `content/`:
+        - `guide/`: Contains Guide React component.
+        - `page-services/` Contains services for handling different pages of site.
+        - `services/` Contains core services.
+        - `content.ts`: The TypeScript file for content script (running on each site page).
+    - `options/`: Contains extension pop-up React component.
+    - `shared/`: Contains shared models and utils
+- `webpack/`: Configuration of webpack for different type od builds.
+- `zip.sh`: A script for creating a `.zip` file with build for publishing.
 
 ### 🤝 Contributing
 
