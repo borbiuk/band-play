@@ -20,6 +20,7 @@ module.exports = {
 			},
 		},
 	},
+	cache: false,
 	module: {
 		rules: [
 			{
