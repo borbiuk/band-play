@@ -5,11 +5,10 @@
 </div>
 
 Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com) by
-providing autoplay functionality and other automation features, allowing users to seamlessly control their music
-playback.
+tempo adjustment, preserve pitch, playback control by shortcuts, autoplay and other automation features,
+allowing users to seamlessly control their music playback.
 
-Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page
-for more details.
+Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page for more details.
 
 <hr/>
 
