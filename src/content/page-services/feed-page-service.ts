@@ -4,11 +4,7 @@ import { BasePageService } from './base/base-page-service';
 
 // Service to handle 'feed' page.
 export class FeedPageService extends BasePageService implements PageService {
-	// The ID of latest played track on the feed page.
-	private lastFeedPlayingTrackId: string;
-
-	// Track ID on the feed page that was paused.
-	private feedPauseTrackId: string;
+	private nowPlaying: Element;
 
 	constructor() {
 		super();
@@ -18,72 +14,19 @@ export class FeedPageService extends BasePageService implements PageService {
 		return url.endsWith('/feed') || url.includes('/feed?');
 	}
 
-	playPause(): void {
-		const playingFeed = document.querySelector('[data-tralbumid].playing');
-		const setPausedTrackId = () => {
-			if (exist(playingFeed)) {
-				this.feedPauseTrackId =
-					playingFeed.getAttribute('data-tralbumid');
-			} else if (exist(this.feedPauseTrackId)) {
-				this.feedPauseTrackId = null;
-			}
-		};
-		this.audioOperator((audio) => {
-			audio.removeEventListener('pause', setPausedTrackId);
-			audio.addEventListener('pause', setPausedTrackId);
-		});
-
-		super.playPause();
-	}
-
 	playNextTrack(next: boolean): void {
-		const index = () => (next ? 1 : -1);
-		const nowPlaying = document.querySelector('[data-tralbumid].playing');
-		if (notExist(nowPlaying)) {
-			const playPauseButton = exist(this.feedPauseTrackId)
-				? this.tracks[
-						this.getTrackIndex(this.feedPauseTrackId) + index()
-					].element.querySelector<HTMLElement>('.play-button')
-				: this.tracks[0].element.querySelector<HTMLElement>(
-						'.play-button'
-					);
-			playPauseButton.click();
-			if (this.config.autoscroll) {
-				playPauseButton.scrollIntoView({
-					block: 'center',
-					behavior: 'smooth',
-				});
-			}
-			playPauseButton.onclick = () => {
-				this.feedPauseTrackId = this.tracks[0].id;
-				this.lastFeedPlayingTrackId = null;
-			};
+		if (notExist(this.nowPlaying)) {
+			this.playTrackByIndex(0);
 			return;
 		}
 
-		const nextPlayPauseButton =
-			this.tracks[
-				this.getTrackIndex(nowPlaying.getAttribute('data-tralbumid')) +
-					index()
-			].element.querySelector<HTMLElement>('.play-button');
-		nextPlayPauseButton.click();
+		const nextIndex =
+			this.tracks
+				.map(({ element }, index) => ({ element, index }))
+				.find(({ element }) => element === this.nowPlaying).index +
+			(next ? 1 : -1);
 
-		if (this.config.autoscroll) {
-			nextPlayPauseButton.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
-
-		nextPlayPauseButton.onclick = () => {
-			this.feedPauseTrackId =
-				this.tracks[
-					this.getTrackIndex(
-						nowPlaying.getAttribute('data-tralbumid')
-					) + index()
-				].id;
-			this.lastFeedPlayingTrackId = null;
-		};
+		this.playTrackByIndex(nextIndex);
 	}
 
 	playTrackByIndex(index: number): void {
@@ -125,75 +68,54 @@ export class FeedPageService extends BasePageService implements PageService {
 			}))
 			.filter((x) => exist(x.id));
 
-		this.tracks.forEach((x) => {
-			x.element.querySelector<HTMLElement>('.play-button').onclick =
-				() => {
-					this.lastFeedPlayingTrackId = null;
-					if (x.element.classList.contains('playing')) {
-						this.feedPauseTrackId = x.id;
-					}
-				};
+		this.tracks.forEach(({ element }) => {
+			const playButton =
+				element.querySelector<HTMLElement>('.play-button');
+			playButton.removeEventListener(
+				'click',
+				() => (this.nowPlaying = element)
+			);
+			playButton.addEventListener(
+				'click',
+				() => (this.nowPlaying = element)
+			);
 		});
 	}
 
 	tryAutoplay(): void {
-		const nowPlaying = document.querySelector('[data-tralbumid].playing');
-		if (exist(nowPlaying)) {
-			this.lastFeedPlayingTrackId =
-				nowPlaying.getAttribute('data-tralbumid');
-			return;
-		}
-
-		if (notExist(this.lastFeedPlayingTrackId)) {
-			return;
-		}
-
-		if (exist(this.feedPauseTrackId)) {
+		const progress = this.audioOperator<number>(
+			(audio) => (audio.currentTime / audio.duration) * 100
+		);
+		if (!this.autoplayNeeded(progress)) {
 			return;
 		}
 
 		if (this.config.loopTrack) {
-			const trackIndex = this.getTrackIndex(this.lastFeedPlayingTrackId);
-			this.playTrackByIndex(trackIndex);
+			this.seekToPercentage(0);
 			return;
 		}
 
-		this.lastFeedPlayingTrackId =
-			this.tracks[this.getTrackIndex(this.lastFeedPlayingTrackId) + 1].id;
-		const playPauseButton =
-			this.tracks[
-				this.getTrackIndex(this.lastFeedPlayingTrackId)
-			].element.querySelector<HTMLElement>('.play-button');
-		playPauseButton.click();
-
-		if (this.config.autoscroll) {
-			playPauseButton.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
+		this.playNextTrack(true);
 	}
 
 	open(active: boolean): void {
-		const playingFeed = document.querySelector('[data-tralbumid].playing');
-		if (notExist(playingFeed)) {
+		if (notExist(this.nowPlaying)) {
 			return;
 		}
 
-		const itemUrl = playingFeed
+		const itemUrl = this.nowPlaying
 			.querySelector('.item-link')
 			.getAttribute('href');
 		this.createNewTab(itemUrl, active);
 	}
 
 	addToWishlist(): void {
-		const nowPlaying = document.querySelector('[data-tralbumid].playing');
-		if (notExist(nowPlaying)) {
+		if (notExist(this.nowPlaying)) {
 			return;
 		}
 
-		const id = `#collect-item_${nowPlaying.getAttribute('data-tralbumid')}`;
-		const buttonContainer = nowPlaying.querySelector<HTMLElement>(id);
+		const id = `#collect-item_${this.nowPlaying.getAttribute('data-tralbumid')}`;
+		const buttonContainer = this.nowPlaying.querySelector<HTMLElement>(id);
 		if (notExist(buttonContainer)) {
 			return;
 		}
