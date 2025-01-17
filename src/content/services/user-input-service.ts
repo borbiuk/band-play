@@ -47,8 +47,8 @@ export class UserInputService {
 				return;
 			}
 
-			const isShortcut = this.shortcutHandlers.some(({ set }) =>
-				set.has(event.code)
+			const isShortcut = this.shortcutHandlers.some(
+				({ set }) => exist(set) && set.has(event.code)
 			);
 			if (!isShortcut) {
 				return;
