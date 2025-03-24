@@ -1,9 +1,12 @@
-import { PageService } from '../../shared/interfaces/page-service';
-import { exist, notExist } from '../../shared/utils/utils.common';
-import { BasePageService } from './base/base-page-service';
+import { PageService } from '@shared/interfaces';
+import { exist, notExist } from '@shared/utils';
+import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
 // Service to handle 'feed' page.
-export class FeedPageService extends BasePageService implements PageService {
+export class FeedPageService
+	extends BaseBandcampPageService
+	implements PageService
+{
 	private nowPlaying: Element;
 
 	constructor() {

@@ -1,9 +1,13 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "6.0.8",
-	"description": "Automation of work with Bandcamp: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
-	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
+	"version": "7.0.0",
+	"description": "Automation of work with Bandcamp & SoundCloud: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
+	"host_permissions": [
+		"https://bandcamp.com/*",
+		"https://*.bandcamp.com/*",
+		"https://soundcloud.com/*"
+	],
 	"permissions": ["tabs", "storage", "power"],
 	"background": {
 		"service_worker": "background.js"
@@ -11,7 +15,11 @@
 	"content_scripts": [
 		{
 			"js": ["vendor.js", "content.js"],
-			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"]
+			"matches": [
+				"https://bandcamp.com/*",
+				"https://*.bandcamp.com/*",
+				"https://soundcloud.com/*"
+			]
 		}
 	],
 	"action": {
@@ -48,7 +56,11 @@
 				"assets/keys/key-V.png",
 				"assets/logo-128.png"
 			],
-			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"]
+			"matches": [
+				"https://bandcamp.com/*",
+				"https://*.bandcamp.com/*",
+				"https://soundcloud.com/*"
+			]
 		}
 	]
 }

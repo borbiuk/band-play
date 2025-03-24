@@ -1,14 +1,15 @@
-import { MessageCode } from '../../shared/enums/message-code';
-import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel } from '../../shared/models/config-model';
-import { MessageModel } from '../../shared/models/messages/message-model';
-import configService from '../../shared/services/config-service';
-import messageService from '../../shared/services/message-service';
-import { exist, notExist } from '../../shared/utils/utils.common';
-import { AlbumPageService } from '../page-services/album-page-service';
-import { CollectionPageService } from '../page-services/collection-page-service';
-import { DiscoverPageService } from '../page-services/discover-page-service';
-import { FeedPageService } from '../page-services/feed-page-service';
+import { MessageCode } from '@shared/enums';
+import { PageService } from '@shared/interfaces';
+import { ConfigModel } from '@shared/models/config-model';
+import { MessageModel } from '@shared/models/messages';
+import configService from '@shared/services/config-service';
+import messageService from '@shared/services/message-service';
+import { exist, notExist } from '@shared/utils';
+import { AlbumPageService } from '../page-services/bandcamp/album-page-service';
+import { CollectionPageService } from '../page-services/bandcamp/collection-page-service';
+import { DiscoverPageService } from '../page-services/bandcamp/discover-page-service';
+import { FeedPageService } from '../page-services/bandcamp/feed-page-service';
+import { SoundCloudDiscoverPageService } from '../page-services/soundcloud/sound-cloud-discover-page-service';
 
 export class PageServiceWorker {
 	private readonly autoplayDelay: number = 250;
@@ -19,6 +20,7 @@ export class PageServiceWorker {
 		new DiscoverPageService(),
 		new FeedPageService(),
 		new CollectionPageService(),
+		new SoundCloudDiscoverPageService(),
 	];
 
 	public pageService: PageService = null;
@@ -85,7 +87,6 @@ export class PageServiceWorker {
 			x.isServiceUrl(url)
 		);
 		if (exist(service)) {
-			service.tracks = [];
 			service.config = await configService.getAll();
 			service.initTracks();
 		}

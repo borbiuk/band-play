@@ -1,6 +1,6 @@
 import React from 'react';
-import { MessageCode } from '../../shared/enums/message-code';
-import messageService from '../../shared/services/message-service';
+import { MessageCode } from '@shared/enums/message-code';
+import messageService from '@shared/services/message-service';
 import { Button } from './internal/button';
 
 export const Footer = () => {

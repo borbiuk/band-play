@@ -1,4 +1,12 @@
 export enum ShortcutType {
+	/* Playlist */
+	PlayPause = 'Play/Pause',
+	PreviousTrack = 'Play previous track',
+	NextTrack = 'Play next track',
+	PlayTrackByIndex = 'Play track by index',
+	LoopTrack = 'Loop track',
+
+	/* Playback */
 	PlaybackSpeedIncrease = 'Increase playback speed',
 	PlaybackSpeedDecrease = 'Decrease playback speed',
 	PlaybackSpeedReset = 'Reset playback speed',
@@ -11,12 +19,7 @@ export enum ShortcutType {
 
 	SeekToPercentage = 'Set playback progress',
 
-	PlayPause = 'Play/Pause',
-	PreviousTrack = 'Play previous track',
-	NextTrack = 'Play next track',
-	PlayTrackByIndex = 'Play track by index',
-	LoopTrack = 'Loop track',
-
+	/* Common */
 	OpenInNewTab = 'Open in new tab',
 	OpenInNewTabWithFocus = 'Open in new tab with focus',
 

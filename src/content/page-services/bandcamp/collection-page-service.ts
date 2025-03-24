@@ -1,11 +1,11 @@
-import { PageService } from '../../shared/interfaces/page-service';
-import { TrackModel } from '../../shared/models/track-model';
-import { exist, notExist } from '../../shared/utils/utils.common';
-import { BasePageService } from './base/base-page-service';
+import { PageService } from '@shared/interfaces';
+import { BandcampTrackModel } from '@shared/models';
+import { exist, notExist } from '@shared/utils';
+import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
 // Service to handle 'collection' and 'wishlist' pages.
 export class CollectionPageService
-	extends BasePageService
+	extends BaseBandcampPageService
 	implements PageService
 {
 	private isWishlist: boolean;
@@ -97,7 +97,9 @@ export class CollectionPageService
 			?.querySelectorAll('[data-tralbumid]');
 		if (
 			notExist(allTracksOnPage) ||
-			this.tracks.length === allTracksOnPage?.length
+			(this.tracks.length === allTracksOnPage?.length &&
+				this.tracks[0].id ===
+					allTracksOnPage[0].getAttribute('data-tralbumid'))
 		) {
 			return;
 		}
@@ -160,7 +162,7 @@ export class CollectionPageService
 			?.substring(1);
 	}
 
-	private getNextTrack(next: boolean): TrackModel {
+	private getNextTrack(next: boolean): BandcampTrackModel {
 		const nowPlayingId = this.getNowPlayingTrackId();
 		if (notExist(nowPlayingId)) {
 			return this.tracks.length > 0 ? this.tracks[0] : null;

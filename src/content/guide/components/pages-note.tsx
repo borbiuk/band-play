@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page } from '../models/Page';
+import { Page } from '../enums/Page';
 import { PageMark } from './page-mark';
 
 export const PagesNote = () => {

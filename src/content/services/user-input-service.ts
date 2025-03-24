@@ -1,9 +1,8 @@
-import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
-import { PlaybackSpeedAction } from '../../shared/enums/playback-speed-action';
-import { PageService } from '../../shared/interfaces/page-service';
-import { ConfigModel, ShortcutConfig } from '../../shared/models/config-model';
-import configService from '../../shared/services/config-service';
-import { exist, notExist } from '../../shared/utils/utils.common';
+import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
+import { PageService } from '@shared/interfaces';
+import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
+import configService from '@shared/services/config-service';
+import { exist, notExist } from '@shared/utils';
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
 import { ShortcutSet } from '../shortcut/shortcut-set';
 import { ShortcutType } from '../shortcut/shortcut-type';
@@ -41,38 +40,46 @@ export class UserInputService {
 
 	private listenHotkeys(serviceWorker: PageServiceWorker): void {
 		const keysPressed = new ShortcutSet();
-		document.addEventListener('keydown', (event: KeyboardEvent) => {
-			const targetName = (event.target as HTMLElement)?.localName;
-			if (['input', 'textarea'].includes(targetName)) {
-				return;
-			}
+		document.addEventListener(
+			'keydown',
+			(event: KeyboardEvent) => {
+				const targetName = (event.target as HTMLElement)?.localName;
+				if (['input', 'textarea'].includes(targetName)) {
+					return;
+				}
 
-			const isShortcut = this.shortcutHandlers.some(
-				({ set }) => exist(set) && set.has(event.code)
-			);
-			if (!isShortcut) {
-				return;
-			}
+				const isShortcut = this.shortcutHandlers.some(
+					({ set }) => exist(set) && set.has(event.code)
+				);
+				if (!isShortcut) {
+					return;
+				}
 
-			event.preventDefault();
+				event.preventDefault();
 
-			keysPressed.add(event.code);
-		});
-		document.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (keysPressed.size === 0) {
-				return;
-			}
+				keysPressed.add(event.code);
+			},
+			{ capture: true }
+		);
+		document.addEventListener(
+			'keyup',
+			(event: KeyboardEvent) => {
+				if (keysPressed.size === 0) {
+					return;
+				}
 
-			const targetName = (event.target as HTMLElement)?.localName;
-			if (['input', 'textarea'].includes(targetName)) {
-				return;
-			}
+				const targetName = (event.target as HTMLElement)?.localName;
+				if (['input', 'textarea'].includes(targetName)) {
+					return;
+				}
 
-			event.preventDefault();
+				event.preventDefault();
 
-			this.handleShortcut(serviceWorker, keysPressed, event);
-			keysPressed.clear();
-		});
+				this.handleShortcut(serviceWorker, keysPressed, event);
+				keysPressed.clear();
+			},
+			{ capture: true }
+		);
 	}
 
 	private handleShortcut(
@@ -181,20 +188,6 @@ export class UserInputService {
 		mediaSession.setActionHandler('seekbackward', () => {
 			serviceWorker.pageService.seekForward(false);
 		});
-		mediaSession.setActionHandler(
-			'seekto',
-			(details: MediaSessionActionDetails) => {
-				serviceWorker.pageService.audioOperator(
-					(audio: HTMLAudioElement) => {
-						if (details.fastSeek) {
-							audio.fastSeek(details.seekTime);
-						} else {
-							audio.currentTime = details.seekTime;
-						}
-					}
-				);
-			}
-		);
 
 		// Play/Pause:
 		mediaSession.setActionHandler('play', () => {

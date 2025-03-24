@@ -1,7 +1,7 @@
 import { KeyCode } from '../enums/key-code';
 import { isNumeric } from './utils.common';
 
-export const mapToString = (value: string): string => {
+export const mapShortcutToString = (value: string): string => {
 	value = value.toLowerCase();
 
 	if (value.includes(KeyCode.Shift.toLowerCase())) {

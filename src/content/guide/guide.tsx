@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import './guide.scss';
 import { createRoot } from 'react-dom/client';
 import { Tooltip } from 'react-tooltip';
-import { MessageCode } from '../../shared/enums/message-code';
-import { MessageModel } from '../../shared/models/messages/message-model';
-import messageService from '../../shared/services/message-service';
+import { MessageCode } from '@shared/enums';
+import { MessageModel } from '@shared/models/messages';
+import messageService from '@shared/services/message-service';
 import { Hotkey } from './components/hotkey';
 import { PagesNote } from './components/pages-note';
-import { Page } from './models/Page';
+import { Page } from './enums/Page';
 
 export const initGuide = () => {
 	const guideContainerId = 'band-play_guide-container';

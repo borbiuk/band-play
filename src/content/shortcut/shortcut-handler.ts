@@ -1,4 +1,4 @@
-import { PageService } from '../../shared/interfaces/page-service';
+import { PageService } from '@shared/interfaces';
 import { ShortcutSet } from './shortcut-set';
 import { ShortcutType } from './shortcut-type';
 

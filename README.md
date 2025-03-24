@@ -4,45 +4,56 @@
     <h1 style="margin-top: 10px; margin-bottom: -8px; color: rgb(17 24 39); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Band Play</h1>
 </div>
 
-Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com) by
-tempo adjustment, preserve pitch, playback control by shortcuts, autoplay and other automation features,
-allowing users to seamlessly control their music playback.
+Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com)
+and [SoundCloud](https://soundcloud.com/) by tempo adjustment, preserve pitch, playback control by shortcuts,
+autoplay and other automation features, allowing users to seamlessly control their music playback.
 
-Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page for more details.
+Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page
+for more details.
 
 <hr/>
 
 ## 🚀 Usage
 
-To use the extension, simply navigate to a supported pages:
+### 🔵 Bandcamp
+
+Bandcamp supported pages:
 
 - Feed
 - Discover
 - Collection/Wishlist
 - Album/Track
 
-### ⌨️ Hotkeys
+### 🟠 SoundCloud
+
+SoundCloud support is not complete at this time, read on for details.
+
+### 🎹 Hotkeys
 
 This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy control over music playback:
 
-|       Key       | Description                                                         |
-| :-------------: | ------------------------------------------------------------------- |
-|     `Space`     | Pause/Play the current track                                        |
-|       `N`       | Play the next Track                                                 |
-|       `B`       | Play the previous Track                                             |
-|       `O`       | Open the current Track in new tab                                   |
-|       `P`       | Enable or disable auto pitch (usable whe playback speed is changed) |
-|   `Shift`+`O`   | Reset auto pitch                                                    |
-|   `Shift`+`O`   | Open the current Track in new tab and focus on it                   |
-|       `L`       | Add or Remove Track from wishlist                                   |
-|      `0-9`      | Play the current track with progress `(Digit * 10)%` \*             |
-|  `Shift`+`0-9`  | Play the track by index                                             |
-|     `←` `→`     | Move track playback back or forward on `step` seconds               |
-|     `↑` `↓`     | Increase or decrease track playback speed on `3.03%` \*\*           |
-| `Shift`+`↑`/`↓` | Reset track playback speed                                          |
+_NOTE: Not all hotkey works for SoundCloud (SC)_
+
+|       Key       | Description                                                         |  SC   |
+| :-------------: | ------------------------------------------------------------------- | :---: |
+|     `Space`     | Pause/Play the current track                                        |   +   |
+|       `N`       | Play the next Track                                                 |   +   |
+|       `B`       | Play the previous Track                                             |   +   |
+|  `Shift`+`0-9`  | Play the track by index                                             | + / - |
+|  `Shift` + `V`  | Loop the current Track                                              |   -   |
+|       `L`       | Add or Remove Track from wishlist                                   |   +   |
+|       `O`       | Open the current Track in new tab                                   |   +   |
+|   `Shift`+`O`   | Open the current Track in new tab and focus on it                   |   +   |
+|      `0-9`      | Play the current Track with progress `(Digit * 10)%` \*             |   +   |
+|     `←` `→`     | Move track playback Back/Forward on `step` seconds \*\*             | + / - |
+|     `↑` `↓`     | Increase/Decrease Track playback speed on `3.03%` \*\*\*            |   -   |
+| `Shift`+`↑`/`↓` | Reset Track playback speed                                          |   -   |
+|       `P`       | Enable or disable auto pitch (usable whe playback speed is changed) |   -   |
+|   `Shift`+`P`   | Reset auto pitch                                                    |   -   |
 
 1. \* For example, pressing key `3` will set the track playback to `30%` of all duration.
-2. \*\* the same as one rotation of a vinyl per minute.
+2. \*\* You can change a `step` value in the menu.
+3. \*\*\* The same as one rotation of a vinyl per minute.
 
 Please note that customization of hotkeys is not available in the current version.
 

@@ -1,12 +1,18 @@
-import { PageService } from '../../shared/interfaces/page-service';
-import { exist, notExist } from '../../shared/utils/utils.common';
-import { BasePageService } from './base/base-page-service';
+import { PageService } from '@shared/interfaces';
+import { exist, notExist } from '@shared/utils';
+
+import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
 // Service to handle 'album' and 'track' pages.
-export class AlbumPageService extends BasePageService implements PageService {
+export class AlbumPageService
+	extends BaseBandcampPageService
+	implements PageService
+{
 	constructor() {
 		super();
 	}
+
+	initTracks(): void {}
 
 	isServiceUrl(url: string): boolean {
 		return url.includes('/album/') || url.includes('/track/');

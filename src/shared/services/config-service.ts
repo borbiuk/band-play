@@ -1,7 +1,7 @@
 import { ShortcutType } from '../../content/shortcut/shortcut-type';
 import { KeyCode } from '../enums/key-code';
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
-import { exist } from '../utils/utils.common';
+import { exist } from '@shared/utils';
 
 /**
  * Service for managing and handling configuration settings stored in local storage.
@@ -139,7 +139,7 @@ class ConfigService {
 			[ShortcutType.PreviousTrack]: [KeyCode.KeyB],
 			[ShortcutType.NextTrack]: [KeyCode.KeyN],
 			[ShortcutType.PlayTrackByIndex]: [KeyCode.Digit, KeyCode.Shift],
-			[ShortcutType.LoopTrack]: [KeyCode.KeyV],
+			[ShortcutType.LoopTrack]: [KeyCode.KeyV, KeyCode.Shift],
 			[ShortcutType.OpenInNewTab]: [KeyCode.KeyO],
 			[ShortcutType.OpenInNewTabWithFocus]: [KeyCode.KeyO, KeyCode.Shift],
 			[ShortcutType.AddToWishlist]: [KeyCode.KeyL],

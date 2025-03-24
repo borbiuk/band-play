@@ -1,5 +1,4 @@
-import { exist, isNumeric, notExist } from '../../shared/utils/utils.common';
-import { mapToString } from '../../shared/utils/utils.shortcut';
+import { exist, isNumeric, notExist, mapShortcutToString } from '@shared/utils';
 
 export class ShortcutSet extends Set<string> {
 	public digit: number;
@@ -9,7 +8,7 @@ export class ShortcutSet extends Set<string> {
 			values = [];
 		}
 
-		super(values.map((x) => mapToString(x)));
+		super(values.map((x) => mapShortcutToString(x)));
 	}
 
 	add(value: string) {
@@ -17,11 +16,11 @@ export class ShortcutSet extends Set<string> {
 			this.digit = Number(value.split('Digit')[1]);
 		}
 
-		return super.add(mapToString(value));
+		return super.add(mapShortcutToString(value));
 	}
 
 	has(value: string): boolean {
-		return super.has(mapToString(value));
+		return super.has(mapShortcutToString(value));
 	}
 
 	delete(_: string): boolean {

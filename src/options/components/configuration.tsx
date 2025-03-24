@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ConfigModel } from '../../shared/models/config-model';
-import configService from '../../shared/services/config-service';
-import { notExist } from '../../shared/utils/utils.common';
+import { ConfigModel } from '@shared/models/config-model';
+import configService from '@shared/services/config-service';
+import { notExist } from '@shared/utils/utils.common';
 import { Checkbox } from './internal/checkbox';
 import { PlaybackStepInput } from './internal/playback-step-input';
 

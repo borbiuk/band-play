@@ -11,6 +11,9 @@
 		"outDir": "dist/js",
 		"noEmitOnError": true,
 		"jsx": "react",
-		"typeRoots": ["node_modules/@types"]
+		"typeRoots": ["node_modules/@types"],
+		"paths": {
+			"@shared/*": ["./src/shared/*"]
+		}
 	}
 }

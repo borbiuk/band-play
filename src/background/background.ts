@@ -1,9 +1,8 @@
-import { MessageCode } from '../shared/enums/message-code';
-import { MessageModel } from '../shared/models/messages/message-model';
-import { NewTabMessage } from '../shared/models/messages/new-tab-message';
-import configService from '../shared/services/config-service';
-import messageService from '../shared/services/message-service';
-import { notExist } from '../shared/utils/utils.common';
+import { MessageCode } from '@shared/enums';
+import { MessageModel, NewTabMessage } from '@shared/models/messages';
+import configService from '@shared/services/config-service';
+import messageService from '@shared/services/message-service';
+import { notExist } from '@shared/utils';
 
 const executeInCurrentTab = (
 	tabCallback: (tabId: number) => void | Promise<void>

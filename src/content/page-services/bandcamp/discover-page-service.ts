@@ -1,12 +1,12 @@
-import { PlaybackPitchAction } from '../../shared/enums/playback-pitch-action';
-import { PageService } from '../../shared/interfaces/page-service';
-import { notExist } from '../../shared/utils/utils.common';
-import { convertTimeStringToSeconds } from '../../shared/utils/utils.time';
-import { BasePageService } from './base/base-page-service';
+import { PlaybackPitchAction } from '@shared/enums';
+import { PageService } from '@shared/interfaces';
+import { notExist, convertTimeStringToSeconds } from '@shared/utils';
+
+import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
 // Service to handle 'discover' page.
 export class DiscoverPageService
-	extends BasePageService
+	extends BaseBandcampPageService
 	implements PageService
 {
 	constructor() {
