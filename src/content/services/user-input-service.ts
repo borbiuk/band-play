@@ -1,16 +1,17 @@
-import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
+import {
+	PlaybackPitchAction,
+	PlaybackSpeedAction,
+	ShortcutType,
+} from '@shared/enums';
 import { PageService } from '@shared/interfaces';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist, notExist } from '@shared/utils';
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
 import { ShortcutSet } from '../shortcut/shortcut-set';
-import { ShortcutType } from '../shortcut/shortcut-type';
 import { PageServiceWorker } from './page-service-worker';
 
 export class UserInputService {
-	constructor() {}
-
 	public start(serviceWorker: PageServiceWorker): void {
 		this.listenHotkeys(serviceWorker);
 		this.listenNavigator(serviceWorker);
@@ -40,11 +41,13 @@ export class UserInputService {
 
 	private listenHotkeys(serviceWorker: PageServiceWorker): void {
 		const keysPressed = new ShortcutSet();
+
+		const bandcampInputElements = ['input', 'textarea', 'menu-bar'];
 		document.addEventListener(
 			'keydown',
 			(event: KeyboardEvent) => {
 				const targetName = (event.target as HTMLElement)?.localName;
-				if (['input', 'textarea'].includes(targetName)) {
+				if (bandcampInputElements.includes(targetName)) {
 					return;
 				}
 
@@ -69,7 +72,7 @@ export class UserInputService {
 				}
 
 				const targetName = (event.target as HTMLElement)?.localName;
-				if (['input', 'textarea'].includes(targetName)) {
+				if (bandcampInputElements.includes(targetName)) {
 					return;
 				}
 
@@ -102,7 +105,7 @@ export class UserInputService {
 		shortcut.handle(serviceWorker.pageService, keysPressed);
 	}
 
-	private shortcutHandlers: ShortcutHandler[] = [
+	private readonly shortcutHandlers: ShortcutHandler[] = [
 		new ShortcutHandler(
 			ShortcutType.PlaybackSpeedIncrease,
 			(service: PageService) =>

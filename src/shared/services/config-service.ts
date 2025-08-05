@@ -1,5 +1,4 @@
-import { ShortcutType } from '../../content/shortcut/shortcut-type';
-import { KeyCode } from '../enums/key-code';
+import { KeyCode, ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
 import { exist } from '@shared/utils';
 

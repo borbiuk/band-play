@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+#band-play_guide-container {
+	@tailwind base;
+	@tailwind components;
+	@tailwind utilities;
+}
 
 /* required to avoid overwriting bandcamp styles */
 *,

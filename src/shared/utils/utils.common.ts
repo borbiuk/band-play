@@ -8,5 +8,5 @@ export const notExist = <T>(value: T) =>
 // Check if a value exists (not null, undefined, or empty string).
 export const exist = <T>(value: T) => !notExist(value);
 
-// Check if string is a valid number.
+// Check if a string is a valid number.
 export const isNumeric = (value: string) => !isNaN(parseFloat(value));

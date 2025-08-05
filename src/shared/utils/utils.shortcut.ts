@@ -1,4 +1,4 @@
-import { KeyCode } from '../enums/key-code';
+import { KeyCode } from '@shared/enums';
 import { isNumeric } from './utils.common';
 
 export const mapShortcutToString = (value: string): string => {

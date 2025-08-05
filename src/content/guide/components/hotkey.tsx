@@ -3,12 +3,15 @@ import { Page } from '../enums/Page';
 import { AvailablePages } from './available-pages';
 
 /**
- * Hotkey component for displaying an image representing a keyboard key along with a title and description.
+ * Hotkey component for displaying a visual representation of a keyboard key along with a title and description.
  *
- * @param {string} fileName - The file name of the keyboard key image.
- * @param {string} title - The title or label associated with the hotkey.
- * @param {string} description - The description explaining the functionality of the hotkey.
- * @param {Page} pages - Available pages of the hotkey.
+ * @param {Object} props - The properties object.
+ * @param {string} props.fileName - The name of the file representing the keyboard key image (e.g., an icon).
+ * @param {string} props.title - The title or label to identify the keyboard shortcut or hotkey.
+ * @param {string} props.description - A detailed description explaining the functionality of the hotkey.
+ * @param {Page[]} props.pages - An array of available pages or contexts where the hotkey is applicable.
+ *
+ * @returns {JSX.Element} The rendered Hotkey component.
  */
 export const Hotkey = ({
 	fileName,

@@ -17,8 +17,9 @@ export const Footer = () => {
 		);
 
 	const showGuide = async (): Promise<void> => {
-		await messageService.sendToActiveContent({
+		await messageService.sendToActiveContent<boolean>({
 			code: MessageCode.ShowGuide,
+			data: true,
 		});
 	};
 

@@ -4,7 +4,6 @@ import './options.scss';
 import { Configuration } from './components/configuration';
 import { Footer } from './components/footer';
 import { ShortcutInput } from './components/shortcut-input';
-import { KeyCode } from '@shared/enums/key-code';
 
 /**
  * Options component representing the user interface of the Chrome extension Options.
@@ -33,7 +32,7 @@ const Options = () => {
 	);
 };
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<React.StrictMode>

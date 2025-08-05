@@ -1,4 +1,4 @@
-import { ShortcutType } from '../../content/shortcut/shortcut-type';
+import { ShortcutType } from '@shared/enums';
 
 export type ShortcutConfig = {
 	[key in ShortcutType]: string;

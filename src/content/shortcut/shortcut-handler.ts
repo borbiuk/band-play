@@ -1,6 +1,6 @@
+import { ShortcutType } from '@shared/enums';
 import { PageService } from '@shared/interfaces';
 import { ShortcutSet } from './shortcut-set';
-import { ShortcutType } from './shortcut-type';
 
 export class ShortcutHandler {
 	public set: ShortcutSet;

@@ -8,14 +8,14 @@ export const AvailablePages = ({ pages }: { pages: Page[] }) => {
 			{Object.keys(Page).map((page, index) =>
 				pages.includes(Page[page]) ? (
 					<div
-						key={index}
+						key={page}
 						className={`-mt-1 lg:-ml-1 lg:-mr-0 z-${100 - index * 10}`}
 					>
 						<PageMark page={Page[page]} />
 					</div>
 				) : (
 					<div
-						key={index}
+						key={page}
 						className={`lg:-ml mt-1 h-4 w-4 lg:-mr-0 z-${100 - index * 10}`}
 					></div>
 				)

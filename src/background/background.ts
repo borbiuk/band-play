@@ -43,20 +43,26 @@ const registerUrlChange = () =>
 
 // Subscribe on messages.
 const registerMessagesHandling = () =>
-	messageService.addListener((message: MessageModel<NewTabMessage>) => {
-		if (notExist(message?.code)) {
-			return;
-		}
-
-		const { code } = message;
-
-		switch (code) {
-			// Open new tab
-			case MessageCode.CreateNewTab:
+	messageService.addListener(async (message: MessageModel<unknown>) => {
+		switch (message.code) {
+			// Open a new tab
+			case MessageCode.CreateNewTab: {
 				const { url, active } = message.data as NewTabMessage;
 				chrome.tabs.create({ url: String(url), active }).catch((e) => {
 					console.error(e);
 				});
+				break;
+			}
+
+			// Redirect ShowGuide message to content
+			case MessageCode.ShowGuide: {
+				await messageService.sendToActiveContent<boolean>(
+					message as MessageModel<boolean>
+				);
+				break;
+			}
+
+			default:
 				break;
 		}
 	});
