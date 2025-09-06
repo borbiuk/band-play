@@ -1,41 +1,53 @@
 import { PageService } from '@shared/interfaces';
 import { exist, notExist } from '@shared/utils';
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
+import { switchPlayer } from './feed-player/feed-player';
 
 // Service to handle 'feed' page.
 export class FeedPageService
 	extends BaseBandcampPageService
 	implements PageService
 {
-	private nowPlaying: Element;
+	public isPreviousTrackAvailable: boolean = false;
+
+	private nowPlaying: {
+		element: Element;
+		name: string;
+		artist: string;
+	};
 
 	constructor() {
 		super();
 	}
 
 	isServiceUrl(url: string): boolean {
-		return url.endsWith('/feed') || url.includes('/feed?');
+		const useService = url.endsWith('/feed') || url.includes('/feed?');
+		switchPlayer(useService, this);
+		return useService;
 	}
 
 	playNextTrack(next: boolean): void {
 		if (notExist(this.nowPlaying)) {
-			this.playTrackByIndex(0);
+			this.isPreviousTrackAvailable = false;
 			return;
 		}
 
 		const nextIndex =
 			this.tracks
 				.map(({ element }, index) => ({ element, index }))
-				.find(({ element }) => element === this.nowPlaying).index +
-			(next ? 1 : -1);
+				.find(({ element }) => element === this.nowPlaying.element)
+				.index + (next ? 1 : -1);
 
 		this.playTrackByIndex(nextIndex);
 	}
 
 	playTrackByIndex(index: number): void {
 		if (index < 0 || index >= this.tracks.length) {
+			this.isPreviousTrackAvailable = false;
 			return;
 		}
+
+		this.isPreviousTrackAvailable = index !== 0;
 
 		const playPauseButton =
 			this.tracks[index].element.querySelector<HTMLElement>(
@@ -74,14 +86,21 @@ export class FeedPageService
 		this.tracks.forEach(({ element }) => {
 			const playButton =
 				element.querySelector<HTMLElement>('.play-button');
-			playButton.removeEventListener(
-				'click',
-				() => (this.nowPlaying = element)
-			);
-			playButton.addEventListener(
-				'click',
-				() => (this.nowPlaying = element)
-			);
+
+			const setNowPlaying = () => {
+				this.nowPlaying = {
+					element,
+					name: element.querySelector<HTMLElement>(
+						'.collection-item-title'
+					).textContent,
+					artist: element.querySelector<HTMLElement>(
+						'.collection-item-artist'
+					).textContent,
+				};
+			};
+
+			playButton.removeEventListener('click', setNowPlaying);
+			playButton.addEventListener('click', setNowPlaying);
 		});
 	}
 
@@ -106,7 +125,7 @@ export class FeedPageService
 			return;
 		}
 
-		const itemUrl = this.nowPlaying
+		const itemUrl = this.nowPlaying.element
 			.querySelector('.item-link')
 			.getAttribute('href');
 		this.createNewTab(itemUrl, active);
@@ -117,8 +136,10 @@ export class FeedPageService
 			return;
 		}
 
-		const id = `#collect-item_${this.nowPlaying.getAttribute('data-tralbumid')}`;
-		const buttonContainer = this.nowPlaying.querySelector<HTMLElement>(id);
+		const nowPlayingElement = this.nowPlaying.element;
+		const id = `#collect-item_${nowPlayingElement.getAttribute('data-tralbumid')}`;
+		const buttonContainer =
+			nowPlayingElement.querySelector<HTMLElement>(id);
 		if (notExist(buttonContainer)) {
 			return;
 		}

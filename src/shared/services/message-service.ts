@@ -42,7 +42,7 @@ class MessageService {
 	 * @returns A promise that resolves when the message has been sent.
 	 */
 	public async sendToBackground<T>(message: MessageModel<T>): Promise<void> {
-		return chrome.runtime.sendMessage(message);
+		await chrome.runtime.sendMessage(message);
 	}
 
 	/**

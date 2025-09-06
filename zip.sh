@@ -41,6 +41,7 @@ include_files=(
 	"dist/assets/logo-32.png"
 	"dist/assets/logo-48.png"
 	"dist/assets/logo-128.png"
+	"dist/assets/nextprev.png"
 	"dist/assets/rate.png"
 	"dist/background.js"
 	"dist/content.js"

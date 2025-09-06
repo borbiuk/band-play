@@ -1,10 +1,13 @@
-import { PlaybackPitchAction } from '@shared/enums';
-import { PlaybackSpeedAction } from '@shared/enums';
+import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
 import { BandcampTrackModel } from '@shared/models';
+import EventEmitter from '@shared/services/event-emitter';
 import { exist, notExist } from '@shared/utils';
 import { BasePageService } from '../../base/base-page-service';
 
 export class BaseBandcampPageService extends BasePageService<BandcampTrackModel> {
+	public audioEventEmitter: EventEmitter<HTMLAudioElement> =
+		new EventEmitter();
+
 	playPause(): void {
 		this.audioOperator<void>((audio) => {
 			if (audio.paused) {
@@ -69,10 +72,12 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 			audio = this.findAudioElement();
 
 			if (notExist(audio?.src)) {
+				this.audioEventEmitter.emit(null);
 				return exist(notFoundHandler) ? notFoundHandler() : undefined;
 			}
 		}
 
+		this.audioEventEmitter.emit(audio);
 		return operator(audio);
 	}
 
