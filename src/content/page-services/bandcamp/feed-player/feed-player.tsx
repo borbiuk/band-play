@@ -1,32 +1,34 @@
+import configService from '@shared/services/config-service';
 import { notExist } from '@shared/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+
 import './feed-player.scss';
 import { FeedPageService } from '../feed-page-service';
 
-export const switchPlayer = (
-	show: boolean,
-	feedPageService: FeedPageService
-) => {
+// Global variable to store the React root
+let globalRoot: any = null;
+
+export const renderPlayer = (feedPageService: FeedPageService) => {
 	const guideContainerId = 'band-play_player-container';
 
-	if (show) {
-		const guideContainer = document.createElement('div');
-		guideContainer.id = guideContainerId;
-		document.body.append(guideContainer);
-
-		const root = createRoot(document.getElementById(guideContainerId));
-		root.render(
-			<React.StrictMode>
-				<FeedPlayer feedPageService={feedPageService} />
-			</React.StrictMode>
-		);
-	} else {
-		const guideContainer = document.getElementById(guideContainerId);
-		if (guideContainer) {
-			guideContainer.remove();
-		}
+	let container = document.getElementById(guideContainerId);
+	if (!container) {
+		container = document.createElement('div');
+		container.id = guideContainerId;
+		document.body.append(container);
 	}
+
+	// Create or reuse React root
+	if (notExist(globalRoot)) {
+		globalRoot = createRoot(container);
+	}
+
+	globalRoot.render(
+		<React.StrictMode>
+			<FeedPlayer feedPageService={feedPageService} />
+		</React.StrictMode>
+	);
 };
 
 export const FeedPlayer = ({
@@ -34,8 +36,10 @@ export const FeedPlayer = ({
 }: {
 	feedPageService: FeedPageService;
 }) => {
-	const prevNextImageUrl = () =>
-		chrome.runtime.getURL('./assets/nextprev.png');
+	const prevNextImageUrl = useMemo(
+		() => chrome.runtime.getURL('./assets/nextprev.png'),
+		[]
+	);
 
 	const [show, setShow] = useState<boolean>(false);
 	const [currentTime, setCurrentTime] = useState<number>(0);
@@ -46,6 +50,17 @@ export const FeedPlayer = ({
 	const [isPreviousTrackAvailable, setIsPreviousTrackAvailable] =
 		useState<boolean>(false);
 	const [seeking, setSeeking] = useState(false);
+	const [trackTitle, setTrackTitle] = useState<string>('');
+	const [trackArtist, setTrackArtist] = useState<string>('');
+	const [coverArtUrl, setCoverArtUrl] = useState<string>('');
+	const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+	useEffect(() => {
+		setShow(feedPageService.config.showFeedPlayer);
+		configService.addListener((newConfig) => {
+			setShow(newConfig.showFeedPlayer);
+		});
+	}, []);
 
 	useEffect(() => {
 		feedPageService.audioEventEmitter.on((audio) => {
@@ -67,6 +82,13 @@ export const FeedPlayer = ({
 				setShow(true);
 			});
 
+			audio.addEventListener('play', () => {
+				setIsPlaying(true);
+			});
+
+			audio.addEventListener('pause', () => {
+				setIsPlaying(false);
+			});
 			audio.addEventListener('progress', () => {
 				try {
 					const bufferedEnd = audio.buffered.end(
@@ -85,6 +107,40 @@ export const FeedPlayer = ({
 	}, []);
 
 	useEffect(() => {
+		const listener = ({
+			title,
+			artist,
+			coverArtUrl,
+		}: {
+			title: string;
+			artist: string;
+			coverArtUrl: string;
+		}) => {
+			setTrackTitle(title ?? '');
+			setTrackArtist(artist ?? '');
+			setCoverArtUrl(coverArtUrl ?? '');
+			setIsPreviousTrackAvailable(
+				feedPageService.isPreviousTrackAvailable
+			);
+		};
+
+		const current = feedPageService.getNowPlayingInfo?.();
+		if (current) {
+			setTrackTitle(current.title ?? '');
+			setTrackArtist(current.artist ?? '');
+			setCoverArtUrl(current.coverArtUrl ?? '');
+			setIsPreviousTrackAvailable(
+				feedPageService.isPreviousTrackAvailable
+			);
+		}
+
+		feedPageService.nowPlayingEventEmitter?.on(listener);
+		return () => {
+			feedPageService.nowPlayingEventEmitter?.off(listener);
+		};
+	}, [feedPageService]);
+
+	useEffect(() => {
 		setProgressWidth(`${((currentTime / duration) * 100).toFixed(2)}%`);
 	}, [currentTime, duration]);
 
@@ -92,42 +148,74 @@ export const FeedPlayer = ({
 		setBufferWidth(`${((bufferEnd / duration) * 100).toFixed(2)}%`);
 	}, [bufferEnd, duration]);
 
-	const formatTime = (time: number): string => {
+	const formatTime = useCallback((time: number): string => {
 		const minutes = Math.floor(time / 60);
 		const seconds = Math.floor(time % 60)
 			.toString()
 			.padStart(2, '0');
 		return `${minutes}:${seconds}`;
-	};
+	}, []);
 
-	const trackName = 'Out of Sorts - Reverse Groove (Manami Remix)';
+	const trackName = useMemo(
+		() =>
+			trackArtist ? `${trackTitle} — ${trackArtist}` : trackTitle || '',
+		[trackArtist, trackTitle]
+	);
 
-	const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-		const progressBar = e.currentTarget;
-		const rect = progressBar.getBoundingClientRect();
+	const handleSeek = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			const progressBar = e.currentTarget;
+			const rect = progressBar.getBoundingClientRect();
 
-		// Calculate the click position as a percentage
-		const clickPosition = e.clientX - rect.left;
-		const percentage = (clickPosition / rect.width) * 100;
+			// Calculate the click position as a percentage
+			const clickPosition = e.clientX - rect.left;
+			const percentage = (clickPosition / rect.width) * 100;
 
-		// Call the FeedPageService method to seek to the clicked position
-		feedPageService.seekToPercentage(percentage);
-	};
+			// Call the FeedPageService method to seek to the clicked position
+			feedPageService.seekToPercentage(percentage);
+		},
+		[feedPageService]
+	);
 
 	return (
 		show && (
-			<div className="fixed bottom-20 right-10 z-[999] flex h-[64px] w-[500px] select-none flex-row rounded-sm bg-white">
-				{/* Play/Pause button */}
-				<div className="paused playing story">
-					<div className="play-button bottom-[8px] left-[8px]">
-						<div className="play-icon"></div>
+			<div className="fixed bottom-20 right-10 z-[999] flex h-[80px] w-[500px] select-none flex-row border border-gray-300 bg-white">
+				{/* Cover Art */}
+				<div
+					className={`story flex items-center justify-center ${isPlaying ? 'playing' : 'paused'}`}
+				>
+					<div className="group relative ml-2 flex h-[60px] w-[60px] cursor-pointer items-center justify-center">
+						{coverArtUrl ? (
+							<>
+								<img
+									src={coverArtUrl}
+									alt="Track cover art"
+									className="h-full w-full object-cover"
+									onClick={() => feedPageService.playPause()}
+								/>
+								{/* Play/Pause overlay */}
+								<div
+									className="cover-art-overlay"
+									onClick={() => feedPageService.playPause()}
+								>
+									<div className="play-icon"></div>
+								</div>
+							</>
+						) : (
+							<div
+								className="flex h-full w-full items-center justify-center bg-black bg-opacity-75"
+								onClick={() => feedPageService.playPause()}
+							>
+								<div className="play-icon"></div>
+							</div>
+						)}
 					</div>
 				</div>
 
 				{/* Player */}
-				<div className="col col-7-15 progress-transport ml-[64px] flex h-[50px] w-full pl-2 pr-4">
-					<div className="info-progress w-full">
-						<div className="info flex w-full flex-row justify-between gap-x-2 pt-[16px]">
+				<div className="col col-8-15 progress-transportflex h-full w-full items-center pl-2 pr-4">
+					<div className="flex h-full w-full flex-col justify-center">
+						<div className="info flex w-full flex-row justify-between gap-x-2">
 							{/* Track name */}
 							<div className="title">
 								<a onClick={() => feedPageService.playPause()}>
@@ -136,7 +224,7 @@ export const FeedPlayer = ({
 							</div>
 
 							{/* Duration */}
-							<div className="pos-dur">
+							<div className="-mr-1.5 flex flex-row">
 								<span>{formatTime(currentTime)}</span> /{' '}
 								<span>{formatTime(duration)}</span>
 							</div>
@@ -166,9 +254,9 @@ export const FeedPlayer = ({
 							</div>
 
 							{/* Previous/Next track buttons */}
-							<div className="transport flex flex-row gap-x-[8px]">
+							<div className="transport mt-0.5 flex flex-row gap-x-[8px]">
 								<img
-									src={prevNextImageUrl()}
+									src={prevNextImageUrl}
 									alt="Play previous track"
 									className={`-mr-[20px] h-[12px] w-[40px] ${isPreviousTrackAvailable ? 'hover:cursor-pointer' : ''}`}
 									style={{
@@ -189,7 +277,7 @@ export const FeedPlayer = ({
 									}}
 								></img>
 								<img
-									src={prevNextImageUrl()}
+									src={prevNextImageUrl}
 									alt="Play next track"
 									className="-ml-[20px] h-[12px] w-[40px] hover:cursor-pointer"
 									style={{

@@ -7,8 +7,10 @@ import { PageService } from '@shared/interfaces';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist, notExist } from '@shared/utils';
+
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
 import { ShortcutSet } from '../shortcut/shortcut-set';
+
 import { PageServiceWorker } from './page-service-worker';
 
 export class UserInputService {

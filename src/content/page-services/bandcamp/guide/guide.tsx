@@ -4,6 +4,7 @@ import messageService from '@shared/services/message-service';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Tooltip } from 'react-tooltip';
+
 import { Hotkey } from './components/hotkey';
 import { PagesNote } from './components/pages-note';
 import { Page } from './enums/Page';

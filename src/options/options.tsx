@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+
 import './options.scss';
 import { Configuration } from './components/configuration';
 import { Footer } from './components/footer';

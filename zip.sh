@@ -20,7 +20,6 @@ temp_dir="band-play-build"
 
 # Files that will be included to .zip
 include_files=(
-	"dist/assets/bandcamp.png"
 	"dist/assets/buymeacoffee.png"
 	"dist/assets/close.png"
 	"dist/assets/github.png"

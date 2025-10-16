@@ -1,6 +1,6 @@
+import { ConfigModel } from '@shared/models/config-model';
 import React, { useEffect, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
-import { ConfigModel } from '@shared/models/config-model';
 
 export interface CheckBoxOptions {
 	// The unique identifier for the checkbox.

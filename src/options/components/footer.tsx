@@ -1,6 +1,7 @@
-import React from 'react';
 import { MessageCode } from '@shared/enums/message-code';
 import messageService from '@shared/services/message-service';
+import React from 'react';
+
 import { Button } from './internal/button';
 
 export const Footer = () => {
@@ -23,11 +24,8 @@ export const Footer = () => {
 		});
 	};
 
-	const openMyBandcamp = () =>
-		window.open('https://bandcamp.com/borbiuk', '_blank');
-
 	return (
-		<div className="flex flex-row justify-between rounded-xl border border-band-200 bg-band-200 p-0.5">
+		<div className="-mt-2 flex flex-row justify-between rounded-xl border border-band-200 bg-band-200 p-0.5 px-2">
 			<Button
 				id="GitHub"
 				onClick={openGitHub}
@@ -45,12 +43,6 @@ export const Footer = () => {
 				onClick={openExtensionPage}
 				tooltip="Rate extension"
 				icon="./../assets/rate.png"
-			/>
-			<Button
-				id="MyBandcamp"
-				onClick={openMyBandcamp}
-				tooltip="My bandcamp"
-				icon="./../assets/bandcamp.png"
 			/>
 			<Button
 				id="ShowGuide"

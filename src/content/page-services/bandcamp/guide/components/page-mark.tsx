@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Page } from '../enums/Page';
 
 export const PageMark = ({ page }: { page: Page }) => {

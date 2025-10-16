@@ -1,4 +1,5 @@
 import { KeyCode } from '@shared/enums';
+
 import { isNumeric } from './utils.common';
 
 export const mapShortcutToString = (value: string): string => {
@@ -36,15 +37,15 @@ export const mapToHumanString = (value: string) => {
 	}
 
 	if (value.includes('Meta')) {
-		return isMac ? '⌘' : '⊞';
+		return isMac() ? '⌘' : '⊞';
 	}
 
 	if (value.includes('Alt')) {
-		return isMac ? '⌥' : 'Alt';
+		return isMac() ? '⌥' : 'Alt';
 	}
 
 	if (value.includes('Control')) {
-		return isMac ? '^' : 'Ctrl';
+		return isMac() ? '^' : 'Ctrl';
 	}
 
 	if (value.includes('Shift')) {

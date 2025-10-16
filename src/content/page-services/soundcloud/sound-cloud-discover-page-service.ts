@@ -1,5 +1,6 @@
 import { PageService } from '@shared/interfaces';
 import { exist, notExist } from '@shared/utils';
+
 import { BasePageService } from '../base/base-page-service';
 
 export class SoundCloudDiscoverPageService

@@ -28,6 +28,69 @@
 		height: 6px;
 		margin-top: 4px;
 	}
+
+	.play-icon {
+		border-color: transparent transparent transparent #fff;
+		border-style: dashed dashed dashed solid; /* dashed for smooth rendering in ff */
+		border-width: 12px 0px 12px 22px;
+		margin: 0 auto;
+		top: 0;
+		left: 1px;
+		position: relative;
+		width: 0px;
+		height: 0px;
+	}
+
+	.playing .play-icon {
+		visibility: visible;
+		border-style: solid;
+		border-width: 0px 0px 0px 0px;
+		border-color: transparent;
+		width: 22px;
+		height: 24px;
+		left: 0px;
+		top: 1px;
+		position: relative;
+		background: transparent;
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			background: #fff;
+			width: 5px;
+			height: 24px;
+			top: 0;
+		}
+
+		&::before {
+			left: 2px;
+		}
+
+		&::after {
+			left: 15px;
+		}
+	}
+
+	.cover-art-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 4px;
+		opacity: 0.3;
+		transition: opacity 0.1s ease-out;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
 }
 
 /* required to avoid overwriting bandcamp styles */

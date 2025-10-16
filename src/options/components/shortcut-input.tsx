@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist } from '@shared/utils/utils.common';
 import { mapToHumanString } from '@shared/utils/utils.shortcut';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+
 import { AnimatedButton } from './internal/animation-button';
 
 export const ShortcutInput = () => {
@@ -103,7 +104,7 @@ export const ShortcutInput = () => {
 
 			{/* Dropdown for Shortcut Names */}
 			<select
-				id={`shortcut-type`}
+				id={'shortcut-type'}
 				className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none"
 				value={shortcutType || ''}
 				onChange={(event) => updateShortcutType(event)}
@@ -120,7 +121,7 @@ export const ShortcutInput = () => {
 
 			{/* Input for Shortcut Update */}
 			<input
-				id={`shortcut-value`}
+				id={'shortcut-value'}
 				type="text"
 				className="text-md block h-8 w-full rounded-md border border-band-200 bg-band-100 py-2.5 text-center font-normal tabular-nums text-gray-900 outline-none"
 				value={shortcutValue}

@@ -1,6 +1,7 @@
 import { PageService } from '@shared/interfaces';
 import { BandcampTrackModel } from '@shared/models';
 import { exist, notExist } from '@shared/utils';
+
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
 // Service to handle 'collection' and 'wishlist' pages.

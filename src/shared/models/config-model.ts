@@ -19,5 +19,7 @@ export interface ConfigModel {
 
 	loopTrack: boolean;
 
+	showFeedPlayer: boolean;
+
 	shortcuts: ShortcutConfig;
 }

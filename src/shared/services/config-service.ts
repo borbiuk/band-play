@@ -1,6 +1,7 @@
 import { KeyCode, ShortcutType } from '@shared/enums';
-import { ConfigModel, ShortcutConfig } from '../models/config-model';
 import { exist } from '@shared/utils';
+
+import { ConfigModel, ShortcutConfig } from '../models/config-model';
 
 /**
  * Service for managing and handling configuration settings stored in local storage.
@@ -55,6 +56,7 @@ class ConfigService {
 			'keepAwake',
 			'playbackStep',
 			'loopTrack',
+			'showFeedPlayer',
 			'shortcuts',
 		])) as ConfigModel;
 
@@ -93,6 +95,9 @@ class ConfigService {
 			loopTrack: exist(config.loopTrack)
 				? Boolean(config.loopTrack)
 				: false,
+			showFeedPlayer: exist(config.showFeedPlayer)
+				? Boolean(config.showFeedPlayer)
+				: true,
 			shortcuts: this.mergeShortcuts(config.shortcuts),
 		};
 

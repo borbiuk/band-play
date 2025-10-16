@@ -19,9 +19,30 @@ module.exports = {
 			chunks(chunk) {
 				return chunk.name !== 'background';
 			},
+			cacheGroups: {
+				vendor: {
+					test: /[\\/]node_modules[\\/]/,
+					name: 'vendor',
+					chunks: 'all',
+					enforce: true,
+				},
+				react: {
+					test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+					name: 'react',
+					chunks: 'all',
+					enforce: true,
+				},
+			},
+		},
+		usedExports: true,
+		sideEffects: false,
+	},
+	cache: {
+		type: 'filesystem',
+		buildDependencies: {
+			config: [__filename],
 		},
 	},
-	cache: false,
 	module: {
 		rules: [
 			{

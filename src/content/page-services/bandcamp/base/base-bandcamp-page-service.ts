@@ -2,6 +2,7 @@ import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
 import { BandcampTrackModel } from '@shared/models';
 import EventEmitter from '@shared/services/event-emitter';
 import { exist, notExist } from '@shared/utils';
+
 import { BasePageService } from '../../base/base-page-service';
 
 export class BaseBandcampPageService extends BasePageService<BandcampTrackModel> {

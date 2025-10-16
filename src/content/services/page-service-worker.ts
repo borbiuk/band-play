@@ -5,6 +5,7 @@ import { MessageModel } from '@shared/models/messages';
 import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
 import { exist, notExist } from '@shared/utils';
+
 import { AlbumPageService } from '../page-services/bandcamp/album-page-service';
 import { CollectionPageService } from '../page-services/bandcamp/collection-page-service';
 import { DiscoverPageService } from '../page-services/bandcamp/discover-page-service';
@@ -53,8 +54,8 @@ export class PageServiceWorker {
 			this.pageService.config = newConfig;
 		});
 
-		// Register autoplay
-		setInterval(() => {
+		// Register autoplay with cleanup
+		const autoplayInterval = setInterval(() => {
 			if (
 				notExist(this.pageService) ||
 				!this.pageService.config.autoplay
@@ -69,14 +70,18 @@ export class PageServiceWorker {
 			}
 		}, this.autoplayDelay);
 
-		// Register track initialization
-		setInterval(() => {
+		// Register track initialization with cleanup
+		const initTracksInterval = setInterval(() => {
 			try {
 				this.pageService?.initTracks();
 			} catch (error) {
 				console.error(error);
 			}
 		}, this.initTracksDelay);
+
+		// Store intervals for potential cleanup
+		(this as any).autoplayInterval = autoplayInterval;
+		(this as any).initTracksInterval = initTracksInterval;
 	}
 
 	// Get the service to handle current page functionality.

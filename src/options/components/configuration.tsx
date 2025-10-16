@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { ConfigModel } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { notExist } from '@shared/utils/utils.common';
+import React, { useEffect, useState } from 'react';
+
 import { Checkbox } from './internal/checkbox';
 import { PlaybackStepInput } from './internal/playback-step-input';
 
@@ -66,6 +67,13 @@ export const Configuration = () => {
 					label="Keep Awake"
 					tooltip="Keep your system or display from going to sleep"
 					defaultValue={currentConfig.keepAwake}
+					onChange={updateStorage}
+				/>
+				<Checkbox
+					id="showFeedPlayer"
+					label="Show feed player"
+					tooltip="Show the feed player on Bandcamp feed pages"
+					defaultValue={currentConfig.showFeedPlayer}
 					onChange={updateStorage}
 				/>
 			</div>

@@ -1,7 +1,9 @@
 import { PageService } from '@shared/interfaces';
+import EventEmitter from '@shared/services/event-emitter';
 import { exist, notExist } from '@shared/utils';
+
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
-import { switchPlayer } from './feed-player/feed-player';
+import { renderPlayer } from './feed-player/feed-player';
 
 // Service to handle 'feed' page.
 export class FeedPageService
@@ -9,11 +11,17 @@ export class FeedPageService
 	implements PageService
 {
 	public isPreviousTrackAvailable: boolean = false;
+	public nowPlayingEventEmitter: EventEmitter<{
+		title: string;
+		artist: string;
+		coverArtUrl: string;
+	}> = new EventEmitter();
 
 	private nowPlaying: {
 		element: Element;
 		name: string;
 		artist: string;
+		coverArtUrl: string;
 	};
 
 	constructor() {
@@ -22,7 +30,9 @@ export class FeedPageService
 
 	isServiceUrl(url: string): boolean {
 		const useService = url.endsWith('/feed') || url.includes('/feed?');
-		switchPlayer(useService, this);
+		if (useService) {
+			renderPlayer(this);
+		}
 		return useService;
 	}
 
@@ -92,11 +102,27 @@ export class FeedPageService
 					element,
 					name: element.querySelector<HTMLElement>(
 						'.collection-item-title'
-					).textContent,
+					)?.textContent,
 					artist: element.querySelector<HTMLElement>(
 						'.collection-item-artist'
-					).textContent,
+					)?.textContent,
+					coverArtUrl:
+						element.querySelector<HTMLImageElement>(
+							'.tralbum-art-large'
+						)?.src ||
+						element.querySelector<HTMLImageElement>(
+							'img[class*="art"]'
+						)?.src ||
+						element.querySelector<HTMLImageElement>(
+							'img[src*="bcbits.com"]'
+						)?.src,
 				};
+
+				this.nowPlayingEventEmitter.emit({
+					title: this.nowPlaying.name,
+					artist: this.nowPlaying.artist,
+					coverArtUrl: this.nowPlaying.coverArtUrl,
+				});
 			};
 
 			playButton.removeEventListener('click', setNowPlaying);
@@ -155,5 +181,21 @@ export class FeedPageService
 		} else {
 			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
 		}
+	}
+
+	getNowPlayingInfo(): {
+		title: string;
+		artist: string;
+		coverArtUrl: string;
+	} | null {
+		if (notExist(this.nowPlaying)) {
+			return null;
+		}
+
+		return {
+			title: this.nowPlaying.name,
+			artist: this.nowPlaying.artist,
+			coverArtUrl: this.nowPlaying.coverArtUrl,
+		};
 	}
 }
