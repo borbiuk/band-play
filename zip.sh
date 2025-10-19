@@ -20,7 +20,6 @@ temp_dir="band-play-build"
 
 # Files that will be included to .zip
 include_files=(
-	"dist/assets/bandcamp.png"
 	"dist/assets/buymeacoffee.png"
 	"dist/assets/close.png"
 	"dist/assets/github.png"
@@ -41,6 +40,7 @@ include_files=(
 	"dist/assets/logo-32.png"
 	"dist/assets/logo-48.png"
 	"dist/assets/logo-128.png"
+	"dist/assets/nextprev.png"
 	"dist/assets/rate.png"
 	"dist/background.js"
 	"dist/content.js"

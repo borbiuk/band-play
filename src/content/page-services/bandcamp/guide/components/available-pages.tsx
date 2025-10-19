@@ -1,5 +1,7 @@
 import React from 'react';
-import { Page } from '../enums/Page';
+
+import { Page } from '../enums/page';
+
 import { PageMark } from './page-mark';
 
 export const AvailablePages = ({ pages }: { pages: Page[] }) => {

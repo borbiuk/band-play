@@ -1,10 +1,26 @@
-import { PlaybackPitchAction } from '@shared/enums';
-import { PlaybackSpeedAction } from '@shared/enums';
+import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
 import { BandcampTrackModel } from '@shared/models';
+import EventEmitter from '@shared/services/event-emitter';
 import { exist, notExist } from '@shared/utils';
+
 import { BasePageService } from '../../base/base-page-service';
 
+/**
+ * Base class for all Bandcamp page services.
+ *
+ * This class provides common functionality for Bandcamp-specific page services including:
+ * - Audio element management and event handling
+ * - Playback control operations (play/pause, seek, speed, pitch)
+ * - Track navigation and playlist management
+ * - Common Bandcamp-specific utilities
+ *
+ * All Bandcamp page services should extend this class to inherit shared functionality.
+ */
 export class BaseBandcampPageService extends BasePageService<BandcampTrackModel> {
+	/** Event emitter for audio element events */
+	public audioEventEmitter: EventEmitter<HTMLAudioElement> =
+		new EventEmitter();
+
 	playPause(): void {
 		this.audioOperator<void>((audio) => {
 			if (audio.paused) {
@@ -69,10 +85,12 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 			audio = this.findAudioElement();
 
 			if (notExist(audio?.src)) {
+				this.audioEventEmitter.emit(null);
 				return exist(notFoundHandler) ? notFoundHandler() : undefined;
 			}
 		}
 
+		this.audioEventEmitter.emit(audio);
 		return operator(audio);
 	}
 

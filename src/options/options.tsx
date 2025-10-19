@@ -1,12 +1,21 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+
 import './options.scss';
 import { Configuration } from './components/configuration';
 import { Footer } from './components/footer';
 import { ShortcutInput } from './components/shortcut-input';
 
 /**
- * Options component representing the user interface of the Chrome extension Options.
+ * Main Options component representing the user interface of the Chrome extension popup.
+ *
+ * This component renders the extension's popup UI with:
+ * - Header with logo and title
+ * - Configuration panel for user settings
+ * - Shortcut input for keyboard shortcuts
+ * - Footer with links and information
+ *
+ * @returns JSX element containing the complete options interface
  */
 const Options = () => {
 	return (
@@ -32,8 +41,10 @@ const Options = () => {
 	);
 };
 
+/** Root element for React rendering */
 const root = createRoot(document.getElementById('root'));
 
+/** Render the Options component in React StrictMode */
 root.render(
 	<React.StrictMode>
 		<Options />

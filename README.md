@@ -5,57 +5,89 @@
 </div>
 
 Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com)
-and [SoundCloud](https://soundcloud.com/) by tempo adjustment, preserve pitch, playback control by shortcuts,
-autoplay and other automation features, allowing users to seamlessly control their music playback.
+and [SoundCloud](https://soundcloud.com/) by providing advanced playback controls, tempo adjustment, pitch preservation,
+keyboard shortcuts, autoplay functionality, and other automation features for seamless music control.
 
 Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page
 for more details.
 
 <hr/>
 
-## 🚀 Usage
+## ✨ Features
 
-### 🔵 Bandcamp
+### 🎵 **Playback Control**
 
-Bandcamp supported pages:
+- **Advanced Speed Control**: Adjust playback speed with 3.03% increments
+- **Pitch Preservation**: Maintain audio pitch when changing speed
+- **Customizable Seek Step**: Configurable forward/backward seeking (1-120 seconds)
+- **Progress Jumping**: Quick navigation to any point in track
 
-- Feed
-- Discover
-- Collection/Wishlist
-- Album/Track
+### 🔄 **Automation**
 
-### 🟠 SoundCloud
+- **Autoplay**: Automatic progression through playlists and collections
+- **Autoscroll**: Auto-scroll to currently playing track
+- **Keep Awake**: Prevent system sleep during playback
+- **Smart Detection**: Automatic page type recognition
 
-SoundCloud support is not complete at this time, read on for details.
+### 🎛️ **Advanced Features**
 
-### 🎹 Hotkeys
+- **Feed Player**: Custom player interface for Bandcamp feed pages
+- **Interactive Guide**: Built-in help system with visual shortcuts
+- **Configuration Panel**: Easy access to all settings
+- **Wishlist Integration**: Seamless add/remove tracks from wishlist
 
-This extension supports fixed keyboard shortcuts (hotkeys) for quick and easy control over music playback:
+### 🌐 **Platform Support**
+
+- **Bandcamp**: Full support for all page types (Feed, Album, Collection, Discover)
+- **SoundCloud**: Limited support for discover pages
+
+### 🎹 **Keyboard Shortcuts**
 
 _NOTE: Not all hotkey works for SoundCloud (SC)_
 
-|       Key       | Description                                                         |  SC   |
-| :-------------: | ------------------------------------------------------------------- | :---: |
-|     `Space`     | Pause/Play the current track                                        |   +   |
-|       `N`       | Play the next Track                                                 |   +   |
-|       `B`       | Play the previous Track                                             |   +   |
-|  `Shift`+`0-9`  | Play the track by index                                             | + / - |
-|  `Shift` + `V`  | Loop the current Track                                              |   -   |
-|       `L`       | Add or Remove Track from wishlist                                   |   +   |
-|       `O`       | Open the current Track in new tab                                   |   +   |
-|   `Shift`+`O`   | Open the current Track in new tab and focus on it                   |   +   |
-|      `0-9`      | Play the current Track with progress `(Digit * 10)%` \*             |   +   |
-|     `←` `→`     | Move track playback Back/Forward on `step` seconds \*\*             | + / - |
-|     `↑` `↓`     | Increase/Decrease Track playback speed on `3.03%` \*\*\*            |   -   |
-| `Shift`+`↑`/`↓` | Reset Track playback speed                                          |   -   |
-|       `P`       | Enable or disable auto pitch (usable whe playback speed is changed) |   -   |
-|   `Shift`+`P`   | Reset auto pitch                                                    |   -   |
+| Feature               | Description                                  | Key    |
+| --------------------- | -------------------------------------------- | ------ |
+| **Play/Pause**        | Quick control to play or pause current track | ␣      |
+| **Next Track**        | Play the next track in playlist              | 🇳      |
+| **Previous Track**    | Play the previous track in playlist          | 🇧      |
+| **Track by Index**    | Play specific track by number (0-9)          | ⇧ + 🔢 |
+| **Loop Track**        | Toggle looping of current track              | ⇧ + 🇻  |
+| **Seek Forward**      | Move playback forward by step seconds \*\*   | ➡️     |
+| **Seek Backward**     | Move playback backward by step seconds \*\*  | ⬅️     |
+| **Speed Increase**    | Increase playback speed by 3.03% \*\*\*      | ⬆️     |
+| **Speed Decrease**    | Decrease playback speed by 3.03% \*\*\*      | ⬇️     |
+| **Reset Speed**       | Reset playback speed to normal               | ⇧ + ⬇️ |
+| **Auto Pitch Toggle** | Enable/disable pitch preservation            | 🇵      |
+| **Reset Auto Pitch**  | Reset auto pitch settings                    | ⇧ + 🇵  |
+| **Progress Control**  | Jump to specific percentage (0-90%) \*       | 🔢     |
+| **Open in New Tab**   | Open current track in new browser tab        | 🇴      |
+| **Open with Focus**   | Open track in new tab and focus on it        | ⇧ + 🇴  |
+| **Wishlist Toggle**   | Add/remove track from wishlist               | 🇱      |
 
 1. \* For example, pressing key `3` will set the track playback to `30%` of all duration.
 2. \*\* You can change a `step` value in the menu.
 3. \*\*\* The same as one rotation of a vinyl per minute.
 
-Please note that customization of hotkeys is not available in the current version.
+<hr/>
+
+## 📄 Supported Pages
+
+### 🔵 **Bandcamp** (Full Support)
+
+| Page Type               | Features                   | Description                                |
+| ----------------------- | -------------------------- | ------------------------------------------ |
+| **Feed**                | All features + Feed Player | Custom player interface with full controls |
+| **Discover**            | All features               | Browse and play new music                  |
+| **Collection/Wishlist** | All features               | Manage your music library                  |
+| **Album/Track**         | All features               | Individual album and track pages           |
+
+### 🟠 **SoundCloud** (Limited Support)
+
+| Page Type    | Features                   | Description                                |
+| ------------ | -------------------------- | ------------------------------------------ |
+| **Discover** | Basic playback, navigation | Limited functionality compared to Bandcamp |
+
+**Note**: SoundCloud support is currently limited to basic playback controls on discover pages. Full feature parity with Bandcamp is planned for future updates.
 
 <hr/>
 
@@ -70,19 +102,20 @@ Please note that customization of hotkeys is not available in the current versio
 5. Click on `Load unpacked` and select the `dist` directory created after previous step.
 6. The extension should now appear in your list of installed extensions and is ready to use.
 
-### 📁 File Structure
+### 📁 **File Structure**
 
 - `public/`: Contains `manifest.json`, images and icons used by the extension.
 - `src/`:
     - `background/background.ts`: Contains the TypeScript files for background script (single instance for Chrome).
     - `content/`:
         - `guide/`: Contains Guide React component.
-        - `page-services/` Contains services for handling different pages of site.
-        - `services/` Contains core services.
+        - `page-services/`: Contains services for handling different pages of site.
+        - `services/`: Contains core services.
+        - `shortcut/`: Contains keyboard shortcut handling.
         - `content.ts`: The TypeScript file for content script (running on each site page).
     - `options/`: Contains extension pop-up React component.
-    - `shared/`: Contains shared models and utils
-- `webpack/`: Configuration of webpack for different type od builds.
+    - `shared/`: Contains shared models, enums, interfaces, services and utils.
+- `webpack/`: Configuration of webpack for different type of builds.
 - `zip.sh`: A script for creating a `.zip` file with build for publishing.
 
 ### 🤝 Contributing

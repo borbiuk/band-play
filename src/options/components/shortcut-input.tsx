@@ -1,19 +1,40 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist } from '@shared/utils/utils.common';
 import { mapToHumanString } from '@shared/utils/utils.shortcut';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+
 import { AnimatedButton } from './internal/animation-button';
 
+/**
+ * ShortcutInput component for managing keyboard shortcuts configuration.
+ *
+ * This component provides a UI for users to:
+ * - View all available keyboard shortcuts
+ * - Edit shortcut key combinations
+ * - Save changes to configuration
+ * - Reset shortcuts to defaults
+ *
+ * @returns JSX element containing the shortcut configuration interface
+ */
 export const ShortcutInput = () => {
+	/** Current shortcuts configuration */
 	const [config, setConfig] = useState<ShortcutConfig>(null);
+
+	/** Currently selected shortcut type for editing */
 	const [shortcutType, setShortcutType] = useState<ShortcutType>(null);
+
+	/** Current shortcut value being edited */
 	const [shortcutValue, setShortcutValue] = useState<string>('');
+
+	/** Set of keys currently pressed for shortcut recording */
 	const [shortcutKeys, setShortcutKeys] = useState<Set<string>>(new Set());
 
+	/** Reference to track currently pressed keys */
 	const currentKeys: Set<string> = useRef<Set<string>>(new Set()).current;
 
+	/** Timeout reference for saving shortcuts with debounce */
 	let saveShortcutTimeout: NodeJS.Timeout =
 		useRef<NodeJS.Timeout>(null).current;
 
@@ -103,7 +124,7 @@ export const ShortcutInput = () => {
 
 			{/* Dropdown for Shortcut Names */}
 			<select
-				id={`shortcut-type`}
+				id={'shortcut-type'}
 				className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none"
 				value={shortcutType || ''}
 				onChange={(event) => updateShortcutType(event)}
@@ -120,7 +141,7 @@ export const ShortcutInput = () => {
 
 			{/* Input for Shortcut Update */}
 			<input
-				id={`shortcut-value`}
+				id={'shortcut-value'}
 				type="text"
 				className="text-md block h-8 w-full rounded-md border border-band-200 bg-band-100 py-2.5 text-center font-normal tabular-nums text-gray-900 outline-none"
 				value={shortcutValue}

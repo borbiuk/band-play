@@ -1,5 +1,5 @@
 import { MessageModel } from '@shared/models/messages';
-import { notExist } from '@shared/utils';
+import { exist, notExist } from '@shared/utils';
 
 /**
  * Service for handling messaging between different components of the Chrome extension.
@@ -42,7 +42,7 @@ class MessageService {
 	 * @returns A promise that resolves when the message has been sent.
 	 */
 	public async sendToBackground<T>(message: MessageModel<T>): Promise<void> {
-		return chrome.runtime.sendMessage(message);
+		await chrome.runtime.sendMessage(message);
 	}
 
 	/**
@@ -68,7 +68,9 @@ class MessageService {
 				try {
 					func(message);
 				} catch (error) {
-					errorHandler(error);
+					if (exist(errorHandler)) {
+						errorHandler(error);
+					}
 				}
 			}
 		);
