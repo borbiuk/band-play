@@ -63,7 +63,7 @@ export const FeedPlayer = ({
 	}, []);
 
 	useEffect(() => {
-		feedPageService.audioEventEmitter.on((audio) => {
+		feedPageService.audioEventEmitter.on((audio: HTMLAudioElement) => {
 			if (notExist(audio)) {
 				setShow(false);
 				return;

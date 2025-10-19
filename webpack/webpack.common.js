@@ -12,54 +12,93 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, './../dist'),
 		filename: '[name].js',
+		clean: true,
+		// Для Chrome Extension не використовуємо hash в іменах файлів
+		// оскільки manifest.json посилається на конкретні імена
 	},
 	optimization: {
 		splitChunks: {
-			name: 'vendor',
 			chunks(chunk) {
-				return chunk.name !== 'background';
+				// Background script не повинен мати vendor dependencies (service worker)
+				if (chunk.name === 'background') {
+					return false;
+				}
+				// Тільки content script має vendor dependencies
+				return chunk.name === 'content';
 			},
+			minSize: 20000,
+			maxSize: 244000,
 			cacheGroups: {
+				// Vendor бібліотеки тільки для content scripts
 				vendor: {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendor',
 					chunks: 'all',
-					enforce: true,
-				},
-				react: {
-					test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-					name: 'react',
-					chunks: 'all',
+					priority: 10,
 					enforce: true,
 				},
 			},
 		},
 		usedExports: true,
 		sideEffects: false,
+		moduleIds: 'deterministic',
+		runtimeChunk: false, // Для extension не потрібен runtime chunk
 	},
 	cache: {
 		type: 'filesystem',
 		buildDependencies: {
 			config: [__filename],
 		},
+		cacheDirectory: path.resolve(__dirname, '../node_modules/.cache/webpack'),
+		compression: 'gzip',
 	},
 	module: {
 		rules: [
 			{
 				test: /\.tsx?$/,
-				use: 'ts-loader',
+				use: [
+					{
+						loader: 'ts-loader',
+						options: {
+							transpileOnly: true,
+							experimentalWatchApi: true,
+							compilerOptions: {
+								noEmit: false,
+							},
+						},
+					},
+				],
 				exclude: /node_modules/,
 			},
 			{
 				test: /\.s[ac]ss$/i,
 				use: [
 					'style-loader',
-					'css-loader',
-					'sass-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							importLoaders: 2,
+							sourceMap: false,
+						},
+					},
 					{
 						loader: 'postcss-loader',
 						options: {
-							postcssOptions: { plugins: ['postcss-preset-env'] },
+							postcssOptions: {
+								plugins: [
+									'tailwindcss',
+									'autoprefixer',
+									'postcss-preset-env',
+								],
+							},
+						},
+					},
+					{
+						loader: 'sass-loader',
+						options: {
+							sassOptions: {
+								outputStyle: 'compressed',
+							},
 						},
 					},
 				],
@@ -68,12 +107,18 @@ module.exports = {
 		],
 	},
 	resolve: {
-		extensions: ['.ts', '.tsx', '.js'],
+		extensions: ['.ts', '.tsx', '.js', '.json'],
 		plugins: [
 			new TsconfigPathsPlugin({
 				configFile: './tsconfig.json',
 			})
 		],
+		// Кешування модулів для швидшої резолюції
+		cacheWithContext: false,
+		// Аліаси для швидшого доступу
+		alias: {
+			'@shared': path.resolve(__dirname, '../src/shared'),
+		},
 	},
 	plugins: [
 		new CopyPlugin({
@@ -88,10 +133,21 @@ module.exports = {
 							'**/logo-full.png',
 							'**/logo.png',
 							'**/.DS_Store',
+							'**/manifest.json', // Виключаємо manifest.json з common
 						],
 					},
+					// Кешування для швидшої копії
+					noErrorOnMissing: true,
 				},
 			],
+			options: {
+				concurrency: 100,
+			},
 		}),
 	],
+	// Специфічні налаштування для Chrome Extension
+	target: ['web', 'es2020'], // Підтримка сучасних браузерів
+	experiments: {
+		topLevelAwait: true, // Підтримка top-level await для service workers
+	},
 };

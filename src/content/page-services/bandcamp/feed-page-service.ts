@@ -132,7 +132,8 @@ export class FeedPageService
 
 	tryAutoplay(): void {
 		const progress = this.audioOperator<number>(
-			(audio) => (audio.currentTime / audio.duration) * 100
+			(audio: HTMLAudioElement) =>
+				(audio.currentTime / audio.duration) * 100
 		);
 		if (!this.autoplayNeeded(progress)) {
 			return;

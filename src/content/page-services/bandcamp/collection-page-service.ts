@@ -26,7 +26,7 @@ export class CollectionPageService
 
 	playPause(): void {
 		this.audioOperator<void>(
-			(audio) => {
+			(audio: HTMLAudioElement) => {
 				if (audio.paused) {
 					audio.play();
 				} else {
@@ -72,7 +72,8 @@ export class CollectionPageService
 
 	tryAutoplay(): void {
 		const progress = this.audioOperator<number>(
-			(audio) => (audio.currentTime / audio.duration) * 100
+			(audio: HTMLAudioElement) =>
+				(audio.currentTime / audio.duration) * 100
 		);
 		if (!this.autoplayNeeded(progress)) {
 			return;

@@ -22,7 +22,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 		new EventEmitter();
 
 	playPause(): void {
-		this.audioOperator<void>((audio) => {
+		this.audioOperator<void>((audio: HTMLAudioElement) => {
 			if (audio.paused) {
 				audio.play();
 			} else {
@@ -32,13 +32,18 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	}
 
 	seekToPercentage(percentage: number): void {
-		this.audioOperator<void>((audio) => {
-			audio.currentTime = (percentage / 100) * audio.duration;
+		this.audioOperator<void>((audio: HTMLAudioElement) => {
+			if (isFinite(audio.duration) && isFinite(percentage)) {
+				const newTime = (percentage / 100) * audio.duration;
+				if (isFinite(newTime)) {
+					audio.currentTime = newTime;
+				}
+			}
 		});
 	}
 
 	seekForward(forward: boolean): void {
-		this.audioOperator<void>((audio) => {
+		this.audioOperator<void>((audio: HTMLAudioElement) => {
 			let nextPositionInSeconds =
 				audio.currentTime +
 				(forward
@@ -56,7 +61,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	}
 
 	speedPlayback(code: PlaybackSpeedAction): void {
-		this.audioOperator((audio) => {
+		this.audioOperator((audio: HTMLAudioElement) => {
 			if (code === PlaybackSpeedAction.Reset) {
 				audio.playbackRate = 1;
 			} else if (code === PlaybackSpeedAction.Increase) {
@@ -68,7 +73,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	}
 
 	switchPreservesPitch(code: PlaybackPitchAction): void {
-		this.audioOperator((audio) => {
+		this.audioOperator((audio: HTMLAudioElement) => {
 			audio.preservesPitch =
 				code === PlaybackPitchAction.Switch
 					? !audio.preservesPitch
@@ -96,14 +101,18 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 
 	private findAudioElement(root: any = document) {
 		let audio = root.querySelector('audio');
-		if (audio) return audio;
+		if (exist(audio)) {
+			return audio;
+		}
 
 		// Recursively check shadow roots
 		const elements = root.querySelectorAll('*');
 		for (const el of elements) {
 			if (el.shadowRoot) {
 				audio = this.findAudioElement(el.shadowRoot);
-				if (audio) return audio;
+				if (exist(audio)) {
+					return audio;
+				}
 			}
 		}
 		return null;

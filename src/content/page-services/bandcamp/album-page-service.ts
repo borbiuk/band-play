@@ -20,7 +20,7 @@ export class AlbumPageService
 
 	playPause(): void {
 		this.audioOperator<void>(
-			(audio) => {
+			(audio: HTMLAudioElement) => {
 				if (audio.paused) {
 					audio.play();
 				} else {
@@ -61,7 +61,8 @@ export class AlbumPageService
 		}
 
 		const progress = this.audioOperator<number>(
-			(audio) => (audio.currentTime / audio.duration) * 100
+			(audio: HTMLAudioElement) =>
+				(audio.currentTime / audio.duration) * 100
 		);
 
 		if (this.autoplayNeeded(progress)) {
