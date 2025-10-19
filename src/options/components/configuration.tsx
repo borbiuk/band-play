@@ -8,15 +8,39 @@ import { PlaybackStepInput } from './internal/playback-step-input';
 
 /**
  * Configuration component for managing and displaying user preferences.
+ *
+ * This component provides a UI for users to configure extension settings including:
+ * - Autoplay functionality
+ * - Autoscroll behavior
+ * - Keep awake feature
+ * - Playback step configuration
+ * - Loop track option
+ * - Feed player visibility
+ *
+ * @returns JSX element containing the configuration interface
  */
 export const Configuration = () => {
+	/** Current active tab ID */
 	const [tabId, setTabId] = useState(null as number);
+
+	/** Current configuration settings */
 	const [currentConfig, setCurrentConfig] = useState(null as ConfigModel);
 
+	/**
+	 * Updates a configuration setting in storage.
+	 *
+	 * @param key - The configuration key to update
+	 * @param value - The new value for the configuration
+	 */
 	const updateStorage = async (key: keyof ConfigModel, value: unknown) => {
 		await configService.update(key, value);
 	};
 
+	/**
+	 * Loads the current active tab ID.
+	 *
+	 * @returns Promise resolving to the active tab ID
+	 */
 	const loadTabId = async () => {
 		const tabs = await chrome.tabs.query({
 			active: true,

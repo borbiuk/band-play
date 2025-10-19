@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Page } from '../enums/Page';
+import { Page } from '../enums/page';
 
 import { AvailablePages } from './available-pages';
 

@@ -7,7 +7,7 @@ import { Tooltip } from 'react-tooltip';
 
 import { Hotkey } from './components/hotkey';
 import { PagesNote } from './components/pages-note';
-import { Page } from './enums/Page';
+import { Page } from './enums/page';
 import './guide.scss';
 
 export const initGuide = () => {

@@ -1,5 +1,14 @@
+/**
+ * A generic event emitter class that allows components to subscribe to and emit events.
+ * Prevents duplicate emissions of the same payload to optimize performance.
+ *
+ * @template T - The type of payload that will be emitted with events
+ */
 class EventEmitter<T> {
+	/** The last emitted payload to prevent duplicate emissions */
 	private previousPayload: T;
+
+	/** Array of listener functions that will be called when events are emitted */
 	private listeners: Array<(payload: T) => void> = [];
 
 	/**

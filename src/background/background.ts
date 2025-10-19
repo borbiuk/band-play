@@ -4,6 +4,11 @@ import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
 import { notExist } from '@shared/utils';
 
+/**
+ * Executes a callback function in the currently active tab.
+ *
+ * @param tabCallback - Function to execute with the active tab ID
+ */
 const executeInCurrentTab = (
 	tabCallback: (tabId: number) => void | Promise<void>
 ) => {
@@ -14,7 +19,10 @@ const executeInCurrentTab = (
 	});
 };
 
-// Send URL change message.
+/**
+ * Registers a listener for URL changes on Bandcamp pages.
+ * Sends a URL change message to content scripts when Bandcamp pages are navigated.
+ */
 const registerUrlChange = () =>
 	chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
 		// url not changed
@@ -41,7 +49,10 @@ const registerUrlChange = () =>
 			});
 	});
 
-// Subscribe on messages.
+/**
+ * Registers message handling for inter-component communication.
+ * Handles messages from content scripts and popup UI.
+ */
 const registerMessagesHandling = () =>
 	messageService.addListener(async (message: MessageModel<unknown>) => {
 		switch (message.code) {
@@ -67,7 +78,10 @@ const registerMessagesHandling = () =>
 		}
 	});
 
-// Subscribe on extension update.
+/**
+ * Registers extension update handling.
+ * Notifies content scripts when a new extension update is available.
+ */
 const registerUpdateHandling = () =>
 	chrome.runtime.onUpdateAvailable.addListener((details) => {
 		executeInCurrentTab((tabId) => {
@@ -82,10 +96,17 @@ const registerUpdateHandling = () =>
 		});
 	});
 
-// Prevents the display from being turned off or dimmed, or the system from sleeping in response to user inactivity.
+/**
+ * Registers keep awake functionality.
+ * Prevents the display from being turned off or dimmed, or the system from sleeping in response to user inactivity.
+ */
 const registerKeepAwakeChange = () => {
 	let currentKeepAwake: boolean = null;
 
+	/**
+	 * Updates the keep awake state based on configuration.
+	 * @param keepAwake - Whether to keep the system awake
+	 */
 	const update = (keepAwake: boolean) => {
 		if (keepAwake === currentKeepAwake) {
 			return;
@@ -103,6 +124,10 @@ const registerKeepAwakeChange = () => {
 	configService.get<boolean>('keepAwake').then(update);
 };
 
+/**
+ * Initializes the background script by registering all event listeners.
+ * Sets up URL change monitoring, message handling, update notifications, and keep awake functionality.
+ */
 const start = (): void => {
 	[
 		registerUrlChange,

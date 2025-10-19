@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "8.0.0",
+	"version": "8.0.1",
 	"description": "Automation of work with Bandcamp & SoundCloud: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
 	"host_permissions": [
 		"https://bandcamp.com/*",

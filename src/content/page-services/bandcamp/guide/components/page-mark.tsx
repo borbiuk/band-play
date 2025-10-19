@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Page } from '../enums/Page';
+import { Page } from '../enums/page';
 
 export const PageMark = ({ page }: { page: Page }) => {
 	const getColor = (page: Page) => {

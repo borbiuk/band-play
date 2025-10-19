@@ -2,6 +2,13 @@ import { KeyCode } from '@shared/enums';
 
 import { isNumeric } from './utils.common';
 
+/**
+ * Maps a shortcut string to a standardized format.
+ * Normalizes key names and handles special cases.
+ *
+ * @param value - The shortcut string to normalize
+ * @returns Normalized shortcut string
+ */
 export const mapShortcutToString = (value: string): string => {
 	value = value.toLowerCase();
 
@@ -25,8 +32,20 @@ export const mapShortcutToString = (value: string): string => {
 	return value;
 };
 
+/**
+ * Checks if the current platform is macOS.
+ *
+ * @returns True if running on macOS, false otherwise
+ */
 const isMac = () => navigator.platform.toLowerCase().includes('mac');
 
+/**
+ * Maps keyboard codes to human-readable symbols and strings.
+ * Provides platform-specific representations for modifier keys.
+ *
+ * @param value - The keyboard code to map
+ * @returns Human-readable representation of the key
+ */
 export const mapToHumanString = (value: string) => {
 	if (value.includes('Key')) {
 		return value.split('Key')[1];

@@ -7,14 +7,34 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import { AnimatedButton } from './internal/animation-button';
 
+/**
+ * ShortcutInput component for managing keyboard shortcuts configuration.
+ *
+ * This component provides a UI for users to:
+ * - View all available keyboard shortcuts
+ * - Edit shortcut key combinations
+ * - Save changes to configuration
+ * - Reset shortcuts to defaults
+ *
+ * @returns JSX element containing the shortcut configuration interface
+ */
 export const ShortcutInput = () => {
+	/** Current shortcuts configuration */
 	const [config, setConfig] = useState<ShortcutConfig>(null);
+
+	/** Currently selected shortcut type for editing */
 	const [shortcutType, setShortcutType] = useState<ShortcutType>(null);
+
+	/** Current shortcut value being edited */
 	const [shortcutValue, setShortcutValue] = useState<string>('');
+
+	/** Set of keys currently pressed for shortcut recording */
 	const [shortcutKeys, setShortcutKeys] = useState<Set<string>>(new Set());
 
+	/** Reference to track currently pressed keys */
 	const currentKeys: Set<string> = useRef<Set<string>>(new Set()).current;
 
+	/** Timeout reference for saving shortcuts with debounce */
 	let saveShortcutTimeout: NodeJS.Timeout =
 		useRef<NodeJS.Timeout>(null).current;
 

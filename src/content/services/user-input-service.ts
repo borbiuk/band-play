@@ -13,7 +13,22 @@ import { ShortcutSet } from '../shortcut/shortcut-set';
 
 import { PageServiceWorker } from './page-service-worker';
 
+/**
+ * Service for handling user input and keyboard shortcuts.
+ *
+ * This class manages:
+ * - Keyboard shortcut detection and handling
+ * - Navigation between tracks and pages
+ * - Configuration updates for shortcuts
+ * - Integration with page services for command execution
+ */
 export class UserInputService {
+	/**
+	 * Starts the user input service with the given page service worker.
+	 * Sets up keyboard listeners and configuration updates.
+	 *
+	 * @param serviceWorker - The page service worker to integrate with
+	 */
 	public start(serviceWorker: PageServiceWorker): void {
 		this.listenHotkeys(serviceWorker);
 		this.listenNavigator(serviceWorker);

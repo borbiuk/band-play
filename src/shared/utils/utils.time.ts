@@ -1,6 +1,11 @@
-// Convert time string (00:00) to seconds.
 import { notExist } from './utils.common';
 
+/**
+ * Convert time string in MM:SS format to total seconds.
+ *
+ * @param value - Time string in MM:SS format (e.g., "3:45")
+ * @returns Total seconds, or 0 if the input is invalid
+ */
 export const convertTimeStringToSeconds = (value: string): number => {
 	if (notExist(value)) {
 		return 0;
