@@ -2,7 +2,7 @@
  * Message data for creating new browser tabs.
  * Used when opening tracks or albums in new tabs.
  */
-export interface NewTabMessage {
+export interface NewTabMessageDataModel {
 	/** URL to open in the new tab */
 	url: string;
 

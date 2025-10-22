@@ -1,5 +1,5 @@
 // @shared/utils/index.ts
 
-export * from './utils.common';
-export * from './utils.shortcut';
-export * from './utils.time';
+export * from './common.utils';
+export * from './shortcut.utils';
+export * from './time.utils';

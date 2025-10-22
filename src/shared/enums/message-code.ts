@@ -8,8 +8,6 @@ export enum MessageCode {
 	CreateNewTab = 'band-play-CreateNewTab',
 	/** Notification that a new extension update is available */
 	NewUpdateAvailable = 'band-play-NewUpdateAvailable',
-	/** Request to show or hide the interactive guide */
-	ShowGuide = 'band-play-ShowGuide',
 	/** Notification that the page URL has changed */
 	UrlChanged = 'band-play-UrlChanged',
 }

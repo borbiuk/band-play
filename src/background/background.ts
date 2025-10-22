@@ -65,14 +65,6 @@ const registerMessagesHandling = () =>
 				break;
 			}
 
-			// Redirect ShowGuide message to content
-			case MessageCode.ShowGuide: {
-				await messageService.sendToActiveContent<boolean>(
-					message as MessageModel<boolean>
-				);
-				break;
-			}
-
 			default:
 				break;
 		}

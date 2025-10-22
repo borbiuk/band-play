@@ -26,11 +26,11 @@ export const Button = ({ id, tooltip, icon, onClick }: ButtonOptions) => {
 			<button
 				id={id}
 				data-tooltip-id={id}
-				className="flex h-8 w-8 justify-center rounded-full duration-100 hover:cursor-pointer hover:bg-band-400"
+				className="flex h-9 w-9 justify-center rounded-full transition-all duration-300 ease-in-out hover:scale-102 hover:cursor-pointer hover:bg-band-400"
 				onClick={onClick}
 			>
 				{/* Icon */}
-				<img src={icon} alt="icon" className="h-8 p-1" />
+				<img src={icon} alt="icon" className="h-9 p-1" />
 			</button>
 			<Tooltip
 				id={id}

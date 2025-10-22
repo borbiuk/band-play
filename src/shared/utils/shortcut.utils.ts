@@ -1,6 +1,6 @@
 import { KeyCode } from '@shared/enums';
 
-import { isNumeric } from './utils.common';
+import { isNumeric } from './common.utils';
 
 /**
  * Maps a shortcut string to a standardized format.

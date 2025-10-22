@@ -1,6 +1,6 @@
 import { ConfigModel } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
-import { notExist } from '@shared/utils/utils.common';
+import { notExist } from '@shared/utils/common.utils';
 import React, { useEffect, useState } from 'react';
 
 import { Checkbox } from './internal/checkbox';

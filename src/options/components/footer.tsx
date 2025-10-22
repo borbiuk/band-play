@@ -5,13 +5,12 @@ import React from 'react';
 import { Button } from './internal/button';
 
 /**
- * Footer component containing action buttons for external links and guide.
+ * Footer component containing action buttons for external links.
  *
  * This component provides buttons for:
  * - GitHub repository link
  * - Donation link (Buy Me a Coffee)
  * - Chrome Web Store rating page
- * - Interactive guide display
  *
  * @returns JSX element containing the footer with action buttons
  */
@@ -37,20 +36,8 @@ export const Footer = () => {
 			'_blank'
 		);
 
-	/**
-	 * Shows the interactive guide by sending a message to the content script.
-	 *
-	 * @returns Promise that resolves when the message is sent
-	 */
-	const showGuide = async (): Promise<void> => {
-		await messageService.sendToActiveContent<boolean>({
-			code: MessageCode.ShowGuide,
-			data: true,
-		});
-	};
-
 	return (
-		<div className="-mt-2 flex flex-row justify-between rounded-xl border border-band-200 bg-band-200 p-0.5 px-2">
+		<div className="-mt-2 flex flex-row justify-between rounded-xl border border-band-100 bg-band-100 p-2 px-3.5">
 			<Button
 				id="GitHub"
 				onClick={openGitHub}
@@ -68,12 +55,6 @@ export const Footer = () => {
 				onClick={openExtensionPage}
 				tooltip="Rate extension"
 				icon="./../assets/rate.png"
-			/>
-			<Button
-				id="ShowGuide"
-				onClick={showGuide}
-				tooltip="Show Guide"
-				icon="./../assets/guide.png"
 			/>
 		</div>
 	);

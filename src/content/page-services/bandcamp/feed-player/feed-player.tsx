@@ -1,30 +1,30 @@
 import configService from '@shared/services/config-service';
 import { notExist } from '@shared/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, Root } from 'react-dom/client';
 
 import './feed-player.scss';
 import { FeedPageService } from '../feed-page-service';
 
 // Global variable to store the React root
-let globalRoot: any = null;
+let globalPlayerRoot: Root = null;
 
 export const renderPlayer = (feedPageService: FeedPageService) => {
-	const guideContainerId = 'band-play_player-container';
+	const playerContainerId = 'band-play_player-container';
 
-	let container = document.getElementById(guideContainerId);
+	let container = document.getElementById(playerContainerId);
 	if (!container) {
 		container = document.createElement('div');
-		container.id = guideContainerId;
+		container.id = playerContainerId;
 		document.body.append(container);
 	}
 
 	// Create or reuse React root
-	if (notExist(globalRoot)) {
-		globalRoot = createRoot(container);
+	if (notExist(globalPlayerRoot)) {
+		globalPlayerRoot = createRoot(container);
 	}
 
-	globalRoot.render(
+	globalPlayerRoot.render(
 		<React.StrictMode>
 			<FeedPlayer feedPageService={feedPageService} />
 		</React.StrictMode>

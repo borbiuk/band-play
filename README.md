@@ -32,7 +32,6 @@ for more details.
 ### 🎛️ **Advanced Features**
 
 - **Feed Player**: Custom player interface for Bandcamp feed pages
-- **Interactive Guide**: Built-in help system with visual shortcuts
 - **Configuration Panel**: Easy access to all settings
 - **Wishlist Integration**: Seamless add/remove tracks from wishlist
 
@@ -108,7 +107,6 @@ _NOTE: Not all hotkey works for SoundCloud (SC)_
 - `src/`:
     - `background/background.ts`: Contains the TypeScript files for background script (single instance for Chrome).
     - `content/`:
-        - `guide/`: Contains Guide React component.
         - `page-services/`: Contains services for handling different pages of site.
         - `services/`: Contains core services.
         - `shortcut/`: Contains keyboard shortcut handling.

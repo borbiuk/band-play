@@ -12,9 +12,9 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToContent<T>(
+	public async sendToContent<TMessageData>(
 		tabId: number,
-		message: MessageModel<T>
+		message: MessageModel<TMessageData>
 	): Promise<void> {
 		return chrome.tabs.sendMessage(tabId, message);
 	}
@@ -25,8 +25,8 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToActiveContent<T>(
-		message: MessageModel<T>
+	public async sendToActiveContent<TMessageData>(
+		message: MessageModel<TMessageData>
 	): Promise<void> {
 		return chrome.tabs
 			.query({ active: true, currentWindow: true })
@@ -41,7 +41,9 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToBackground<T>(message: MessageModel<T>): Promise<void> {
+	public async sendToBackground<TMessageData>(
+		message: MessageModel<TMessageData>
+	): Promise<void> {
 		await chrome.runtime.sendMessage(message);
 	}
 
@@ -51,13 +53,13 @@ class MessageService {
 	 * @param func - The callback function to handle incoming messages.
 	 * @param errorHandler - Optional. A callback function to handle errors that may occur during message processing.
 	 */
-	public addListener<T>(
-		func: (message: MessageModel<T>) => void | Promise<void>,
+	public addListener<TMessageData>(
+		func: (message: MessageModel<TMessageData>) => void | Promise<void>,
 		errorHandler?: (error: Error) => void
 	): void {
 		chrome.runtime.onMessage.addListener(
 			(
-				message: MessageModel<T>,
+				message: MessageModel<TMessageData>,
 				_sender: chrome.runtime.MessageSender,
 				_sendResponse: (response?: unknown) => void
 			) => {

@@ -1,4 +1,4 @@
-import { notExist } from './utils.common';
+import { notExist } from './common.utils';
 
 /**
  * Convert time string in MM:SS format to total seconds.

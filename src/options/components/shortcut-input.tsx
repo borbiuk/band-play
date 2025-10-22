@@ -1,8 +1,8 @@
 import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
-import { exist } from '@shared/utils/utils.common';
-import { mapToHumanString } from '@shared/utils/utils.shortcut';
+import { exist } from '@shared/utils/common.utils';
+import { mapToHumanString } from '@shared/utils/shortcut.utils';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import { AnimatedButton } from './internal/animation-button';

@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "8.0.2",
+	"version": "8.0.3",
 	"description": "Bandcamp Play",
 	"main": "index.js",
 	"scripts": {
@@ -26,13 +26,13 @@
 	"devDependencies": {
 		"@eslint/eslintrc": "3.3.1",
 		"@eslint/js": "9.38.0",
-		"@tailwindcss/postcss": "4.1.14",
+		"@tailwindcss/postcss": "4.1.15",
 		"@types/chrome": "0.1.24",
 		"@types/jest": "30.0.0",
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
-		"@typescript-eslint/eslint-plugin": "8.46.1",
-		"@typescript-eslint/parser": "8.46.1",
+		"@typescript-eslint/eslint-plugin": "8.46.2",
+		"@typescript-eslint/parser": "8.46.2",
 		"copy-webpack-plugin": "13.0.1",
 		"css-loader": "7.1.2",
 		"css-minimizer-webpack-plugin": "^7.0.2",
