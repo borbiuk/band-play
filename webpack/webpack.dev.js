@@ -4,24 +4,24 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = merge(common, {
-	devtool: 'cheap-module-source-map', // Змінюємо devtool для service worker
+	devtool: 'cheap-module-source-map', // Adjust devtool for service worker
 	mode: 'development',
 	optimization: {
-		// Відключаємо мінімізацію в dev режимі
+		// Disable minimization in dev mode
 		minimize: false,
-		// Швидша збірка в dev режимі
+		// Faster builds in dev mode
 		removeAvailableModules: false,
 		removeEmptyChunks: false,
-		// В dev режимі відключаємо splitChunks для уникнення конфліктів
+		// Disable splitChunks in dev mode to avoid conflicts
 		splitChunks: false,
 	},
-	// Швидше перезавантаження при змінах
+	// Faster reloads on file changes
 	watchOptions: {
 		ignored: /node_modules/,
 		aggregateTimeout: 300,
 		poll: 1000,
 	},
-	// Статистика збірки
+	// Build statistics output
 	stats: {
 		colors: true,
 		modules: false,
@@ -30,7 +30,7 @@ module.exports = merge(common, {
 		chunkModules: false,
 	},
 	plugins: [
-		// Створюємо dev manifest без vendor.js
+		// Create dev manifest without vendor.js
 		new CopyPlugin({
 			patterns: [
 				{
@@ -38,7 +38,7 @@ module.exports = merge(common, {
 					to: path.join(__dirname, '../dist/manifest.json'),
 					transform(content) {
 						const manifest = JSON.parse(content.toString());
-						// Видаляємо vendor.js з content_scripts для dev режиму
+						// Remove vendor.js from content_scripts for dev mode
 						manifest.content_scripts[0].js = ['content.js'];
 						return JSON.stringify(manifest, null, 2);
 					},

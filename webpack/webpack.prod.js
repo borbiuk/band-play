@@ -7,7 +7,7 @@ const path = require('path');
 
 module.exports = merge(common, {
 	mode: 'production',
-	devtool: false, // Відключаємо source maps в production
+	devtool: false, // Disable source maps in production
 	optimization: {
 		minimize: true,
 		minimizer: [
@@ -41,7 +41,7 @@ module.exports = merge(common, {
 				},
 			}),
 		],
-		// Додаткові оптимізації
+		// Additional optimizations
 		concatenateModules: true,
 		flagIncludedChunks: true,
 		providedExports: true,
@@ -50,16 +50,16 @@ module.exports = merge(common, {
 	},
 	performance: {
 		hints: 'warning',
-		// Chrome Extension має обмеження по розміру файлів
-		maxEntrypointSize: 2000000, // 2MB для entry points
-		maxAssetSize: 2000000, // 2MB для assets
-		// Додаткові налаштування для extension
+		// Chrome Extensions have file size limits
+		maxEntrypointSize: 2000000, // 2MB for entry points
+		maxAssetSize: 2000000, // 2MB for assets
+		// Additional settings for extensions
 		assetFilter: function(assetFilename) {
 			return !assetFilename.endsWith('.map');
 		},
 	},
 	plugins: [
-		// Копіюємо manifest.json для production
+		// Copy manifest.json for production
 		new CopyPlugin({
 			patterns: [
 				{

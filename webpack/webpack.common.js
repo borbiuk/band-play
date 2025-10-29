@@ -13,27 +13,29 @@ module.exports = {
 		path: path.join(__dirname, './../dist'),
 		filename: '[name].js',
 		clean: true,
-		// Для Chrome Extension не використовуємо hash в іменах файлів
-		// оскільки manifest.json посилається на конкретні імена
+		// For Chrome Extensions, do not use hashed file names
+		// because manifest.json references exact file names
 	},
 	optimization: {
 		splitChunks: {
 			chunks(chunk) {
-				// Background script не повинен мати vendor dependencies (service worker)
+				// Background script must not include vendor dependencies (service worker)
 				if (chunk.name === 'background') {
 					return false;
 				}
-				// Тільки content script має vendor dependencies
+				// Only the content script should include vendor dependencies
 				return chunk.name === 'content';
 			},
 			minSize: 20000,
 			maxSize: 244000,
 			cacheGroups: {
-				// Vendor бібліотеки тільки для content scripts
+				// Vendor libraries only for content scripts
 				vendor: {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendor',
-					chunks: 'all',
+						// Extract vendor only from the 'content' entry
+						// to avoid splitting the popup (options) and requiring vendor.js in options.html
+						chunks: (chunk) => chunk.name === 'content',
 					priority: 10,
 					enforce: true,
 				},
@@ -42,7 +44,7 @@ module.exports = {
 		usedExports: true,
 		sideEffects: false,
 		moduleIds: 'deterministic',
-		runtimeChunk: false, // Для extension не потрібен runtime chunk
+		runtimeChunk: false, // Runtime chunk is not needed for extensions
 	},
 	cache: {
 		type: 'filesystem',
@@ -113,9 +115,9 @@ module.exports = {
 				configFile: './tsconfig.json',
 			})
 		],
-		// Кешування модулів для швидшої резолюції
+		// Cache modules for faster resolution
 		cacheWithContext: false,
-		// Аліаси для швидшого доступу
+		// Aliases for faster access
 		alias: {
 			'@shared': path.resolve(__dirname, '../src/shared'),
 		},
@@ -133,10 +135,10 @@ module.exports = {
 							'**/logo-full.png',
 							'**/logo.png',
 							'**/.DS_Store',
-							'**/manifest.json', // Виключаємо manifest.json з common
+						'**/manifest.json', // Exclude manifest.json from common
 						],
 					},
-					// Кешування для швидшої копії
+					// Caching for faster copy
 					noErrorOnMissing: true,
 				},
 			],
@@ -145,9 +147,9 @@ module.exports = {
 			},
 		}),
 	],
-	// Специфічні налаштування для Chrome Extension
-	target: ['web', 'es2020'], // Підтримка сучасних браузерів
+	// Chrome Extension specific settings
+	target: ['web', 'es2020'], // Support modern browsers
 	experiments: {
-		topLevelAwait: true, // Підтримка top-level await для service workers
+		topLevelAwait: true, // Enable top-level await for service workers
 	},
 };
