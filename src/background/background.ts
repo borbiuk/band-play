@@ -114,6 +114,11 @@ const registerKeepAwakeChange = () => {
 	};
 
 	configService.get<boolean>('keepAwake').then(update);
+
+	// React to settings changes in real time
+	configService.addListener((newConfig) => {
+		update(Boolean(newConfig.keepAwake));
+	});
 };
 
 /**

@@ -1,12 +1,14 @@
 {
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
-	"version": "8.0.3",
-	"description": "Automation of work with Bandcamp & SoundCloud: tempo adjustment, preserve pitch, playback control by hotkeys, autoplay, etc.",
+	"short_name": "BandPlay",
+	"version": "8.0.4",
+	"description": "Enhanced playback for Bandcamp & SoundCloud: autoplay, speed, pitch, hotkeys.",
+	"homepage_url": "https://github.com/borbiuk/band-play",
 	"host_permissions": [
 		"https://bandcamp.com/*",
 		"https://*.bandcamp.com/*",
-		"https://soundcloud.com/*"
+		"https://soundcloud.com/discover*"
 	],
 	"permissions": ["tabs", "storage", "power"],
 	"background": {
@@ -18,12 +20,13 @@
 			"matches": [
 				"https://bandcamp.com/*",
 				"https://*.bandcamp.com/*",
-				"https://soundcloud.com/*"
-			]
+				"https://soundcloud.com/discover*"
+			],
+			"run_at": "document_idle"
 		}
 	],
 	"action": {
-		"default_title": "Bandcamp play settings",
+		"default_title": "Bandcamp Play settings",
 		"default_popup": "./options.html",
 		"default_icon": {
 			"16": "assets/logo-16.png",
