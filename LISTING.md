@@ -9,6 +9,7 @@ Power up Bandcamp and SoundCloud with autoplay, precise speed control, pitch pre
 - ⌨️ Smart hotkeys: Play/Pause, seek, speed, next/prev, open in new tab, wishlist
 - 💤 Keep Awake: Prevents system sleep during listening sessions
 - 🧩 Feed Player (Bandcamp): Clean, focused player UI on feed pages
+- 🎨 Highlight Visited (Bandcamp): Visually marks albums/tracks you've already opened or listened to
 
 🌍 Works on
 

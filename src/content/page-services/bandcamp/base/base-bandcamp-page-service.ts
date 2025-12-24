@@ -1,6 +1,7 @@
 import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
 import { BandcampTrackModel } from '@shared/models';
 import EventEmitter from '@shared/services/event-emitter';
+import visitedService from '@shared/services/visited-service';
 import { exist, notExist } from '@shared/utils';
 
 import { BasePageService } from '../../base/base-page-service';
@@ -20,6 +21,30 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	/** Event emitter for audio element events */
 	public audioEventEmitter: EventEmitter<HTMLAudioElement> =
 		new EventEmitter();
+	/** Guard to ensure visited audio binding is attached once per service instance */
+	private visitedBindingInitialized: boolean = false;
+
+	protected constructor() {
+		super();
+		this.bindVisitedAudioOnce();
+	}
+
+	/**
+	 * Highlight or unhighlight tracks depending on config.highlightVisited.
+	 * Should be called by concrete services at the end of initTracks().
+	 */
+	protected async updateVisitedHighlighting(): Promise<void> {
+		if (notExist(this.tracks) || this.tracks.length === 0) {
+			return;
+		}
+		if (this.config?.highlightVisited) {
+			await visitedService
+				.highlightBandcampTracks(this.tracks)
+				.catch(() => void 0);
+			return;
+		}
+		visitedService.unhighlightBandcampTracks(this.tracks);
+	}
 
 	playPause(): void {
 		this.audioOperator<void>((audio: HTMLAudioElement) => {
@@ -79,6 +104,14 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 					? !audio.preservesPitch
 					: false;
 		});
+	}
+
+	private bindVisitedAudioOnce(): void {
+		if (this.visitedBindingInitialized) {
+			return;
+		}
+		this.visitedBindingInitialized = true;
+		visitedService.bindBandcampAudio(() => this.audioEventEmitter);
 	}
 
 	audioOperator<TResult>(

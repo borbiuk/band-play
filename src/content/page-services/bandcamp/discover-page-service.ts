@@ -66,6 +66,8 @@ export class DiscoverPageService
 	}
 
 	initTracks(): void {
+		setTimeout(() => this.updateVisitedHighlighting(), 0);
+
 		const list = document.querySelectorAll('.results-grid-item');
 		if (notExist(list) || list.length === this.tracks.length) {
 			return;

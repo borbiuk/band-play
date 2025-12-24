@@ -1,5 +1,5 @@
 import configService from '@shared/services/config-service';
-import { notExist } from '@shared/utils';
+import { exist, notExist } from '@shared/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
@@ -56,7 +56,7 @@ export const FeedPlayer = ({
 	const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
 	useEffect(() => {
-		setShow(feedPageService.config.showFeedPlayer);
+		setShow(feedPageService.config?.showFeedPlayer);
 		configService.addListener((newConfig) => {
 			setShow(newConfig.showFeedPlayer);
 		});
@@ -178,7 +178,8 @@ export const FeedPlayer = ({
 	);
 
 	return (
-		show && (
+		show &&
+		exist(trackTitle) && (
 			<div className="fixed bottom-20 right-10 z-[999] flex h-[80px] w-[500px] select-none flex-row border border-gray-300 bg-white">
 				{/* Cover Art */}
 				<div

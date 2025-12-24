@@ -1,5 +1,6 @@
 import { PageService } from '@shared/interfaces';
 import EventEmitter from '@shared/services/event-emitter';
+import visitedService from '@shared/services/visited-service';
 import { exist, notExist } from '@shared/utils';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
@@ -12,6 +13,7 @@ export class FeedPageService
 {
 	public isPreviousTrackAvailable: boolean = false;
 	public nowPlayingEventEmitter: EventEmitter<{
+		id: string;
 		title: string;
 		artist: string;
 		coverArtUrl: string;
@@ -19,6 +21,7 @@ export class FeedPageService
 
 	private nowPlaying: {
 		element: Element;
+		id: string;
 		name: string;
 		artist: string;
 		coverArtUrl: string;
@@ -73,12 +76,15 @@ export class FeedPageService
 	}
 
 	initTracks(): void {
+		setTimeout(() => this.updateVisitedHighlighting(), 0);
+
 		const collectionId = 'story-list';
 		const itemIdSelector = 'data-tralbumid';
 
 		const allTracksOnPage = document
 			.getElementById(collectionId)
 			?.querySelectorAll('[data-tralbumid]');
+
 		if (
 			notExist(allTracksOnPage) ||
 			this.tracks.length === allTracksOnPage?.length
@@ -100,6 +106,7 @@ export class FeedPageService
 			const setNowPlaying = () => {
 				this.nowPlaying = {
 					element,
+					id: element.getAttribute('data-tralbumid'),
 					name: element.querySelector<HTMLElement>(
 						'.collection-item-title'
 					)?.textContent,
@@ -119,10 +126,15 @@ export class FeedPageService
 				};
 
 				this.nowPlayingEventEmitter.emit({
+					id: this.nowPlaying.id,
 					title: this.nowPlaying.name,
 					artist: this.nowPlaying.artist,
 					coverArtUrl: this.nowPlaying.coverArtUrl,
 				});
+
+				visitedService
+					.markBandcampTralbumIdVisited(this.nowPlaying.id)
+					.catch(() => void 0);
 			};
 
 			playButton.removeEventListener('click', setNowPlaying);
@@ -188,7 +200,7 @@ export class FeedPageService
 		title: string;
 		artist: string;
 		coverArtUrl: string;
-	} | null {
+	} {
 		if (notExist(this.nowPlaying)) {
 			return null;
 		}

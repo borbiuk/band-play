@@ -88,7 +88,10 @@ export class CollectionPageService
 	}
 
 	initTracks(): void {
-		this.clickShowAllItems();
+		setTimeout(async () => {
+			this.clickShowAllItems();
+			await this.updateVisitedHighlighting();
+		}, 0);
 
 		const collectionId = this.isWishlist
 			? 'wishlist-grid'

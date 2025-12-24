@@ -22,6 +22,9 @@ export interface ConfigModel {
 	/** Prevents the display from being turned off or dimmed, or the system from sleeping in response to user inactivity */
 	keepAwake: boolean;
 
+	/** Highlight already visited/listened albums and tracks on Bandcamp pages */
+	highlightVisited: boolean;
+
 	/** Step of track moving in seconds */
 	playbackStep: number;
 

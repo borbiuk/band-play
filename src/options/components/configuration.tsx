@@ -100,6 +100,13 @@ export const Configuration = () => {
 					defaultValue={currentConfig.showFeedPlayer}
 					onChange={updateStorage}
 				/>
+				<Checkbox
+					id="highlightVisited"
+					label="Highlight visited"
+					tooltip="Hihlight albums and tracks that are already listened"
+					defaultValue={currentConfig.highlightVisited}
+					onChange={updateStorage}
+				/>
 			</div>
 
 			<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">

@@ -16,7 +16,7 @@ import { SoundCloudDiscoverPageService } from '../page-services/soundcloud/sound
  * Service worker that manages page-specific services and handles page type detection.
  *
  * This class is responsible for:
- * - Detecting the current page type and selecting appropriate service
+ * - Detecting the current page type and selecting the appropriate service
  * - Managing autoplay functionality with configurable delays
  * - Handling URL changes and service switching
  * - Initializing tracks on page load
@@ -27,7 +27,7 @@ export class PageServiceWorker {
 	private readonly autoplayDelay: number = 250;
 
 	/** Delay in milliseconds for track initialization */
-	private readonly initTracksDelay: number = 700;
+	private readonly initTracksDelay: number = 300;
 
 	/** Array of all available page services for different platforms */
 	private readonly pageServices: PageService[] = [

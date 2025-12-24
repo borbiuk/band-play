@@ -1,0 +1,26 @@
+/* Band Play: visited marker (scoped for feed and collection containers) */
+.band-play-visited {
+	.tralbum-details {
+		a,
+		.collection-item-title,
+		.title,
+		.item-link {
+			color: #7b1fa2 !important;
+		}
+	}
+
+	.collection-title-details {
+		a,
+		.collection-item-title,
+		.collection-item-artist {
+			color: #7b1fa2 !important;
+		}
+	}
+
+	.collection-item-details-container {
+		.collection-item-title,
+		.collection-item-artist {
+			color: #7b1fa2 !important;
+		}
+	}
+}

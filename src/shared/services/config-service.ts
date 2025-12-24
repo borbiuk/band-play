@@ -13,23 +13,8 @@ class ConfigService {
 	 * @param callback - The callback function to handle the updated configuration.
 	 */
 	public addListener(callback: (newConfig: ConfigModel) => void): void {
-		chrome.storage.local.onChanged.addListener(
-			(storageChanges: {
-				[key: string]: chrome.storage.StorageChange;
-			}) => {
-				const currentConfig = Object.keys(storageChanges).reduce(
-					(config, key) => ({
-						...config,
-						[key]:
-							storageChanges[key] === undefined
-								? storageChanges[key].oldValue
-								: storageChanges[key].newValue,
-					}),
-					{} as ConfigModel
-				);
-
-				callback(this.getWithDefaults(currentConfig));
-			}
+		chrome.storage.local.onChanged.addListener(() =>
+			this.getAll().then(callback)
 		);
 	}
 
@@ -50,17 +35,18 @@ class ConfigService {
 	 * @returns A promise that resolves with the complete configuration object.
 	 */
 	public async getAll(): Promise<ConfigModel> {
-		const config = (await chrome.storage.local.get([
+		const config = await chrome.storage.local.get([
 			'autoplay',
 			'autoscroll',
 			'keepAwake',
+			'highlightVisited',
 			'playbackStep',
 			'loopTrack',
 			'showFeedPlayer',
 			'shortcuts',
-		])) as ConfigModel;
+		]);
 
-		return this.getWithDefaults(config);
+		return this.getWithDefaults(config as unknown as ConfigModel);
 	}
 
 	/**
@@ -69,9 +55,7 @@ class ConfigService {
 	 * @returns A promise that resolves with the complete configuration object.
 	 */
 	public async get<T>(key: keyof ConfigModel): Promise<T> {
-		const config = (await chrome.storage.local.get([key])) as ConfigModel;
-
-		return this.getWithDefaults(config)[key] as T;
+		return (await this.getAll())[key] as T;
 	}
 
 	/**
@@ -91,6 +75,9 @@ class ConfigService {
 			keepAwake: exist(config.keepAwake)
 				? Boolean(config.keepAwake)
 				: true,
+			highlightVisited: exist(config.highlightVisited)
+				? Boolean(config.highlightVisited)
+				: true,
 			playbackStep: Number(config.playbackStep),
 			loopTrack: exist(config.loopTrack)
 				? Boolean(config.loopTrack)
@@ -101,7 +88,7 @@ class ConfigService {
 			shortcuts: this.mergeShortcuts(config.shortcuts),
 		};
 
-		if (isNaN(config.playbackStep)) {
+		if (Number.isNaN(config.playbackStep)) {
 			config.playbackStep = 10;
 		}
 
