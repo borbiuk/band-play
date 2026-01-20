@@ -78,7 +78,7 @@ export const PlaybackStepInput = ({
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="h-7 rounded-s-lg border border-band-200 bg-band-200 p-1.5 pb-0 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-6 rounded-s-lg border border-band-200 bg-band-200 px-2 pt-1 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleDecrement}
 				>
 					<svg
@@ -93,19 +93,19 @@ export const PlaybackStepInput = ({
 				</button>
 
 				{/* Input */}
-				<div className="relative h-7 w-full">
+				<div className="relative h-6 w-full">
 					<input
 						type="number"
 						id={`${id}-number-input`}
 						min={min}
 						max={max}
 						value={value}
-						className="block h-full w-full border-y border-band-200 bg-band-100 py-2.5 text-center text-base font-medium tabular-nums text-gray-900 outline-none"
+						className="block h-full w-full border-y border-band-200 bg-band-100 text-center text-sm font-normal tabular-nums text-gray-900 outline-none"
 						placeholder={max.toString()}
 						onChange={handleChange}
 						required
 					/>
-					<span className="absolute bottom-1 right-2 pt-1 text-xs text-gray-500">
+					<span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-500">
 						{suffix}
 					</span>
 				</div>
@@ -114,7 +114,7 @@ export const PlaybackStepInput = ({
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="h-7 rounded-e-lg border border-band-200 bg-band-200 p-1.5 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					className="h-6 rounded-e-lg border border-band-200 bg-band-200 px-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
 					onClick={handleIncrement}
 				>
 					<svg

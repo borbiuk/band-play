@@ -1,4 +1,4 @@
-import { ShortcutType } from '@shared/enums';
+import { BatchDownloadFormat, ShortcutType } from '@shared/enums';
 
 /**
  * Configuration type for keyboard shortcuts.
@@ -36,4 +36,10 @@ export interface ConfigModel {
 
 	/** Keyboard shortcuts configuration */
 	shortcuts: ShortcutConfig;
+
+	/** Preferred download format for batch downloads on Bandcamp */
+	batchDownloadFormat: BatchDownloadFormat;
+
+	/** Number of concurrent active downloads for batch downloads */
+	batchDownloadConcurrency: number;
 }

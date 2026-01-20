@@ -1,5 +1,5 @@
-import { KeyCode, ShortcutType } from '@shared/enums';
-import { exist } from '@shared/utils';
+import { BatchDownloadFormat, KeyCode, ShortcutType } from '@shared/enums';
+import { exist, notExist } from '@shared/utils';
 
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
 
@@ -44,6 +44,8 @@ class ConfigService {
 			'loopTrack',
 			'showFeedPlayer',
 			'shortcuts',
+			'batchDownloadFormat',
+			'batchDownloadConcurrency',
 		]);
 
 		return this.getWithDefaults(config as unknown as ConfigModel);
@@ -78,7 +80,7 @@ class ConfigService {
 			highlightVisited: exist(config.highlightVisited)
 				? Boolean(config.highlightVisited)
 				: true,
-			playbackStep: Number(config.playbackStep),
+			playbackStep: exist(config.playbackStep) ? config.playbackStep : 10,
 			loopTrack: exist(config.loopTrack)
 				? Boolean(config.loopTrack)
 				: false,
@@ -86,10 +88,23 @@ class ConfigService {
 				? Boolean(config.showFeedPlayer)
 				: true,
 			shortcuts: this.mergeShortcuts(config.shortcuts),
+			batchDownloadFormat: exist(config.batchDownloadFormat)
+				? config.batchDownloadFormat
+				: BatchDownloadFormat.Wav,
+			batchDownloadConcurrency: exist(config.batchDownloadConcurrency)
+				? config.batchDownloadConcurrency
+				: 8,
 		};
 
-		if (Number.isNaN(config.playbackStep)) {
+		if (config.playbackStep < 1 || config.playbackStep > 60) {
 			config.playbackStep = 10;
+		}
+
+		if (
+			config.batchDownloadConcurrency < 1 ||
+			config.batchDownloadConcurrency > 15
+		) {
+			config.batchDownloadConcurrency = 8;
 		}
 
 		return config;

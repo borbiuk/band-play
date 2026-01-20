@@ -12,6 +12,7 @@ export class CollectionPageService
 	private isWishlist: boolean;
 	private collectionShowAllItemsClicked: boolean = false;
 	private wishlistShowAllItemsClicked: boolean = false;
+	private externalTabsInjected: boolean = false;
 
 	constructor() {
 		super();
@@ -89,6 +90,7 @@ export class CollectionPageService
 
 	initTracks(): void {
 		setTimeout(async () => {
+			this.injectExternalTabs();
 			this.clickShowAllItems();
 			await this.updateVisitedHighlighting();
 		}, 0);
@@ -115,6 +117,67 @@ export class CollectionPageService
 				id: x.getAttribute('data-tralbumid'),
 				element: x,
 			}));
+	}
+
+	private injectExternalTabs(): void {
+		if (this.externalTabsInjected) {
+			return;
+		}
+
+		const tabs = document.getElementById('grid-tabs');
+		if (notExist(tabs)) {
+			return;
+		}
+
+		const donateTabId = 'band-play-tab-donate';
+		const rateTabId = 'band-play-tab-rate';
+
+		if (exist(document.getElementById(donateTabId))) {
+			this.externalTabsInjected = true;
+			return;
+		}
+
+		const donateUrl = 'https://www.buymeacoffee.com/borbiuk';
+		const rateUrl =
+			'https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews';
+
+		const createExternalTab = (id: string, title: string, url: string) => {
+			const li = document.createElement('li');
+			li.id = id;
+			li.classList.add('band-play-external-tab');
+			li.setAttribute('role', 'button');
+			li.setAttribute('tabindex', '0');
+
+			const titleSpan = document.createElement('span');
+			titleSpan.className = 'tab-title';
+
+			titleSpan.appendChild(document.createTextNode(title));
+			li.appendChild(titleSpan);
+
+			const open = (event: Event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				this.createNewTab(url, true);
+			};
+
+			li.addEventListener('click', open);
+			li.addEventListener('keydown', (event: KeyboardEvent) => {
+				if (event.key !== 'Enter' && event.key !== ' ') {
+					return;
+				}
+				open(event);
+			});
+
+			return li;
+		};
+
+		const donateTab = createExternalTab(donateTabId, 'donate', donateUrl);
+		const rateTab = createExternalTab(rateTabId, 'rate', rateUrl);
+
+		tabs.appendChild(donateTab);
+		tabs.appendChild(rateTab);
+
+		this.externalTabsInjected = true;
 	}
 
 	open(active: boolean): void {

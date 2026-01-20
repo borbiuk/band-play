@@ -1,20 +1,16 @@
-🎵 Bandcamp Play — Enhanced Music Controls for Bandcamp & SoundCloud
+🎵 Bandcamp Play — Enhanced Music Controls for Bandcamp
 
-Power up Bandcamp and SoundCloud with autoplay, precise speed control, pitch preservation, and keyboard-first navigation. Lightweight, private, and open source.
+Power up Bandcamp with autoplay, precise speed control, pitch preservation, batch downloads, and keyboard-first navigation. Lightweight, private, and open source.
 
 ✨ Key features
 
+- 🎨 Highlight Visited: Visually marks albums/tracks you've already opened or listened to
+- 📥 Batch Download: Select multiple items on Collection/Wishlist/Purchases and manage the queue
+- 🧩 Feed Player: Clean, focused player UI on feed pages
 - ▶️ Autoplay: Seamlessly play collections, wishlists, feeds, and albums
 - 🕒 Speed control: Fine-grained tempo steps (3.03%) with pitch preservation
 - ⌨️ Smart hotkeys: Play/Pause, seek, speed, next/prev, open in new tab, wishlist
 - 💤 Keep Awake: Prevents system sleep during listening sessions
-- 🧩 Feed Player (Bandcamp): Clean, focused player UI on feed pages
-- 🎨 Highlight Visited (Bandcamp): Visually marks albums/tracks you've already opened or listened to
-
-🌍 Works on
-
-- ✅ Bandcamp: Feed, Album/Track, Collection/Wishlist, Discover (full support)
-- ⚠️ SoundCloud: Discover (limited support)
 
 🎹 Essential hotkeys (fully configurable)
 
@@ -39,11 +35,7 @@ Power up Bandcamp and SoundCloud with autoplay, precise speed control, pitch pre
 - 🗂️ Tabs — Create a new tab for the current track and query the active tab
 - 💾 Storage — Save your preferences and shortcut configuration locally
 - 🔋 Power — Keep the display awake while listening (optional feature)
-
-📝 Notes
-
-- 🟠 SoundCloud support is currently limited (Discover only)
-- 📢 Not affiliated with or endorsed by Bandcamp or SoundCloud
+- ⬇️ Downloads — Save Bandcamp files and manage batch download queue
 
 🆘 Support
 

@@ -8,6 +8,7 @@ module.exports = {
 		options: path.join(srcDir, './options/options.tsx'),
 		background: path.join(srcDir, './background/background.ts'),
 		content: path.join(srcDir, './content/content.ts'),
+		downloads: path.join(srcDir, './downloads/downloads.tsx'),
 	},
 	output: {
 		path: path.join(__dirname, './../dist'),

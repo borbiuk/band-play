@@ -5,8 +5,8 @@
 </div>
 
 Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com)
-and [SoundCloud](https://soundcloud.com/) by providing advanced playback controls, tempo adjustment, pitch preservation,
-keyboard shortcuts, autoplay functionality, and other automation features for seamless music control.
+by providing advanced playback controls, tempo adjustment, pitch preservation,
+keyboard shortcuts, autoplay functionality, batch downloads, and other automation features for seamless music control.
 
 Check the [Chrome Web Store](https://chrome.google.com/webstore/detail/band-play/nooegmjcddclidfdlibmgcpaahkikmlh) page
 for more details.
@@ -32,17 +32,9 @@ for more details.
 ### 🎛️ **Advanced Features**
 
 - **Feed Player**: Custom player interface for Bandcamp feed pages
-- **Configuration Panel**: Easy access to all settings
-- **Wishlist Integration**: Seamless add/remove tracks from wishlist
-
-### 🌐 **Platform Support**
-
-- **Bandcamp**: Full support for all page types (Feed, Album, Collection, Discover)
-- **SoundCloud**: Limited support for discover pages
+- **Batch Download**: Quickly select multiple purchases to download in bulk
 
 ### 🎹 **Keyboard Shortcuts**
-
-_NOTE: Not all hotkey works for SoundCloud (SC)_
 
 | Feature               | Description                                  | Key    |
 | --------------------- | -------------------------------------------- | ------ |
@@ -71,22 +63,12 @@ _NOTE: Not all hotkey works for SoundCloud (SC)_
 
 ## 📄 Supported Pages
 
-### 🔵 **Bandcamp** (Full Support)
-
-| Page Type               | Features                   | Description                                |
-| ----------------------- | -------------------------- | ------------------------------------------ |
-| **Feed**                | All features + Feed Player | Custom player interface with full controls |
-| **Discover**            | All features               | Browse and play new music                  |
-| **Collection/Wishlist** | All features               | Manage your music library                  |
-| **Album/Track**         | All features               | Individual album and track pages           |
-
-### 🟠 **SoundCloud** (Limited Support)
-
-| Page Type    | Features                   | Description                                |
-| ------------ | -------------------------- | ------------------------------------------ |
-| **Discover** | Basic playback, navigation | Limited functionality compared to Bandcamp |
-
-**Note**: SoundCloud support is currently limited to basic playback controls on discover pages. Full feature parity with Bandcamp is planned for future updates.
+| Page Type               | Features                      | Description                                |
+| ----------------------- | ----------------------------- | ------------------------------------------ |
+| **Feed**                | All features + Feed Player    | Custom player interface with full controls |
+| **Discover**            | All features                  | Browse and play new music                  |
+| **Collection/Wishlist** | All features + Batch Download | Manage your music library                  |
+| **Album/Track**         | All features                  | Individual album and track pages           |
 
 <hr/>
 
@@ -111,6 +93,7 @@ _NOTE: Not all hotkey works for SoundCloud (SC)_
         - `services/`: Contains core services.
         - `shortcut/`: Contains keyboard shortcut handling.
         - `content.ts`: The TypeScript file for content script (running on each site page).
+    - `downloads/`: Contains the batch download manager page.
     - `options/`: Contains extension pop-up React component.
     - `shared/`: Contains shared models, enums, interfaces, services and utils.
 - `webpack/`: Configuration of webpack for different type of builds.

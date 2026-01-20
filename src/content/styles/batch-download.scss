@@ -1,0 +1,63 @@
+.band-play-batch-checkbox {
+	width: 22px;
+	height: 22px;
+	cursor: pointer;
+	accent-color: #35a0c3;
+	opacity: 0.85;
+
+	.collection-item-container & {
+		width: 29px;
+		height: 29px;
+		z-index: 10;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.1s ease-out;
+		appearance: none;
+		-webkit-appearance: none;
+		background-color: #fff;
+		border: 1px solid #35a0c3;
+		border-radius: 5px;
+
+		&:focus-visible {
+			opacity: 0.85;
+			pointer-events: auto;
+		}
+
+		&:checked {
+			opacity: 0.9;
+			pointer-events: auto;
+			border-color: #35a0c3;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2335a0c3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: 18px 18px;
+		}
+	}
+
+	.collection-item-container:hover & {
+		opacity: 0.85;
+		pointer-events: auto;
+	}
+}
+
+#band-play-batch-overlay-root,
+#band-play-batch-overlay-root * {
+	box-sizing: border-box;
+	@tailwind utilities;
+}
+
+#band-play-batch-overlay-root button {
+	text-decoration: none !important;
+	color: #111827 !important;
+	background-color: #c6dde8 !important;
+	border: 1px solid #c6dde8 !important;
+}
+
+#band-play-batch-overlay-root button:hover {
+	text-decoration: none !important;
+	background-color: #7ab6d0 !important;
+}
+
+#band-play-batch-overlay-root span {
+	text-decoration: none !important;
+}

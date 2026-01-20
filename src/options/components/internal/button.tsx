@@ -34,7 +34,7 @@ export const Button = ({ id, tooltip, icon, onClick }: ButtonOptions) => {
 			</button>
 			<Tooltip
 				id={id}
-				className="max-w-32"
+				className="!z-[9999] max-w-32"
 				variant="light"
 				place="top"
 				opacity={1}

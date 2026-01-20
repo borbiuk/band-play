@@ -1,9 +1,11 @@
+import { ExternalLinksPopup } from '@shared/components/external-links';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './options.scss';
+import { BatchDownload } from './components/batch-download';
 import { Configuration } from './components/configuration';
-import { Footer } from './components/footer';
+import { PlaybackStep } from './components/playback-step';
 import { ShortcutInput } from './components/shortcut-input';
 
 /**
@@ -19,24 +21,41 @@ import { ShortcutInput } from './components/shortcut-input';
  */
 const Options = () => {
 	return (
-		<div className="relative flex w-52 select-none flex-col justify-center gap-y-6 overflow-hidden bg-band-100/35 p-3 pb-4 align-middle">
-			{/* Header */}
-			<div className="mb-1 ml-2 flex w-full flex-row items-center gap-y-1.5 transition-all duration-300 ease-in-out hover:scale-102">
-				<img
-					src="./../assets/logo-128.png"
-					alt="Bandplay logo"
-					className="h-12 w-12 rounded-full shadow-xl shadow-gray-300"
-				/>
-				<span className="ml-2 text-2xl font-medium text-gray-800">
-					BandPlay
-				</span>
+		<div className="relative inline-flex select-none flex-col gap-6 overflow-hidden bg-band-100/35 p-3 pb-4 align-middle">
+			<div className="flex flex-row items-center justify-between">
+				<div className="ml-2 flex w-46 flex-row items-center gap-1.5 transition-all duration-300 ease-in-out hover:scale-102">
+					<img
+						src="./../assets/logo-128.png"
+						alt="Bandplay logo"
+						className="h-12 w-12 rounded-full shadow-xl shadow-gray-300"
+					/>
+					<span className="ml-2 text-2xl font-medium text-gray-800">
+						BandPlay
+					</span>
+				</div>
+
+				<div className="w-46">
+					<ExternalLinksPopup />
+				</div>
 			</div>
 
-			<Configuration />
+			<div className="flex flex-row gap-4">
+				<div className="w-46">
+					<Configuration />
+				</div>
 
-			<ShortcutInput />
+				<div className="flex w-46 flex-col justify-between">
+					<BatchDownload />
+					<PlaybackStep />
+				</div>
 
-			<Footer />
+				<div className="flex w-46 flex-col justify-between">
+					<ShortcutInput />
+					<span className="-mb-3 -mr-1 text-end text-[10px] text-gray-500">
+						by borbiuk
+					</span>
+				</div>
+			</div>
 		</div>
 	);
 };

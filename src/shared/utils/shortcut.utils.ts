@@ -1,6 +1,7 @@
 import { KeyCode } from '@shared/enums';
+import { isMac } from '@shared/utils/platfor.utils';
 
-import { isNumeric } from './common.utils';
+import { isNumeric } from './guard.utils';
 
 /**
  * Maps a shortcut string to a standardized format.
@@ -31,13 +32,6 @@ export const mapShortcutToString = (value: string): string => {
 
 	return value;
 };
-
-/**
- * Checks if the current platform is macOS.
- *
- * @returns True if running on macOS, false otherwise
- */
-const isMac = () => navigator.platform.toLowerCase().includes('mac');
 
 /**
  * Maps keyboard codes to human-readable symbols and strings.

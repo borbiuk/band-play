@@ -40,14 +40,14 @@ export const Checkbox = ({
 	return (
 		<div>
 			<label
-				className="inline-flex h-6 w-full cursor-pointer items-center rounded-full hover:cursor-pointer"
+				className="group inline-flex h-6 w-full cursor-pointer items-center rounded-full hover:cursor-pointer"
 				htmlFor={id}
 				data-tooltip-id={id}
 			>
 				<div className="relative flex items-center">
 					<input
 						type="checkbox"
-						className="before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all duration-300 before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:bg-band-500 before:opacity-0 before:transition-opacity checked:border-b-band-700 checked:bg-band-700 checked:before:bg-band-700 hover:scale-115 hover:before:opacity-0"
+						className="before:content[''] peer relative h-4 w-4 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all duration-300 before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:bg-band-500 before:opacity-0 before:transition-opacity checked:border-b-band-700 checked:bg-band-700 checked:before:bg-band-700 group-hover:scale-115 group-hover:before:opacity-0"
 						id={id}
 						checked={isChecked}
 						onChange={() => setIsChecked(!isChecked)}
@@ -65,11 +65,13 @@ export const Checkbox = ({
 					</span>
 				</div>
 
-				<span className="pl-1.5 text-sm text-gray-900">{label}</span>
+				<span className="pl-1.5 text-sm text-gray-900 transition-all duration-300 group-hover:scale-103">
+					{label}
+				</span>
 			</label>
 			<Tooltip
 				id={id}
-				className="max-w-40"
+				className="!z-[9999] max-w-40"
 				variant="light"
 				place="top"
 				opacity={1}

@@ -1,6 +1,6 @@
 import { ConfigModel } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
-import { notExist } from '@shared/utils/common.utils';
+import { notExist } from '@shared/utils/guard.utils';
 import React, { useEffect, useState } from 'react';
 
 import { Checkbox } from './internal/checkbox';
@@ -68,7 +68,7 @@ export const Configuration = () => {
 		<div className="flex w-full flex-col gap-y-6">
 			<div className="relative flex flex-col gap-y-1 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
 				<span className="absolute left-1 -mt-7.5 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
-					Configuration
+					Common
 				</span>
 
 				{/* Flags */}
@@ -105,22 +105,6 @@ export const Configuration = () => {
 					label="Highlight visited"
 					tooltip="Hihlight albums and tracks that are already listened"
 					defaultValue={currentConfig.highlightVisited}
-					onChange={updateStorage}
-				/>
-			</div>
-
-			<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
-				<span className="absolute left-1 z-20 -mt-8 rounded-xl p-1 text-base text-gray-500 backdrop-blur-sm">
-					Playback step
-				</span>
-
-				{/* Playback moving step */}
-				<PlaybackStepInput
-					id="playbackStep"
-					defaultValue={currentConfig.playbackStep}
-					min={1}
-					max={120}
-					suffix="sec"
 					onChange={updateStorage}
 				/>
 			</div>

@@ -11,7 +11,7 @@ export enum KeyCode {
 	ArrowRight = 'ArrowRight',
 	/** Up arrow key */
 	ArrowUp = 'ArrowUp',
-	/** Digit keys (0-9) - represented by '1' as placeholder */
+	/** Digit keys (0-9) - represented by '1' as a placeholder */
 	Digit = '1',
 	/** B key */
 	KeyB = 'KeyB',

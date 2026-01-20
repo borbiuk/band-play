@@ -10,7 +10,6 @@ import { AlbumPageService } from '../page-services/bandcamp/album-page-service';
 import { CollectionPageService } from '../page-services/bandcamp/collection-page-service';
 import { DiscoverPageService } from '../page-services/bandcamp/discover-page-service';
 import { FeedPageService } from '../page-services/bandcamp/feed-page-service';
-import { SoundCloudDiscoverPageService } from '../page-services/soundcloud/sound-cloud-discover-page-service';
 
 /**
  * Service worker that manages page-specific services and handles page type detection.
@@ -35,7 +34,6 @@ export class PageServiceWorker {
 		new DiscoverPageService(),
 		new FeedPageService(),
 		new CollectionPageService(),
-		new SoundCloudDiscoverPageService(),
 	];
 
 	/** Currently active page service for the current page */

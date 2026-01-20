@@ -24,4 +24,5 @@ export const exist = <T>(value: T) => !notExist(value);
  * @param value - The string to check
  * @returns True if the string represents a valid number, false otherwise
  */
-export const isNumeric = (value: string) => !isNaN(parseFloat(value));
+export const isNumeric = (value: string) =>
+	!Number.isNaN(Number.parseFloat(value));

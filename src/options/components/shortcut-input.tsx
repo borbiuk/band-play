@@ -1,11 +1,11 @@
 import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
-import { exist } from '@shared/utils/common.utils';
+import { exist } from '@shared/utils/guard.utils';
 import { mapToHumanString } from '@shared/utils/shortcut.utils';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
-import { AnimatedButton } from './internal/animation-button';
+import { LabelButton } from '@shared/components/button';
 
 /**
  * ShortcutInput component for managing keyboard shortcuts configuration.
@@ -143,7 +143,7 @@ export const ShortcutInput = () => {
 			<input
 				id={'shortcut-value'}
 				type="text"
-				className="text-md block h-8 w-full rounded-md border border-band-200 bg-band-100 py-2.5 text-center font-normal tabular-nums text-gray-900 outline-none"
+				className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-center text-sm font-normal tabular-nums text-gray-900 outline-none"
 				value={shortcutValue}
 				disabled={!shortcutType}
 				placeholder="Press keys for shortcut"
@@ -151,9 +151,13 @@ export const ShortcutInput = () => {
 				onKeyUp={handleKeyUp}
 			/>
 
-			<div className="flex w-full flex-row justify-around gap-2 pt-2">
-				<AnimatedButton label="Save" onClick={saveShortcut} />
-				<AnimatedButton label="Reset" onClick={reset} />
+			<div className="flex w-full flex-row gap-2 pt-1.5">
+				<LabelButton
+					className="w-full"
+					label="Save"
+					onClick={saveShortcut}
+				/>
+				<LabelButton className="w-full" label="Reset" onClick={reset} />
 			</div>
 		</div>
 	);

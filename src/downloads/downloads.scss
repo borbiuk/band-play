@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind utilities;
+
+/* Minimal page styling for the downloads tab */
+body {
+	margin: 0;
+	background: #ebf3f4;
+	font-family:
+		system-ui,
+		-apple-system,
+		Segoe UI,
+		Roboto,
+		Helvetica,
+		Arial,
+		sans-serif;
+}
+
+@keyframes bandPlayIndeterminate {
+	0% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 0.75;
+	}
+	100% {
+		opacity: 0.35;
+	}
+}
+
+/* Indeterminate progress bar (used when totalBytes is unknown) */
+.band-play-progress-indeterminate {
+	position: relative;
+	overflow: hidden;
+	background: #e5e7eb;
+}
+
+.band-play-progress-indeterminate::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	background: #9ca3af;
+	animation: bandPlayIndeterminate 1s ease-in-out infinite;
+}
+
+.band-play-progress-paused {
+	background: #9ca3af;
+}

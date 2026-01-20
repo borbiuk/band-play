@@ -4,7 +4,7 @@ import { ConfigModel } from '../models/config-model';
 
 /**
  * Interface defining the contract for page-specific services.
- * Each page service (Bandcamp, SoundCloud) must implement this interface
+ * Each page service (Bandcamp) must implement this interface
  * to provide consistent functionality across different music streaming platforms.
  */
 export interface PageService {

@@ -51,6 +51,6 @@ export default [
 		},
 	},
 	{
-		ignores: ['**/node_modules/**', '**/dist/**', '**/webpack/**'],
+		ignores: ['**/node_modules/**', '**/dist/**', '**/webpack/**', '**/batchcamp/**'],
 	},
 ];

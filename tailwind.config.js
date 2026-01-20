@@ -28,6 +28,9 @@ module.exports = {
 			},
 			margin: {
 				7.5: '30px'
+			},
+			spacing: {
+				46: '11.5rem',
 			}
 		},
 	},

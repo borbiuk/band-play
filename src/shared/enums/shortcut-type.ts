@@ -42,6 +42,6 @@ export enum ShortcutType {
 	/** Open the current track in a new tab and focus on it */
 	OpenInNewTabWithFocus = 'Open in new tab with focus',
 
-	/** Add or remove the current track from wishlist */
+	/** Add or remove the current track from the wishlist */
 	AddToWishlist = 'Add/Remove from Wishlist',
 }
