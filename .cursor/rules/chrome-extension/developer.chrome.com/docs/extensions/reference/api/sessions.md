@@ -128,7 +128,7 @@ Fired when recently closed tabs and/or windows are changed. This event does not 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

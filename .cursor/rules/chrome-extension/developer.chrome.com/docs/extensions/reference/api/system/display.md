@@ -664,7 +664,7 @@ Fired when anything changes to the display configuration.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

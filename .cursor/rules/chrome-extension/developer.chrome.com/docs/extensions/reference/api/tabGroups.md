@@ -210,7 +210,7 @@ Fired when a group is created.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (group: [TabGroup](#type-TabGroup)) => void
@@ -234,7 +234,7 @@ Fired when a group is moved within a window. Move events are still fired for the
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (group: [TabGroup](#type-TabGroup)) => void
@@ -258,7 +258,7 @@ Fired when a group is closed, either directly by the user or automatically becau
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (group: [TabGroup](#type-TabGroup)) => void
@@ -282,7 +282,7 @@ Fired when a group is updated.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (group: [TabGroup](#type-TabGroup)) => void

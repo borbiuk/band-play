@@ -277,7 +277,7 @@ Fired when audio devices change, either new devices being added, or existing dev
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (devices: [AudioDeviceInfo](#type-AudioDeviceInfo)[]) => void
@@ -301,7 +301,7 @@ Fired when sound level changes for an active audio device.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (event: [LevelChangedEvent](#type-LevelChangedEvent)) => void
@@ -325,7 +325,7 @@ Fired when the mute state of the audio input or output changes. Note that mute s
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (event: [MuteChangedEvent](#type-MuteChangedEvent)) => void

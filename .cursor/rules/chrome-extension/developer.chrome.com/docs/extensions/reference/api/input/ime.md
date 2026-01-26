@@ -785,7 +785,7 @@ This event is sent when an IME is activated. It signals that the IME will be rec
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string, screen: [ScreenType](#type-ScreenType)) => void
@@ -813,7 +813,7 @@ This event is sent when a button in an assistive window is clicked.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -844,7 +844,7 @@ This event is sent when focus leaves a text box. It is sent to all extensions th
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (contextID: number) => void
@@ -868,7 +868,7 @@ This event is sent if this extension owns the active IME.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string, candidateID: number, button: [MouseButton](#type-MouseButton)) => void
@@ -896,7 +896,7 @@ This event is sent when an IME is deactivated. It signals that the IME will no l
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string) => void
@@ -920,7 +920,7 @@ This event is sent when focus enters a text box. It is sent to all extensions th
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (context: [InputContext](#type-InputContext)) => void
@@ -944,7 +944,7 @@ This event is sent when the properties of the current InputContext change, such 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (context: [InputContext](#type-InputContext)) => void
@@ -968,7 +968,7 @@ Fired when a key event is sent from the operating system. The event will be sent
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string, keyData: [KeyboardEvent](#type-KeyboardEvent), requestId: string) => boolean | undefined
@@ -999,7 +999,7 @@ Called when the user selects a menu item
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string, name: string) => void
@@ -1025,7 +1025,7 @@ This event is sent when chrome terminates ongoing text input session.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string) => void
@@ -1049,7 +1049,7 @@ Called when the editable string around caret is changed or when the caret positi
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (engineID: string, surroundingInfo: object) => void

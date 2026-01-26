@@ -246,7 +246,7 @@ The user pressed a button in the notification.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (notificationId: string, buttonIndex: number) => void
@@ -272,7 +272,7 @@ The user clicked in a non-button area of the notification.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (notificationId: string) => void
@@ -296,7 +296,7 @@ The notification closed, either by the system or by user action.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (notificationId: string, byUser: boolean) => void
@@ -322,7 +322,7 @@ The user changes the permission level. As of Chrome 47, only ChromeOS has UI tha
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (level: [PermissionLevel](#type-PermissionLevel)) => void
@@ -350,7 +350,7 @@ The user clicked on a link for the app's notification settings. As of Chrome 47,
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

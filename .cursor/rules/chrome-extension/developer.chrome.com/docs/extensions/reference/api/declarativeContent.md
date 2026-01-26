@@ -118,7 +118,7 @@ Matches the state of a web page based on various criteria.
 - constructor
   void
 
-                            The `constructor` function looks like:
+                              The `constructor` function looks like:
 
 ```
 (arg: [PageStateMatcher](#type-PageStateMatcher)) => {...}
@@ -151,7 +151,7 @@ WARNING: This action is still experimental and is not supported on stable builds
 - constructor
   void
 
-                            The `constructor` function looks like:
+                              The `constructor` function looks like:
 
 ```
 (arg: [RequestContentScript](#type-RequestContentScript)) => {...}
@@ -185,7 +185,7 @@ Exactly one of `imageData` or `path` must be specified. Both are dictionaries ma
 - constructor
   void
 
-                            The `constructor` function looks like:
+                              The `constructor` function looks like:
 
 ```
 (arg: [SetIcon](#type-SetIcon)) => {...}
@@ -212,7 +212,7 @@ On pages where the conditions are not met the extension's toolbar action will be
 - constructor
   void
 
-                            The `constructor` function looks like:
+                              The `constructor` function looks like:
 
 ```
 (arg: [ShowAction](#type-ShowAction)) => {...}
@@ -238,7 +238,7 @@ On pages where the conditions are not met the extension's toolbar action will be
 - constructor
   void
 
-                            The `constructor` function looks like:
+                              The `constructor` function looks like:
 
 ```
 (arg: [ShowPageAction](#type-ShowPageAction)) => {...}

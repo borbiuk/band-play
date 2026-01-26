@@ -85,7 +85,7 @@ Dispatched when the session state changes. `sessionState` is the new session sta
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (sessionState: [SessionState](#type-SessionState)) => void

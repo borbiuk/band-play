@@ -278,7 +278,7 @@ Fired when a URL is visited, providing the `HistoryItem` data for that URL. This
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (result: [HistoryItem](#type-HistoryItem)) => void
@@ -302,7 +302,7 @@ Fired when one or more URLs are removed from history. When all visits have been 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (removed: object) => void

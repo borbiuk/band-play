@@ -662,7 +662,7 @@ Fired when an extension's proposed modification to a network request is ignored.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -695,7 +695,7 @@ Fired when an authentication failure is received. The listener has three options
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object, asyncCallback?: function) => [BlockingResponse](#type-BlockingResponse) | undefined
@@ -783,7 +783,7 @@ Standard HTTP status code returned by the server.
 - asyncCallback
   function optionalChrome 58+
 
-                            The `asyncCallback` parameter looks like:
+                              The `asyncCallback` parameter looks like:
 
 ```
 (response: [BlockingResponse](#type-BlockingResponse)) => void
@@ -817,7 +817,7 @@ Fired when a server-initiated redirect is about to occur.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -914,7 +914,7 @@ Fired when a request is about to occur.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => [BlockingResponse](#type-BlockingResponse) | undefined
@@ -1010,7 +1010,7 @@ Fired before sending an HTTP request, once the request headers are available. Th
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => [BlockingResponse](#type-BlockingResponse) | undefined
@@ -1096,7 +1096,7 @@ Fired when a request is completed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -1190,7 +1190,7 @@ Fired when an error occurs.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -1278,7 +1278,7 @@ Fired when HTTP response headers of a request have been received.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => [BlockingResponse](#type-BlockingResponse) | undefined
@@ -1377,7 +1377,7 @@ Fired when the first byte of the response body is received. For HTTP requests, t
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -1471,7 +1471,7 @@ Fired just before a request is going to be sent to the server (modifications of 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void

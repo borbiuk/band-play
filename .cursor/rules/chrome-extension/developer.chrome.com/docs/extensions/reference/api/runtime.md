@@ -399,7 +399,7 @@ An object which allows two way communication with other pages. See [Long-lived c
   Event<functionvoidvoid>
   Fired when the port is disconnected from the other end(s). ``[runtime.lastError](#property-lastError) may be set if the port was disconnected by an error. If the port is closed via [disconnect](#method-Port-disconnect), then this event is only fired on the other end. This event is fired at most once (see also [Port lifetime](https://developer.chrome.com/docs/extensions/messaging#port-lifetime)).
 
-                            The `onDisconnect.addListener` function looks like:
+                              The `onDisconnect.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -408,7 +408,7 @@ An object which allows two way communication with other pages. See [Long-lived c
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (port: [Port](#type-Port)) => void
@@ -420,7 +420,7 @@ An object which allows two way communication with other pages. See [Long-lived c
   Event<functionvoidvoid>
   This event is fired when [postMessage](#method-Port-postMessage) is called by the other end of the port.
 
-                            The `onMessage.addListener` function looks like:
+                              The `onMessage.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -429,7 +429,7 @@ An object which allows two way communication with other pages. See [Long-lived c
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (message: any, port: [Port](#type-Port)) => void
@@ -446,7 +446,7 @@ An object which allows two way communication with other pages. See [Long-lived c
   void
   Immediately disconnect the port. Calling `disconnect()` on an already-disconnected port has no effect. When a port is disconnected, no new events will be dispatched to this port.
 
-                            The `disconnect` function looks like:
+                              The `disconnect` function looks like:
 
 ```
 () => {...}
@@ -456,7 +456,7 @@ An object which allows two way communication with other pages. See [Long-lived c
   void
   Send a message to the other end of the port. If the port is disconnected, an error is thrown.
 
-                            The `postMessage` function looks like:
+                              The `postMessage` function looks like:
 
 ```
 (message: any) => {...}
@@ -848,7 +848,7 @@ Fired when a Chrome update is available, but isn't installed immediately because
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -869,7 +869,7 @@ Fired when a connection is made from either an extension process or a content sc
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (port: [Port](#type-Port)) => void
@@ -893,7 +893,7 @@ Fired when a connection is made from another extension (by ``[runtime.connect](#
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (port: [Port](#type-Port)) => void
@@ -919,7 +919,7 @@ Fired when a connection is made from a native application. This event requires t
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (port: [Port](#type-Port)) => void
@@ -943,7 +943,7 @@ Fired when the extension is first installed, when the extension is updated to a 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -977,7 +977,7 @@ Fired when a message is sent from either an extension process (by `[runtime.send
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (message: any, sender: [MessageSender](#type-MessageSender), sendResponse: function) => boolean | Promise<any> | undefined
@@ -990,7 +990,7 @@ Fired when a message is sent from either an extension process (by `[runtime.send
 - sendResponse
   function
 
-                            The `sendResponse` parameter looks like:
+                              The `sendResponse` parameter looks like:
 
 ```
 (response?: any) => void
@@ -1018,7 +1018,7 @@ Fired when a message is sent from another extension (by ``[runtime.sendMessage](
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (message: any, sender: [MessageSender](#type-MessageSender), sendResponse: function) => boolean | Promise<any> | undefined
@@ -1031,7 +1031,7 @@ Fired when a message is sent from another extension (by ``[runtime.sendMessage](
 - sendResponse
   function
 
-                            The `sendResponse` parameter looks like:
+                              The `sendResponse` parameter looks like:
 
 ```
 (response?: any) => void
@@ -1059,7 +1059,7 @@ Fired when an app or the device that it runs on needs to be restarted. The app s
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (reason: [OnRestartRequiredReason](#type-OnRestartRequiredReason)) => void
@@ -1083,7 +1083,7 @@ Fired when a profile that has this extension installed first starts up. This eve
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -1104,7 +1104,7 @@ Sent to the event page just before it is unloaded. This gives the extension oppo
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -1125,7 +1125,7 @@ Sent after onSuspend to indicate that the app won't be unloaded after all.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -1146,7 +1146,7 @@ Fired when an update is available, but isn't installed immediately because the a
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -1177,7 +1177,7 @@ Fired when a connection is made from a user script from this extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (port: [Port](#type-Port)) => void
@@ -1204,7 +1204,7 @@ Fired when a message is sent from a user script associated with the same extensi
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (message: any, sender: [MessageSender](#type-MessageSender), sendResponse: function) => boolean | undefined
@@ -1217,7 +1217,7 @@ Fired when a message is sent from a user script associated with the same extensi
 - sendResponse
   function
 
-                            The `sendResponse` parameter looks like:
+                              The `sendResponse` parameter looks like:
 
 ```
 (response?: any) => void

@@ -446,7 +446,7 @@ This event fires if the certificates set via `[setCertificates](#method-setCerti
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (request: [CertificatesUpdateRequest](#type-CertificatesUpdateRequest)) => void
@@ -473,7 +473,7 @@ The extension must sign the input data from `request` using the appropriate algo
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (request: [SignatureRequest](#type-SignatureRequest)) => void

@@ -101,7 +101,7 @@ Shows desktop media picker UI with the specified set of sources.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (streamId: string, options: object) => void

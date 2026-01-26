@@ -785,7 +785,7 @@ When any of a ``[DownloadItem](#type-DownloadItem)'s properties except `bytesRec
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (downloadDelta: [DownloadDelta](#type-DownloadDelta)) => void
@@ -809,7 +809,7 @@ This event fires with the ``[DownloadItem](#type-DownloadItem) object when a dow
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (downloadItem: [DownloadItem](#type-DownloadItem)) => void
@@ -833,7 +833,7 @@ During the filename determination process, extensions will be given the opportun
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (downloadItem: [DownloadItem](#type-DownloadItem), suggest: function) => void
@@ -844,7 +844,7 @@ During the filename determination process, extensions will be given the opportun
 - suggest
   function
 
-                            The `suggest` parameter looks like:
+                              The `suggest` parameter looks like:
 
 ```
 (suggestion?: [FilenameSuggestion](#type-FilenameSuggestion)) => void
@@ -868,7 +868,7 @@ Fires with the `downloadId` when a download is erased from history.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (downloadId: number) => void

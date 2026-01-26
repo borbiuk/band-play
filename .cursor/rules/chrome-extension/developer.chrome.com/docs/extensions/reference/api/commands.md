@@ -331,7 +331,7 @@ Fired when a registered command is activated using a keyboard shortcut.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (command: string, tab?: [tabs.Tab](https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab)) => void

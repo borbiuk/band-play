@@ -446,7 +446,7 @@ Fired when a bookmark or folder changes. Note: Currently, only title and url cha
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, changeInfo: object) => void
@@ -477,7 +477,7 @@ Fired when the children of a folder have changed their order due to the order be
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, reorderInfo: object) => void
@@ -506,7 +506,7 @@ Fired when a bookmark or folder is created.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, bookmark: [BookmarkTreeNode](#type-BookmarkTreeNode)) => void
@@ -532,7 +532,7 @@ Fired when a bookmark import session is begun. Expensive observers should ignore
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -553,7 +553,7 @@ Fired when a bookmark import session is ended.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -574,7 +574,7 @@ Fired when a bookmark or folder is moved to a different parent folder.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, moveInfo: object) => void
@@ -609,7 +609,7 @@ Fired when a bookmark or folder is removed. When a folder is removed recursively
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, removeInfo: object) => void

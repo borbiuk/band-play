@@ -832,7 +832,7 @@ Raised when aborting an operation with `operationRequestId` is requested. The op
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [AbortRequestedOptions](#type-AbortRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -843,7 +843,7 @@ Raised when aborting an operation with `operationRequestId` is requested. The op
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -852,7 +852,7 @@ Raised when aborting an operation with `operationRequestId` is requested. The op
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -878,7 +878,7 @@ Raised when setting a new directory watcher is requested. If an error occurs, th
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [AddWatcherRequestedOptions](#type-AddWatcherRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -889,7 +889,7 @@ Raised when setting a new directory watcher is requested. If an error occurs, th
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -898,7 +898,7 @@ Raised when setting a new directory watcher is requested. If an error occurs, th
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -922,7 +922,7 @@ Raised when opening a file previously opened with `openRequestId` is requested t
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [CloseFileRequestedOptions](#type-CloseFileRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -933,7 +933,7 @@ Raised when opening a file previously opened with `openRequestId` is requested t
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -942,7 +942,7 @@ Raised when opening a file previously opened with `openRequestId` is requested t
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -968,7 +968,7 @@ Raised when showing a configuration dialog for `fileSystemId` is requested. If i
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [ConfigureRequestedOptions](#type-ConfigureRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -979,7 +979,7 @@ Raised when showing a configuration dialog for `fileSystemId` is requested. If i
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -988,7 +988,7 @@ Raised when showing a configuration dialog for `fileSystemId` is requested. If i
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1012,7 +1012,7 @@ Raised when copying an entry (recursively if a directory) is requested. If an er
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [CopyEntryRequestedOptions](#type-CopyEntryRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1023,7 +1023,7 @@ Raised when copying an entry (recursively if a directory) is requested. If an er
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1032,7 +1032,7 @@ Raised when copying an entry (recursively if a directory) is requested. If an er
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1056,7 +1056,7 @@ Raised when creating a directory is requested. The operation must fail with the 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [CreateDirectoryRequestedOptions](#type-CreateDirectoryRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1067,7 +1067,7 @@ Raised when creating a directory is requested. The operation must fail with the 
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1076,7 +1076,7 @@ Raised when creating a directory is requested. The operation must fail with the 
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1100,7 +1100,7 @@ Raised when creating a file is requested. If the file already exists, then `erro
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [CreateFileRequestedOptions](#type-CreateFileRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1111,7 +1111,7 @@ Raised when creating a file is requested. If the file already exists, then `erro
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1120,7 +1120,7 @@ Raised when creating a file is requested. If the file already exists, then `erro
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1144,7 +1144,7 @@ Raised when deleting an entry is requested. If `recursive` is true, and the entr
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [DeleteEntryRequestedOptions](#type-DeleteEntryRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1155,7 +1155,7 @@ Raised when deleting an entry is requested. If `recursive` is true, and the entr
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1164,7 +1164,7 @@ Raised when deleting an entry is requested. If `recursive` is true, and the entr
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1190,7 +1190,7 @@ Raised when executing an action for a set of files or directories is\ requested.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [ExecuteActionRequestedOptions](#type-ExecuteActionRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1201,7 +1201,7 @@ Raised when executing an action for a set of files or directories is\ requested.
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1210,7 +1210,7 @@ Raised when executing an action for a set of files or directories is\ requested.
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1236,7 +1236,7 @@ Raised when a list of actions for a set of files or directories at `entryPaths` 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [GetActionsRequestedOptions](#type-GetActionsRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1247,7 +1247,7 @@ Raised when a list of actions for a set of files or directories at `entryPaths` 
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 (actions: [Action](#type-Action)[]) => void
@@ -1258,7 +1258,7 @@ Raised when a list of actions for a set of files or directories at `entryPaths` 
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1282,7 +1282,7 @@ Raised when metadata of a file or a directory at `entryPath` is requested. The m
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [GetMetadataRequestedOptions](#type-GetMetadataRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1293,7 +1293,7 @@ Raised when metadata of a file or a directory at `entryPath` is requested. The m
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 (metadata: [EntryMetadata](#type-EntryMetadata)) => void
@@ -1304,7 +1304,7 @@ Raised when metadata of a file or a directory at `entryPath` is requested. The m
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1330,7 +1330,7 @@ Raised when showing a dialog for mounting a new file system is requested. If the
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (successCallback: function, errorCallback: function) => void
@@ -1339,7 +1339,7 @@ Raised when showing a dialog for mounting a new file system is requested. If the
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1348,7 +1348,7 @@ Raised when showing a dialog for mounting a new file system is requested. If the
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1372,7 +1372,7 @@ Raised when moving an entry (recursively if a directory) is requested. If an err
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [MoveEntryRequestedOptions](#type-MoveEntryRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1383,7 +1383,7 @@ Raised when moving an entry (recursively if a directory) is requested. If an err
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1392,7 +1392,7 @@ Raised when moving an entry (recursively if a directory) is requested. If an err
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1416,7 +1416,7 @@ Raised when opening a file at `filePath` is requested. If the file does not exis
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [OpenFileRequestedOptions](#type-OpenFileRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1427,7 +1427,7 @@ Raised when opening a file at `filePath` is requested. If the file does not exis
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 (metadata?: [EntryMetadata](#type-EntryMetadata)) => void
@@ -1438,7 +1438,7 @@ Raised when opening a file at `filePath` is requested. If the file does not exis
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1462,7 +1462,7 @@ Raised when contents of a directory at `directoryPath` are requested. The result
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [ReadDirectoryRequestedOptions](#type-ReadDirectoryRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1473,7 +1473,7 @@ Raised when contents of a directory at `directoryPath` are requested. The result
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 (entries: [EntryMetadata](#type-EntryMetadata)[], hasMore: boolean) => void
@@ -1486,7 +1486,7 @@ Raised when contents of a directory at `directoryPath` are requested. The result
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1510,7 +1510,7 @@ Raised when reading contents of a file opened previously with `openRequestId` is
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [ReadFileRequestedOptions](#type-ReadFileRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1521,7 +1521,7 @@ Raised when reading contents of a file opened previously with `openRequestId` is
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 (data: ArrayBuffer, hasMore: boolean) => void
@@ -1534,7 +1534,7 @@ Raised when reading contents of a file opened previously with `openRequestId` is
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1560,7 +1560,7 @@ Raised when the watcher should be removed. If an error occurs, then `errorCallba
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [RemoveWatcherRequestedOptions](#type-RemoveWatcherRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1571,7 +1571,7 @@ Raised when the watcher should be removed. If an error occurs, then `errorCallba
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1580,7 +1580,7 @@ Raised when the watcher should be removed. If an error occurs, then `errorCallba
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1604,7 +1604,7 @@ Raised when truncating a file to a desired length is requested. If an error occu
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [TruncateRequestedOptions](#type-TruncateRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1615,7 +1615,7 @@ Raised when truncating a file to a desired length is requested. If an error occu
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1624,7 +1624,7 @@ Raised when truncating a file to a desired length is requested. If an error occu
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1648,7 +1648,7 @@ Raised when unmounting for the file system with the `fileSystemId` identifier is
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [UnmountRequestedOptions](#type-UnmountRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1659,7 +1659,7 @@ Raised when unmounting for the file system with the `fileSystemId` identifier is
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1668,7 +1668,7 @@ Raised when unmounting for the file system with the `fileSystemId` identifier is
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void
@@ -1692,7 +1692,7 @@ Raised when writing contents to a file opened previously with `openRequestId` is
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (options: [WriteFileRequestedOptions](#type-WriteFileRequestedOptions), successCallback: function, errorCallback: function) => void
@@ -1703,7 +1703,7 @@ Raised when writing contents to a file opened previously with `openRequestId` is
 - successCallback
   function
 
-                            The `successCallback` parameter looks like:
+                              The `successCallback` parameter looks like:
 
 ```
 () => void
@@ -1712,7 +1712,7 @@ Raised when writing contents to a file opened previously with `openRequestId` is
 - errorCallback
   function
 
-                            The `errorCallback` parameter looks like:
+                              The `errorCallback` parameter looks like:
 
 ```
 (error: [ProviderError](#type-ProviderError)) => void

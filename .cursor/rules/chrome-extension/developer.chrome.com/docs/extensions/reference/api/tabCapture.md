@@ -158,7 +158,7 @@ Captures the visible area of the currently active tab. Capture can only be start
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (stream: LocalMediaStream) => void
@@ -221,7 +221,7 @@ Event fired when the capture status of a tab changes. This allows extension auth
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [CaptureInfo](#type-CaptureInfo)) => void

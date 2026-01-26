@@ -280,7 +280,7 @@ Notifies about proxy errors.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void

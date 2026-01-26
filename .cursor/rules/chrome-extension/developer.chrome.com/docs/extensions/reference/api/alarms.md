@@ -235,7 +235,7 @@ Fired when an alarm has elapsed. Useful for event pages.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (alarm: [Alarm](#type-Alarm)) => void

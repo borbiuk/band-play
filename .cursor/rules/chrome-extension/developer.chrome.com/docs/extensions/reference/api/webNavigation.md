@@ -239,7 +239,7 @@ Fired when a navigation is about to occur.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -307,7 +307,7 @@ Fired when a navigation is committed. The document (and the resources it refers 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -384,7 +384,7 @@ Fired when a document, including the resources it refers to, is completely loade
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -455,7 +455,7 @@ Fired when a new window, or a new tab in an existing window, is created to host 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -505,7 +505,7 @@ Fired when the page's DOM is fully constructed, but the referenced resources may
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -576,7 +576,7 @@ Fired when an error occurs and the navigation is aborted. This can happen if eit
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -654,7 +654,7 @@ Fired when the frame's history was updated to a new URL. All future events for t
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -731,7 +731,7 @@ Fired when the reference fragment of a frame was updated. All future events for 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -807,7 +807,7 @@ Fired when the contents of the tab is replaced by a different (usually previousl
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void

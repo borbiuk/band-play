@@ -110,7 +110,7 @@ Identifies the entity that is authorized to access resources associated with thi
 - options
   object optionalChrome 46+
 
-                          Deprecated since Chrome 89
+                            Deprecated since Chrome 89
 
     options are deprecated and will be ignored.
 
@@ -144,7 +144,7 @@ Fired when all the granted tokens need to be refreshed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

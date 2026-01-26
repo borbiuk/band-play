@@ -423,7 +423,7 @@ Event fired when the status of the job is changed. This is only fired for the jo
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (jobId: string, status: [JobStatus](#type-JobStatus)) => void

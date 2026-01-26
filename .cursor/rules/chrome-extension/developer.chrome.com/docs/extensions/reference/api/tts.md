@@ -267,7 +267,7 @@ Gender of voice for synthesized speech.
   void optional
   This function is called with events that occur in the process of speaking the utterance.
 
-                            The `onEvent` function looks like:
+                              The `onEvent` function looks like:
 
 ```
 (event: [TtsEvent](#type-TtsEvent)) =& gt;{...}
@@ -415,7 +415,7 @@ Called when the list of ``[tts.TtsVoice](#type-TtsVoice) that would be returned 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () =& gt;void

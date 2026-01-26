@@ -195,7 +195,7 @@ Fires when a WebAuthn `navigator.credentials.create()` call occurs. The extensio
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (requestInfo: [CreateRequest](#type-CreateRequest)) => void
@@ -219,7 +219,7 @@ Fires when a WebAuthn navigator.credentials.get() call occurs. The extension mus
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (requestInfo: [GetRequest](#type-GetRequest)) => void
@@ -243,7 +243,7 @@ Fires when a `PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (requestInfo: [IsUvpaaRequest](#type-IsUvpaaRequest)) => void
@@ -270,7 +270,7 @@ The event listener must be registered synchronously at load time.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -291,7 +291,7 @@ Fires when a `onCreateRequest` or `onGetRequest` event is canceled (because the 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (requestId: number) => void

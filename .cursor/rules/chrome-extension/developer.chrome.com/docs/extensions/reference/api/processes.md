@@ -198,7 +198,7 @@ Fired each time a process is created, providing the corrseponding Process object
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (process: [Process](#type-Process)) => void
@@ -222,7 +222,7 @@ Fired each time a process is terminated, providing the type of exit.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (processId: number, exitType: number, exitCode: number) => void
@@ -250,7 +250,7 @@ Fired each time a process becomes unresponsive, providing the corrseponding Proc
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (process: [Process](#type-Process)) => void
@@ -274,7 +274,7 @@ Fired each time the Task Manager updates its process statistics, providing the d
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (processes: object) => void
@@ -298,7 +298,7 @@ Fired each time the Task Manager updates its process statistics, providing the d
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (processes: object) => void

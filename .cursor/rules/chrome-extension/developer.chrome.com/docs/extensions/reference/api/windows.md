@@ -384,7 +384,7 @@ Fired when a window has been resized; this event is only dispatched when the new
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (window: [Window](#type-Window)) => void
@@ -409,7 +409,7 @@ Fired when a window is created.
 - callback
   functionChrome 46+
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (window: [Window](#type-Window)) => void
@@ -441,7 +441,7 @@ Fired when the currently focused window changes. Returns `chrome.windows.WINDOW_
 - callback
   functionChrome 46+
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (windowId: number) => void
@@ -473,7 +473,7 @@ Fired when a window is removed (closed).
 - callback
   functionChrome 46+
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (windowId: number) => void

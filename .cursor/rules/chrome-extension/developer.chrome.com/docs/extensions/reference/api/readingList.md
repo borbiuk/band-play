@@ -272,7 +272,7 @@ Triggered when a `ReadingListEntry` is added to the reading list.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (entry: [ReadingListEntry](#type-ReadingListEntry)) => void
@@ -296,7 +296,7 @@ Triggered when a `ReadingListEntry` is removed from the reading list.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (entry: [ReadingListEntry](#type-ReadingListEntry)) => void
@@ -320,7 +320,7 @@ Triggered when a `ReadingListEntry` is updated in the reading list.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (entry: [ReadingListEntry](#type-ReadingListEntry)) => void

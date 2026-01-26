@@ -291,7 +291,7 @@ Fired when the extension acquires new permissions.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (permissions: [Permissions](#type-Permissions)) => void
@@ -315,7 +315,7 @@ Fired when access to permissions has been removed from the extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (permissions: [Permissions](#type-Permissions)) => void

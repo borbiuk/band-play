@@ -107,7 +107,7 @@ Fired when file system action is executed from ChromeOS file browser.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, details: [FileHandlerExecuteEventDetails](#type-FileHandlerExecuteEventDetails)) => void

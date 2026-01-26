@@ -120,7 +120,7 @@ Allows the extension to implement custom replay functionality.
   void
   Converts a recording from the Recorder panel format into a string.
 
-                            The `stringify` function looks like:
+                              The `stringify` function looks like:
 
 ```
 (recording: object) => {...}
@@ -133,7 +133,7 @@ Allows the extension to implement custom replay functionality.
   void
   Converts a step of the recording from the Recorder panel format into a string.
 
-                            The `stringifyStep` function looks like:
+                              The `stringifyStep` function looks like:
 
 ```
 (step: object) => {...}
@@ -155,7 +155,7 @@ Represents a view created by extension to be embedded inside the Recorder panel.
   Event<functionvoidvoid>
   Fired when the view is hidden.
 
-                            The `onHidden.addListener` function looks like:
+                              The `onHidden.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -164,7 +164,7 @@ Represents a view created by extension to be embedded inside the Recorder panel.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -174,7 +174,7 @@ Represents a view created by extension to be embedded inside the Recorder panel.
   Event<functionvoidvoid>
   Fired when the view is shown.
 
-                            The `onShown.addListener` function looks like:
+                              The `onShown.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -183,7 +183,7 @@ Represents a view created by extension to be embedded inside the Recorder panel.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -193,7 +193,7 @@ Represents a view created by extension to be embedded inside the Recorder panel.
   void
   Indicates that the extension wants to show this view in the Recorder panel.
 
-                            The `show` function looks like:
+                              The `show` function looks like:
 
 ```
 () => {...}

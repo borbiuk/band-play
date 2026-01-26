@@ -190,7 +190,7 @@ Event fired when the print job is finished. This includes any of termination sta
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (jobInfo: [PrintJobInfo](#type-PrintJobInfo)) => void

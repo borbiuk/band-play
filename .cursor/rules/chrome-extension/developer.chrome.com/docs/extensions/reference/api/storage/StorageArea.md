@@ -165,7 +165,7 @@ Fired when one or more items change.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (changes: object) => void

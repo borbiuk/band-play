@@ -52,7 +52,7 @@ Fired when the Performance panel starts recording.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -73,7 +73,7 @@ Fired when the Performance panel stops recording.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

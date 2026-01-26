@@ -60,7 +60,7 @@ An interface that allows access to a Chrome browser setting. See ``[accessibilit
   Event<functionvoidvoid>
   Fired after the setting changes.
 
-                            The `onChange.addListener` function looks like:
+                              The `onChange.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -69,7 +69,7 @@ An interface that allows access to a Chrome browser setting. See ``[accessibilit
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (details: object) => void
@@ -92,7 +92,7 @@ An interface that allows access to a Chrome browser setting. See ``[accessibilit
   void
   Clears the setting, restoring any default value.
 
-                            The `clear` function looks like:
+                              The `clear` function looks like:
 
 ```
 (details: object) => {...}
@@ -115,7 +115,7 @@ Called at the completion of the clear operation.
   void
   Gets the value of a setting.
 
-                            The `get` function looks like:
+                              The `get` function looks like:
 
 ```
 (details: object) => {...}
@@ -136,7 +136,7 @@ Called at the completion of the clear operation.
   void
   Sets the value of a setting.
 
-                            The `set` function looks like:
+                              The `set` function looks like:
 
 ```
 (details: object) => {...}

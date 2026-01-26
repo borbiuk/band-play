@@ -106,7 +106,7 @@ Fired when a message is received through FCM.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (message: object) => void
@@ -140,7 +140,7 @@ Fired when a FCM server had to delete messages sent by an app server to the appl
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -161,7 +161,7 @@ Fired when it was not possible to send a message to the FCM server.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (error: object) => void

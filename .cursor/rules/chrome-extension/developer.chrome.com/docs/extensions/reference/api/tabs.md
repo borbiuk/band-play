@@ -1159,7 +1159,7 @@ Fires when the active tab in a window changes. Note that the tab's URL may not b
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (activeInfo: object) => void
@@ -1190,7 +1190,7 @@ Fired when a tab is attached to a window; for example, because it was moved betw
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tabId: number, attachInfo: object) => void
@@ -1221,7 +1221,7 @@ Fired when a tab is created. Note that the tab's URL and tab group membership ma
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tab: [Tab](#type-Tab)) => void
@@ -1245,7 +1245,7 @@ Fired when a tab is detached from a window; for example, because it was moved be
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tabId: number, detachInfo: object) => void
@@ -1276,7 +1276,7 @@ Fired when the highlighted or selected tabs in a window changes.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (highlightInfo: object) => void
@@ -1307,7 +1307,7 @@ Fired when a tab is moved within a window. Only one move event is fired, represe
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tabId: number, moveInfo: object) => void
@@ -1340,7 +1340,7 @@ Fired when a tab is closed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tabId: number, removeInfo: object) => void
@@ -1373,7 +1373,7 @@ Fired when a tab is replaced with another tab due to prerendering or instant.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (addedTabId: number, removedTabId: number) => void
@@ -1399,7 +1399,7 @@ Fired when a tab is updated.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tabId: number, changeInfo: object, tab: [Tab](#type-Tab)) => void
@@ -1480,7 +1480,7 @@ Fired when a tab is zoomed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (ZoomChangeInfo: object) => void

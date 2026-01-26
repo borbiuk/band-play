@@ -320,7 +320,7 @@ Fired when browser terminates debugging session for the tab. This happens when e
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (source: [Debuggee](#type-Debuggee), reason: [DetachReason](#type-DetachReason)) => void
@@ -346,7 +346,7 @@ Fired whenever debugging target issues instrumentation event.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (source: [DebuggerSession](#type-DebuggerSession), method: string, params?: object) => void

@@ -499,7 +499,7 @@ Fired when the extension's side panel is closed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [PanelClosedInfo](#type-PanelClosedInfo)) => void
@@ -525,7 +525,7 @@ Fired when the extension's side panel is opened.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [PanelOpenedInfo](#type-PanelOpenedInfo)) => void

@@ -106,7 +106,7 @@ Fired when the system changes to an active, idle or locked state. The event fire
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (newState: [IdleState](#type-IdleState)) => void

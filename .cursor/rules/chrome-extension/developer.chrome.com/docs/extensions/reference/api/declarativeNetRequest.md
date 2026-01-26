@@ -1564,7 +1564,7 @@ Fired when a rule is matched with a request. Only available for unpacked extensi
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [MatchedRuleInfoDebug](#type-MatchedRuleInfoDebug)) => void

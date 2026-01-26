@@ -117,7 +117,7 @@ Properties of the new context menu item.
   void optional
   A function that is called back when the menu item is clicked. This is not available inside of a service worker; instead, you should register a listener for ``[contextMenus.onClicked](#event-onClicked).
 
-                            The `onclick` function looks like:
+                              The `onclick` function looks like:
 
 ```
 (info: [OnClickData](#type-OnClickData), tab: [Tab](https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab)) => {...}
@@ -221,7 +221,7 @@ Creates a new context menu item. If an error occurs during creation, it may not 
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -313,7 +313,7 @@ Whether the item is visible in the menu.
 - onclick
   void optional
 
-                            The `onclick` function looks like:
+                              The `onclick` function looks like:
 
 ```
 (info: [OnClickData](#type-OnClickData), tab: [Tab](https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab)) => {...}
@@ -350,7 +350,7 @@ Fired when a context menu item is clicked.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [OnClickData](#type-OnClickData), tab?: [tabs.Tab](https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab)) => void

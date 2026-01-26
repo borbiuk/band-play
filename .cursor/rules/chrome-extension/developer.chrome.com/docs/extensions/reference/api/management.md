@@ -474,7 +474,7 @@ Fired when an app or extension has been disabled.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [ExtensionInfo](#type-ExtensionInfo)) => void
@@ -498,7 +498,7 @@ Fired when an app or extension has been enabled.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [ExtensionInfo](#type-ExtensionInfo)) => void
@@ -522,7 +522,7 @@ Fired when an app or extension has been installed.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [ExtensionInfo](#type-ExtensionInfo)) => void
@@ -546,7 +546,7 @@ Fired when an app or extension has been uninstalled.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string) => void

@@ -234,7 +234,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
   void
   Registers an event listener callback to an event.
 
-                            The `addListener` function looks like:
+                              The `addListener` function looks like:
 
 ```
 (callback: H) => {...}
@@ -247,7 +247,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
   void
   Registers rules to handle events.
 
-                            The `addRules` function looks like:
+                              The `addRules` function looks like:
 
 ```
 (rules: [Rule](#type-Rule)<anyany>[], callback?: function) => {...}
@@ -259,7 +259,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (rules: [Rule](#type-Rule)<anyany>[]) => void
@@ -272,7 +272,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
   void
   Returns currently registered rules.
 
-                            The `getRules` function looks like:
+                              The `getRules` function looks like:
 
 ```
 (ruleIdentifiers?: string[], callback: function) => {...}
@@ -284,7 +284,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (rules: [Rule](#type-Rule)<anyany>[]) => void
@@ -296,7 +296,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
 - hasListener
   void
 
-                            The `hasListener` function looks like:
+                              The `hasListener` function looks like:
 
 ```
 (callback: H) => {...}
@@ -312,7 +312,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
 - hasListeners
   void
 
-                            The `hasListeners` function looks like:
+                              The `hasListeners` function looks like:
 
 ```
 () => {...}
@@ -325,7 +325,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
   void
   Deregisters an event listener callback from an event.
 
-                            The `removeListener` function looks like:
+                              The `removeListener` function looks like:
 
 ```
 (callback: H) => {...}
@@ -338,7 +338,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
   void
   Unregisters currently registered rules.
 
-                            The `removeRules` function looks like:
+                              The `removeRules` function looks like:
 
 ```
 (ruleIdentifiers?: string[], callback?: function) => {...}
@@ -350,7 +350,7 @@ An object which allows the addition and removal of listeners for a Chrome event.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

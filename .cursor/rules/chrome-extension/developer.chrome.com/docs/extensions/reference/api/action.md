@@ -695,7 +695,7 @@ Fired when an action icon is clicked. This event will not fire if the action has
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (tab: [tabs.Tab](https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab)) => void
@@ -721,7 +721,7 @@ Fired when user-specified settings relating to an extension's action change.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (change: [UserSettingsChange](#type-UserSettingsChange)) => void

@@ -79,7 +79,7 @@ Event fired when print manager requests printer capabilities.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (printerId: string, resultCallback: function) => void
@@ -90,7 +90,7 @@ Event fired when print manager requests printer capabilities.
 - resultCallback
   function
 
-                            The `resultCallback` parameter looks like:
+                              The `resultCallback` parameter looks like:
 
 ```
 (capabilities: object) => void
@@ -115,7 +115,7 @@ Event fired when print manager requests printers provided by extensions.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (resultCallback: function) => void
@@ -124,7 +124,7 @@ Event fired when print manager requests printers provided by extensions.
 - resultCallback
   function
 
-                            The `resultCallback` parameter looks like:
+                              The `resultCallback` parameter looks like:
 
 ```
 (printerInfo: [PrinterInfo](#type-PrinterInfo)[]) => void
@@ -151,7 +151,7 @@ Note: An application should not rely on this event being fired more than once pe
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (device: [usb.Device](https://developer.chrome.com/docs/extensions/reference/usb/#type-Device), resultCallback: function) => void
@@ -162,7 +162,7 @@ Note: An application should not rely on this event being fired more than once pe
 - resultCallback
   function
 
-                            The `resultCallback` parameter looks like:
+                              The `resultCallback` parameter looks like:
 
 ```
 (printerInfo?: [PrinterInfo](#type-PrinterInfo)) => void
@@ -186,7 +186,7 @@ Event fired when print manager requests printing.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (printJob: [PrintJob](#type-PrintJob), resultCallback: function) => void
@@ -197,7 +197,7 @@ Event fired when print manager requests printing.
 - resultCallback
   function
 
-                            The `resultCallback` parameter looks like:
+                              The `resultCallback` parameter looks like:
 
 ```
 (result: [PrintError](#type-PrintError)) => void

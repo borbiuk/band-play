@@ -139,7 +139,7 @@ Chrome 121+
   void
   Clear all content setting rules set by this extension.
 
-                            The `clear` function looks like:
+                              The `clear` function looks like:
 
 ```
 (details: object) => {...}
@@ -159,7 +159,7 @@ Chrome 121+
   void
   Gets the current content setting for a given pair of URLs.
 
-                            The `get` function looks like:
+                              The `get` function looks like:
 
 ```
 (details: object) => {...}
@@ -187,7 +187,7 @@ Chrome 121+
 - getResourceIdentifiers
   void
 
-                            The `getResourceIdentifiers` function looks like:
+                              The `getResourceIdentifiers` function looks like:
 
 ```
 () => {...}
@@ -200,7 +200,7 @@ Chrome 121+
   void
   Applies a new content setting rule.
 
-                            The `set` function looks like:
+                              The `set` function looks like:
 
 ```
 (details: object) => {...}

@@ -1,0 +1,18 @@
+
+# JetBrains IDE
+.idea
+*.DotSettings.user
+*.DS_Store
+
+# builds
+*.zip
+dist/
+tmp/
+band-play-build*
+
+# logs
+npm-debug.log
+
+# dependencies
+node_modules/
+package-lock.json

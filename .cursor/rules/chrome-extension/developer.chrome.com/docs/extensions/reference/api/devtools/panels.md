@@ -59,7 +59,7 @@ A button created by the extension.
   Event<functionvoidvoid>
   Fired when the button is clicked.
 
-                            The `onClicked.addListener` function looks like:
+                              The `onClicked.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -68,7 +68,7 @@ A button created by the extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -78,7 +78,7 @@ A button created by the extension.
   void
   Updates the attributes of the button. If some of the arguments are omitted or `null`, the corresponding attributes are not updated.
 
-                            The `update` function looks like:
+                              The `update` function looks like:
 
 ```
 (iconPath?: string, tooltipText?: string, disabled?: boolean) => {...}
@@ -104,7 +104,7 @@ Represents the Elements panel.
   Event<functionvoidvoid>
   Fired when an object is selected in the panel.
 
-                            The `onSelectionChanged.addListener` function looks like:
+                              The `onSelectionChanged.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -113,7 +113,7 @@ Represents the Elements panel.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -123,7 +123,7 @@ Represents the Elements panel.
   void
   Creates a pane within panel's sidebar.
 
-                            The `createSidebarPane` function looks like:
+                              The `createSidebarPane` function looks like:
 
 ```
 (title: string, callback?: function) => {...}
@@ -135,7 +135,7 @@ Represents the Elements panel.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (result: [ExtensionSidebarPane](#type-ExtensionSidebarPane)) => void
@@ -155,7 +155,7 @@ Represents a panel created by an extension.
   Event<functionvoidvoid>
   Fired when the user switches away from the panel.
 
-                            The `onHidden.addListener` function looks like:
+                              The `onHidden.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -164,7 +164,7 @@ Represents a panel created by an extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -174,7 +174,7 @@ Represents a panel created by an extension.
   Event<functionvoidvoid>
   Fired upon a search action (start of a new search, search result navigation, or search being canceled).
 
-                            The `onSearch.addListener` function looks like:
+                              The `onSearch.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -183,7 +183,7 @@ Represents a panel created by an extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (action: string, queryString?: string) => void
@@ -197,7 +197,7 @@ Represents a panel created by an extension.
   Event<functionvoidvoid>
   Fired when the user switches to the panel.
 
-                            The `onShown.addListener` function looks like:
+                              The `onShown.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -206,7 +206,7 @@ Represents a panel created by an extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (window: Window) => void
@@ -218,7 +218,7 @@ Represents a panel created by an extension.
   void
   Appends a button to the status bar of the panel.
 
-                            The `createStatusBarButton` function looks like:
+                              The `createStatusBarButton` function looks like:
 
 ```
 (iconPath: string, tooltipText: string, disabled: boolean) => {...}
@@ -257,7 +257,7 @@ A sidebar created by the extension.
   Event<functionvoidvoid>
   Fired when the sidebar pane becomes hidden as a result of the user switching away from the panel that hosts the sidebar pane.
 
-                            The `onHidden.addListener` function looks like:
+                              The `onHidden.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -266,7 +266,7 @@ A sidebar created by the extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -276,7 +276,7 @@ A sidebar created by the extension.
   Event<functionvoidvoid>
   Fired when the sidebar pane becomes visible as a result of user switching to the panel that hosts it.
 
-                            The `onShown.addListener` function looks like:
+                              The `onShown.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -285,7 +285,7 @@ A sidebar created by the extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (window: Window) => void
@@ -297,7 +297,7 @@ A sidebar created by the extension.
   void
   Sets an expression that is evaluated within the inspected page. The result is displayed in the sidebar pane.
 
-                            The `setExpression` function looks like:
+                              The `setExpression` function looks like:
 
 ```
 (expression: string, rootTitle?: string, callback?: function) => {...}
@@ -312,7 +312,7 @@ A sidebar created by the extension.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -322,7 +322,7 @@ A sidebar created by the extension.
   void
   Sets the height of the sidebar.
 
-                            The `setHeight` function looks like:
+                              The `setHeight` function looks like:
 
 ```
 (height: string) => {...}
@@ -335,7 +335,7 @@ A sidebar created by the extension.
   void
   Sets a JSON-compliant object to be displayed in the sidebar pane.
 
-                            The `setObject` function looks like:
+                              The `setObject` function looks like:
 
 ```
 (jsonObject: string, rootTitle?: string, callback?: function) => {...}
@@ -350,7 +350,7 @@ A sidebar created by the extension.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -360,7 +360,7 @@ A sidebar created by the extension.
   void
   Sets an HTML page to be displayed in the sidebar pane.
 
-                            The `setPage` function looks like:
+                              The `setPage` function looks like:
 
 ```
 (path: string) => {...}
@@ -380,7 +380,7 @@ Represents the Sources panel.
   Event<functionvoidvoid>
   Fired when an object is selected in the panel.
 
-                            The `onSelectionChanged.addListener` function looks like:
+                              The `onSelectionChanged.addListener` function looks like:
 
 ```
 (callback: function) => {...}
@@ -389,7 +389,7 @@ Represents the Sources panel.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -399,7 +399,7 @@ Represents the Sources panel.
   void
   Creates a pane within panel's sidebar.
 
-                            The `createSidebarPane` function looks like:
+                              The `createSidebarPane` function looks like:
 
 ```
 (title: string, callback?: function) => {...}
@@ -411,7 +411,7 @@ Represents the Sources panel.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (result: [ExtensionSidebarPane](#type-ExtensionSidebarPane)) => void
@@ -491,7 +491,7 @@ Creates an extension panel.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (panel: [ExtensionPanel](#type-ExtensionPanel)) => void
@@ -530,7 +530,7 @@ Specifies the column number to scroll to when the resource is loaded.
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -551,7 +551,7 @@ Specifies the function to be called when the user clicks a resource link in the 
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (resource: [Resource](https://developer.chrome.com/docs/extensions/reference/api/devtools/devtools_inspectedWindow/#type-Resource), lineNumber: number) => void
@@ -581,7 +581,7 @@ Specifies the function to be called when the current theme changes in DevTools. 
 - callback
   function optional
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (theme: [Theme](#type-Theme)) => void

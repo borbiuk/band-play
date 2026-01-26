@@ -363,7 +363,7 @@ The maximum number of items that can be stored in sync storage. Updates that wou
 - MAX_SUSTAINED_WRITE_OPERATIONS_PER_MINUTE
   1000000
 
-                          Deprecated
+                            Deprecated
 
     The storage.sync API no longer has a sustained write operation quota.
 
@@ -406,7 +406,7 @@ Fired when one or more items change.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (changes: object, areaName: string) => void

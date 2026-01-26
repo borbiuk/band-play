@@ -107,7 +107,7 @@ Passes the key pair of `certificate` for usage with ``[platformKeys.subtleCrypto
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (publicKey: object, privateKey?: object) => void
@@ -145,7 +145,7 @@ Passes the key pair identified by `publicKeySpkiDer` for usage with ``[platformK
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (publicKey: object, privateKey?: object) => void

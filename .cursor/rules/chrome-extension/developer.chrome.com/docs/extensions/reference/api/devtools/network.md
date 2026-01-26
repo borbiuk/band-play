@@ -49,7 +49,7 @@ Represents a network request for a document resource (script, image and so on). 
   void
   Returns content of the response body.
 
-                            The `getContent` function looks like:
+                              The `getContent` function looks like:
 
 ```
 (callback: function) => {...}
@@ -58,7 +58,7 @@ Represents a network request for a document resource (script, image and so on). 
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (content: string, encoding: string) => void
@@ -88,7 +88,7 @@ Returns HAR log that contains all known network requests.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (harLog: object) => void
@@ -115,7 +115,7 @@ Fired when the inspected window navigates to a new page.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (url: string) => void
@@ -139,7 +139,7 @@ Fired when a network request is finished and all request data are available.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (request: [Request](#type-Request)) => void

@@ -390,7 +390,7 @@ Fired when a cookie is set or removed. As a special case, note that updating a c
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (changeInfo: object) =& gt;void

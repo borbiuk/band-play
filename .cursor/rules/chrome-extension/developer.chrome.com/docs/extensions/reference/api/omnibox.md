@@ -140,7 +140,7 @@ User has deleted a suggested result.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (text: string) => void
@@ -164,7 +164,7 @@ User has ended the keyword input session without accepting the input.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void
@@ -185,7 +185,7 @@ User has changed what is typed into the omnibox.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (text: string, suggest: function) => void
@@ -196,7 +196,7 @@ User has changed what is typed into the omnibox.
 - suggest
   function
 
-                            The `suggest` parameter looks like:
+                              The `suggest` parameter looks like:
 
 ```
 (suggestResults: [SuggestResult](#type-SuggestResult)[]) => void
@@ -221,7 +221,7 @@ User has accepted what is typed into the omnibox.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (text: string, disposition: [OnInputEnteredDisposition](#type-OnInputEnteredDisposition)) => void
@@ -247,7 +247,7 @@ User has started a keyword input session by typing the extension's keyword. This
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 () => void

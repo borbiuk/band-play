@@ -1,0 +1,34 @@
+{
+	"manifest_version": 3,
+	"name": "Chrome Extension Example",
+	"short_name": "ExtExample",
+	"version": "1.0.0",
+	"description": "Example Chrome Extension for content, background, popup, and extension pages.",
+	"permissions": ["tabs", "storage"],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"content_scripts": [
+		{
+			"js": ["content.js"],
+			"matches": ["https://*/*", "http://*/*"],
+			"run_at": "document_idle"
+		}
+	],
+	"action": {
+		"default_title": "Extension Example",
+		"default_popup": "./popup.html",
+		"default_icon": {
+			"16": "assets/logo-16.png",
+			"32": "assets/logo-32.png",
+			"48": "assets/logo-48.png",
+			"128": "assets/logo-128.png"
+		}
+	},
+	"icons": {
+		"16": "assets/logo-16.png",
+		"32": "assets/logo-32.png",
+		"48": "assets/logo-48.png",
+		"128": "assets/logo-128.png"
+	}
+}

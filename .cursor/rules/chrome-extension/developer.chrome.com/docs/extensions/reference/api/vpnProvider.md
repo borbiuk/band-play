@@ -234,7 +234,7 @@ Triggered when a configuration is created by the platform for the extension.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, name: string, data: object) => void
@@ -262,7 +262,7 @@ Triggered when a configuration created by the extension is removed by the platfo
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string) => void
@@ -286,7 +286,7 @@ Triggered when an IP packet is received via the tunnel for the VPN session owned
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (data: ArrayBuffer) => void
@@ -310,7 +310,7 @@ Triggered when a message is received from the platform for a VPN configuration o
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string, message: [PlatformMessage](#type-PlatformMessage), error: string) => void
@@ -338,7 +338,7 @@ Triggered when there is a UI event for the extension. UI events are signals from
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (event: [UIEvent](#type-UIEvent), id?: string) => void

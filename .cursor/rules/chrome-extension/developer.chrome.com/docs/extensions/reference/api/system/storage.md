@@ -131,7 +131,7 @@ Fired when a new removable storage is attached to the system.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (info: [StorageUnitInfo](#type-StorageUnitInfo)) => void
@@ -155,7 +155,7 @@ Fired when a removable storage is detached from the system.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (id: string) => void

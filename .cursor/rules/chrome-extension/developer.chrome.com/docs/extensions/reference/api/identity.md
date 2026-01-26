@@ -285,7 +285,7 @@ Fired when signin state changes for an account on the user's profile.
 - callback
   function
 
-                            The `callback` parameter looks like:
+                              The `callback` parameter looks like:
 
 ```
 (account: [AccountInfo](#type-AccountInfo), signedIn: boolean) => void
