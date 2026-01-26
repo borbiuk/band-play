@@ -1,0 +1,40 @@
+---
+description: How to use Cursor effectively when writing a technical article (outline, drafts, code accuracy, and fact-checking).
+globs: ARTICLE*.md, **/ARTICLE*.md, src/**/*.{ts,tsx,js,scss}, webpack/**/*.js, public/manifest.json
+alwaysApply: true
+---
+
+- **Use Cursor to accelerate writing, not to invent facts**
+  - Never fabricate APIs, Chrome/Manifest details, or library behavior.
+  - When unsure, search official docs and cite them in the article.
+
+- **Recommended interaction pattern**
+  - Ask Cursor for:
+    - target reader + promise statement (WHO/WHAT/WHY)
+    - 3–5 outline options (then pick one and refine)
+    - title variants (10–20) and a “curiosity gap” rewrite pass
+    - section-by-section drafts (one section at a time)
+    - a “so what?” pass per section (why the reader should care)
+    - clarity rewrites (shorter, simpler)
+    - tone normalization (consistent voice)
+    - an editing checklist derived from the current draft (filler words, “which” clauses, transitions)
+  - Avoid asking Cursor to write the whole article at once (hard to verify and edit).
+
+- **Technical correctness**
+  - Any code snippet must be runnable or obviously illustrative.
+  - Prefer referencing real files in this repo (paths like `src/background/background.ts`).
+  - Validate build steps against `package.json` scripts (root vs `example/`).
+
+- **Evidence and credibility**
+  - For claims about MV3, permissions, or Chrome APIs, include at least one authoritative reference.
+  - For performance or sizing claims, include numbers and how they were measured.
+  - Maintain a source-note section while drafting (links + what each link supports), then integrate into the final article.
+
+- **Editing checklist (Cursor-assisted)**
+  - Ask Cursor to:
+    - list ambiguous sentences
+    - find missing prerequisites
+    - detect broken promises (title/intro vs body)
+    - propose tighter headings and bullet lists
+    - generate a “common pitfalls” section
+    - flag where the article becomes “selfie writing” (too author-centric) and suggest reader-focused rewrites

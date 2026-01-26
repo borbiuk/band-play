@@ -1,0 +1,33 @@
+---
+description: Guidelines for continuously improving Cursor rules based on emerging code patterns and best practices.
+globs: **/*
+alwaysApply: true
+---
+
+- **Rule improvement triggers**
+  - New code patterns not covered by existing rules
+  - Repeated similar implementations across files
+  - Common error patterns that could be prevented
+  - New libraries or tools being used consistently
+
+- **Analysis process**
+  - Compare new code with existing rules
+  - Identify patterns that should be standardized
+  - Prefer examples from the actual codebase
+
+- **Rule updates**
+  - **Add new rules when**
+    - A new technology/pattern is used in 3+ files
+    - Code review feedback repeats the same points
+    - A rule can prevent common bugs/security issues
+  - **Modify existing rules when**
+    - Better examples exist in the codebase
+    - Additional edge cases are discovered
+    - Implementation details have changed
+
+- **Rule quality checks**
+  - Rules should be actionable and specific
+  - Examples should come from actual code
+  - References should be up to date
+
+Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for proper rule formatting and structure.

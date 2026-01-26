@@ -1,0 +1,23 @@
+---
+description: Agent rules and safety constraints for this repository (Band Play).
+globs: **/*
+alwaysApply: true
+---
+
+- **Code changes**
+  - Follow existing project conventions (code style, folder structure, naming, dependency management) unless explicitly instructed otherwise.
+  - Never perform refactoring unless explicitly requested.
+  - Apply only the changes directly required for the current request.
+  - Keep changes minimal, explicit, and localized to the requested task.
+  - Ensure modifications are clear, readable, and consistent with the existing code style.
+  - Always use a block `if-return` statement (avoid inline one-liners for clarity).
+
+- **Git and workflow safety**
+  - Never perform these git commands automatically:
+    - `commit`, `reset`, `rebase`, `push`, `pull --force`, `checkout --force`, `clean`, `stash drop`
+  - Always ask for user confirmation before running:
+    - `git pull`, `git merge`, `git stash`
+
+- **Language**
+  - All comments and documentation must be in English.
+  - The answer must be in the same language as the question.

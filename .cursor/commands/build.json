@@ -1,0 +1,7 @@
+{
+	"name": "Build extension (prod)",
+	"command": "npm run build",
+	"description": "Build the Band Play Chrome extension into dist/ using webpack.prod.js.",
+	"category": "Build",
+	"args": []
+}

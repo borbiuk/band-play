@@ -1,0 +1,7 @@
+{
+	"name": "Format (root)",
+	"command": "npm run format",
+	"description": "Run Prettier for TS/TSX/SCSS/MD/JSON files in the root project.",
+	"category": "Quality",
+	"args": []
+}

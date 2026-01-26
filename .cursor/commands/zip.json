@@ -1,0 +1,7 @@
+{
+	"name": "Create release zip",
+	"command": "npm run zip",
+	"description": "Create a .zip build artifact for publishing (runs ./zip.sh).",
+	"category": "Release",
+	"args": []
+}

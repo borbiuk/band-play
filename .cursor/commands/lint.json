@@ -1,0 +1,7 @@
+{
+	"name": "Lint (root)",
+	"command": "npm run lint",
+	"description": "Run ESLint for all TypeScript/TSX files in the root project.",
+	"category": "Quality",
+	"args": []
+}

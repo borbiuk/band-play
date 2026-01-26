@@ -1,0 +1,17 @@
+---
+description: Rules for working with the root package vs the example/ template package.
+globs: **/*
+alwaysApply: true
+---
+
+- **Two packages**
+  - Root project is the real extension build (outputs `dist/`).
+  - `example/` is a separate template package with its own `package.json`, configs, and output (`example/dist/`).
+
+- **When changing dependencies or scripts**
+  - Update the correct `package.json` (root vs `example/package.json`).
+  - Avoid accidentally mixing configs between the two (Tailwind, webpack, tsconfig).
+
+- **Tailwind style isolation**
+  - `example/` uses Tailwind `prefix: "ext-"` and disables `preflight` to reduce CSS conflicts.
+  - Do not remove this isolation in `example/` unless explicitly requested.

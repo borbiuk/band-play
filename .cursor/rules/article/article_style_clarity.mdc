@@ -1,0 +1,46 @@
+---
+description: Style and clarity rules for readable, compelling articles (structure, voice, and reader relevance).
+globs: ARTICLE*.md, **/ARTICLE*.md
+alwaysApply: true
+---
+
+- **Write like a modern human**
+  - Use raw, short, punchy, conversational language when appropriate.
+  - If you would never say something in real life, do not write it that way.
+  - Prefer short sentences when explaining complex topics.
+
+- **Structure is non-negotiable**
+  - The article must have a clear spine: lead → point A → point B → point C → conclusion.
+  - Each section must have one main idea and a clear transition to the next.
+  - Work both levels of structure:
+    - Macro: logical unrolling from paragraph to paragraph
+    - Micro: sentence variety (avoid repetitive forms)
+
+- **Play your ace card early**
+  - Put the most valuable insight/step near the top (lead + nut graf).
+  - Don’t hide the payoff until the end.
+
+- **Be a guide, not a lecturer**
+  - Explain trade-offs and alternatives briefly.
+  - Anticipate common mistakes and show how to avoid them.
+  - Write “hand in hand” with the reader: explore what you do not know yet, not just what you know.
+
+- **Always answer “So what?”**
+  - Every major section should connect to a user problem, benefit, or decision.
+  - Make the link to the reader explicit (actionable instruction or universal themes).
+
+- **It’s not about you**
+  - Even when using first-person, the article should not be about the author.
+  - The author is a conduit for experience/meaning; the reader should “look through your eyes”, not at you.
+
+- **Show, don’t label**
+  - Replace vague judgments (“awesome”, “bad”) with observable facts, outcomes, or examples.
+  - The writer is the cause; the reader is the effect: describe details that create the impression in the reader.
+
+- **Avoid clichés and filler**
+  - Remove stock phrases and overused idioms (“idiom crutch”).
+  - Cut repeated ideas; prefer one strong example over multiple weak ones.
+  - Prefer fresh, specific imagery over worn-out expressions.
+
+- **Spelling counts**
+  - Proofread for grammar, punctuation, and names (professionalism signal).

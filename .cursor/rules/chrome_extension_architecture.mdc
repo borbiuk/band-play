@@ -1,0 +1,20 @@
+---
+description: Architecture rules for MV3 Chrome extension (Band Play) and its build constraints.
+globs: src/**/*.{ts,tsx,scss}, public/**/*, webpack/**/*.js, tsconfig.json, tailwind.config.js
+alwaysApply: true
+---
+
+- **Entry points and responsibilities**
+  - `src/background/background.ts`: service worker (single instance). Keep it lean and deterministic.
+  - `src/content/content.ts`: content script injected into Bandcamp pages.
+  - `src/options/options.tsx`: extension popup/options UI.
+  - `src/downloads/downloads.tsx`: downloads tab/page UI.
+  - `src/shared/`: shared enums/models/services/utils used across all parts.
+
+- **Manifest constraints (MV3)**
+  - `public/manifest.json` references exact build artifact filenames.
+  - Do NOT introduce hashed filenames for extension bundles.
+
+- **Imports**
+  - Prefer the `@shared/*` alias for cross-area shared code (see `webpack/webpack.common.js`).
+  - Avoid deep cross-area relative imports like `../../shared/...` when `@shared/...` exists.

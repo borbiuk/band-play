@@ -1,0 +1,82 @@
+---
+description: End-to-end workflow for writing high-quality articles (topic → research → outline → draft → edits → publish → promote).
+globs: ARTICLE*.md, **/ARTICLE*.md
+alwaysApply: true
+---
+
+- **Pick the article format first**
+  - Article format influences topic, length, research depth, and style.
+  - Common formats (pick one):
+    - Blog article (often up to ~1,500 words; conversational)
+    - Digital feature (often 1,500–5,000+ words; in-depth)
+    - Print magazine feature (often 5,000–10,000+ words; heavily researched)
+    - Essay (often 500–2,000 words; reflective/persuasive/analytical)
+    - Newspaper article (often 300–700 words; concise reporting)
+    - Technical article (simplify complex concepts/processes)
+    - List post / roundup
+    - White paper (depth varies)
+
+- **Choose the right topic**
+  - **Know your audience**: interests and pain points.
+  - **Mind SEO**: keyword phrases with high search volume + lower competition (when relevant).
+  - **Consider seasonality/events**: holidays, awareness months, current events.
+  - **Piggyback on news/social conversation**: breaking news, viral topics, controversies.
+  - **Localize bigger stories**: find a fresh local angle.
+  - **Solve a problem**: strong basis for how-to articles.
+  - **Educate through explainers**: simplify complex topics.
+  - **Tap into emotions**: inspiration, humor, heartbreak, etc. (only if authentic to topic).
+  - Always ask: “Would my target readers truly care about this article?”
+
+- **Research thoroughly**
+  - Keep organized notes: citations, quotes, stats, sources.
+  - Check sources: verify facts/statistics; double-check quote origins.
+  - Seek expert insights: reach out for 1–3 strong quotes or stats when it adds credibility.
+  - Search broadly: go beyond first search results; use niche publications/journals/forums.
+  - Read background: build foundational context and key stakeholder understanding.
+  - Look for patterns or contradictions worth highlighting.
+  - Consult primary sources: original research, reports, documents.
+  - Interact with the topic when possible (test, attend, experience) for firsthand perspective.
+
+- **Create an outline before drafting**
+  - Typical outline elements:
+    - **Introduction**: hook, background context, why it matters, what the article covers
+    - **Main body**: 3–5 key sections with subheads (logical order)
+    - **Expert opinions**: 1–3 strongest quotes/stats (if applicable)
+    - **Key takeaways**: summarize the most important insights
+    - **Call to action**: next steps (optional, only if it fits)
+  - Organize sections so each idea builds on the previous one.
+  - Each major section must answer: “So what?” / “Why should the reader care?”
+
+- **Drafting rules**
+  - Start with a hook (lede/anecdote/question/surprising fact).
+  - Use subheads to break up text and make skimming easy.
+  - Maintain active voice.
+  - Vary sentence length to avoid monotony.
+  - Incorporate storytelling (stories/analogies/anecdotes), not just facts.
+  - Write concisely; trim fluff/wordiness.
+  - Explain complex concepts simply without losing expertise.
+  - Use transitions between ideas/sections.
+  - Inject personality (consistent voice).
+  - Limit jargon: spell out acronyms, define terms, avoid insider language.
+
+- **Editing and polishing**
+  - Set the draft aside (ideally at least a day), then revisit with fresh eyes.
+  - Do multiple rounds:
+    - Consistency pass: names, stats, acronyms.
+    - Lede pass: strengthen the opening to frame the piece.
+    - Flow pass: strengthen transitions.
+    - Sentence pass: vary structure; tighten wordy sentences.
+    - Brevity pass: cut filler words (e.g., really, very, little, just, actually).
+    - Clarity pass: reduce excessive clauses, especially “which …” chains.
+    - Credibility pass: fact-check again; ensure citations are correct.
+    - Formatting pass: headings, bullets, quote placement, skimmability.
+  - If possible, have a colleague/editor review before finalizing.
+
+- **Formatting**
+  - Use headings with a consistent hierarchy.
+  - Use code blocks for commands/snippets and add brief context before each block.
+  - Prefer examples over abstract advice; show the exact file names/paths when possible.
+
+- **Promotion and repurposing**
+  - Do not let the article disappear after publishing.
+  - Promote and repurpose (see [article_promotion.mdc](mdc:.cursor/rules/article/article_promotion.mdc)).

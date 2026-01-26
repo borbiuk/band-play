@@ -1,0 +1,10 @@
+---
+description: Require official Chrome documentation links only in article content.
+globs: ARTICLE.md
+alwaysApply: true
+---
+
+- **Source link policy**
+  - Use links only to official Chrome documentation on `developer.chrome.com`.
+  - Do not add links to third-party articles, blogs, or community posts.
+  - If a supporting source is needed, prefer the official reference pages for Extensions, Manifest, Permissions, or APIs.

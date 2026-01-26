@@ -1,0 +1,53 @@
+---
+description: Title-writing rules (based on 5 proven tips) for making titles clear, specific, and irresistible.
+globs: ARTICLE*.md, **/ARTICLE*.md
+alwaysApply: true
+---
+
+- **Treat titling as a skill**
+  - Titles are as essential as the body; do not treat them as an afterthought.
+  - Poor title can sink excellent content.
+
+- **Be clear, not clever**
+  - Titles are not supposed to be enigmatic.
+  - Your title should tell the reader:
+    - WHO the article is for
+    - WHAT it is about
+    - WHY they must read it (the promise)
+  - If the title confuses the reader, you have lost the reader.
+  - Every time you draft a title, ask:
+    - “Does this title clearly state WHO it is for, WHAT it is about, and WHY they must read it?”
+
+- **Write many variants**
+  - Rewrite titles at least 10 times.
+  - Very rarely is the first title the best title.
+  - More iterations improve:
+    - clarity and “instinctive perfection”
+    - idea generation (more iterations = more writing ideas)
+  - Definition:
+    - A “perfect title” is clear, irresistible, and instinctively feels perfect.
+
+- **Use How / Why / What / Where / Numbers**
+  - These elements work because they set expectations and signal solutions.
+  - **Numbers**
+    - Work well for listicles because readers know exactly what they will get.
+    - Prefer concrete, specific numbers.
+    - Odd numbers can be especially attention-grabbing; use them only when they match the content.
+  - **How-to**
+    - Old-fashioned but effective: readers want solutions.
+
+- **Maintain a curiosity gap (without clickbait)**
+  - Clear titles are good; bland titles are worse.
+  - Add a “surprise element” that makes the reader think “This should be interesting”.
+  - Curiosity gap is not clickbait; the article must deliver on the promise.
+  - Pattern:
+    - Clear + Curiosity gap > Clear-only
+
+- **Speak to the reader**
+  - Use “you” and “your” to make the benefit feel directly applicable to the reader.
+  - “You/your” works when it addresses a reader pain point and implies practical solutions.
+
+- **Quality checks**
+  - Avoid generic, vague, confusing, or bland titles.
+  - The title should help the reader quickly decide whether the article is for them.
+  - If the title promises a result, the body must include steps/evidence that deliver it.
