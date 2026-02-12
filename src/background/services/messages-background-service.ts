@@ -26,9 +26,7 @@ export class MessagesBackgroundService {
 					const { url, active } = message.data as NewTabMessage;
 					chrome.tabs
 						.create({ url: String(url), active })
-						.catch((e) => {
-							console.error(e);
-						});
+						.catch((e) => console.error(e));
 					break;
 				}
 
@@ -76,6 +74,15 @@ export class MessagesBackgroundService {
 
 				case MessageCode.BatchDownloadResumeAll: {
 					await this.batchDownload.resumeAll();
+					break;
+				}
+				case MessageCode.BatchDownloadResumeItem: {
+					const data = message.data as BatchDownloadItemIdMessage;
+					if (!data?.id) {
+						break;
+					}
+
+					await this.batchDownload.resumeItem(String(data.id));
 					break;
 				}
 

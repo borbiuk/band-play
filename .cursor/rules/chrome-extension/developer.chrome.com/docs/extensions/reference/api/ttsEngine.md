@@ -323,7 +323,7 @@ Fired when a TTS client requests to install a new language. The engine should at
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (requestor: [TtsClient](#type-TtsClient), lang: string) => void
@@ -351,7 +351,7 @@ Fired when a TTS client requests the install status of a language.
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (requestor: [TtsClient](#type-TtsClient), lang: string) => void
@@ -377,7 +377,7 @@ Optional: if an engine supports the pause event, it should pause the current utt
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 () => void
@@ -398,7 +398,7 @@ Optional: if an engine supports the pause event, it should also support the resu
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 () => void
@@ -419,7 +419,7 @@ Called when the user makes a call to tts.speak() and one of the voices from this
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (utterance: string, options: [SpeakOptions](#type-SpeakOptions), sendTtsEvent: function) => void
@@ -432,7 +432,7 @@ Called when the user makes a call to tts.speak() and one of the voices from this
 - sendTtsEvent
   function
 
-                              The `sendTtsEvent` parameter looks like:
+                                The `sendTtsEvent` parameter looks like:
 
 ```
 (event: [tts.TtsEvent](https://developer.chrome.com/docs/extensions/reference/tts/#type-TtsEvent)) => void
@@ -459,7 +459,7 @@ Called when the user makes a call to tts.speak() and one of the voices from this
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (utterance: string, options: [SpeakOptions](#type-SpeakOptions), audioStreamOptions: [AudioStreamOptions](#type-AudioStreamOptions), sendTtsAudio: function, sendError: function) => void
@@ -474,7 +474,7 @@ Called when the user makes a call to tts.speak() and one of the voices from this
 - sendTtsAudio
   function
 
-                              The `sendTtsAudio` parameter looks like:
+                                The `sendTtsAudio` parameter looks like:
 
 ```
 (audioBufferParams: [AudioBuffer](#type-AudioBuffer)) => void
@@ -486,7 +486,7 @@ Called when the user makes a call to tts.speak() and one of the voices from this
 - sendError
   functionChrome 94+
 
-                              The `sendError` parameter looks like:
+                                The `sendError` parameter looks like:
 
 ```
 (errorMessage?: string) => void
@@ -511,7 +511,7 @@ Fired when a call is made to tts.stop and this extension may be in the middle of
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 () => void
@@ -534,7 +534,7 @@ Fired when a TTS client indicates a language is no longer needed.
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (requestor: [TtsClient](#type-TtsClient), lang: string, uninstallOptions: [LanguageUninstallOptions](#type-LanguageUninstallOptions)) => void

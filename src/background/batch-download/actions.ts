@@ -215,7 +215,10 @@ export const resumeAllBatchDownloads = async (
 			continue;
 		}
 
-		if (x.status !== DownloadStatus.Paused) {
+		if (
+			x.status !== DownloadStatus.Paused &&
+			x.status !== DownloadStatus.Duplicate
+		) {
 			continue;
 		}
 
@@ -227,7 +230,48 @@ export const resumeAllBatchDownloads = async (
 			return x;
 		}
 
-		if (x.status !== DownloadStatus.Paused) {
+		if (
+			x.status !== DownloadStatus.Paused &&
+			x.status !== DownloadStatus.Duplicate
+		) {
+			return x;
+		}
+
+		if (x.download.browserDownloadId) {
+			return { ...x, status: DownloadStatus.Downloading };
+		}
+
+		return { ...x, status: DownloadStatus.Resolved };
+	});
+
+	items = updateParentsProgress(items);
+	await setBatchDownloadItems(items);
+	scheduleBatchTick();
+};
+
+export const resumeBatchDownloadItem = async (
+	id: string,
+	scheduleBatchTick: () => void
+): Promise<void> => {
+	let items = await getBatchDownloadItems();
+	const item = items.find((x) => x.id === id);
+	if (!item || item.type !== DownloadType.Single) {
+		return;
+	}
+
+	if (
+		item.status !== DownloadStatus.Paused &&
+		item.status !== DownloadStatus.Duplicate
+	) {
+		return;
+	}
+
+	if (item.download.browserDownloadId) {
+		await resumeChromeDownloadSafe(item.download.browserDownloadId);
+	}
+
+	items = items.map((x) => {
+		if (x.id !== item.id || x.type !== DownloadType.Single) {
 			return x;
 		}
 
@@ -362,8 +406,17 @@ export const enqueuePendingItems = async (
 
 	// Use chrome.storage.local as a reliable transport channel.
 	// (content scripts can send to background; UI reads state from storage.)
+	const createdAt = Date.now();
+	const normalized = items.map((item, index) => {
+		const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+		return {
+			...item,
+			sourceId: item.sourceId ?? item.id,
+			id: `${item.id}-${createdAt}-${index}-${uniqueSuffix}`,
+		};
+	});
 	const existing = await getQueuedBatchDownloadItems();
-	await setQueuedBatchDownloadItems([...existing, ...items]);
+	await setQueuedBatchDownloadItems([...existing, ...normalized]);
 
 	await openOrFocusDownloadsTab();
 	scheduleBatchTick();

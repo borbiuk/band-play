@@ -21,6 +21,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	/** Event emitter for audio element events */
 	public audioEventEmitter: EventEmitter<HTMLAudioElement> =
 		new EventEmitter();
+
 	/** Guard to ensure visited audio binding is attached once per service instance */
 	private visitedBindingInitialized: boolean = false;
 
@@ -49,7 +50,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 	playPause(): void {
 		this.audioOperator<void>((audio: HTMLAudioElement) => {
 			if (audio.paused) {
-				audio.play();
+				audio.play().catch((e) => console.error(e));
 			} else {
 				audio.pause();
 			}
@@ -58,9 +59,12 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 
 	seekToPercentage(percentage: number): void {
 		this.audioOperator<void>((audio: HTMLAudioElement) => {
-			if (isFinite(audio.duration) && isFinite(percentage)) {
+			if (
+				Number.isFinite(audio.duration) &&
+				Number.isFinite(percentage)
+			) {
 				const newTime = (percentage / 100) * audio.duration;
-				if (isFinite(newTime)) {
+				if (Number.isFinite(newTime)) {
 					audio.currentTime = newTime;
 				}
 			}
@@ -116,7 +120,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 
 	audioOperator<TResult>(
 		operator: (audio: HTMLAudioElement) => TResult,
-		notFoundHandler?: () => TResult
+		notFoundOperator?: () => TResult
 	): TResult {
 		let audio: HTMLAudioElement = document.querySelector('audio');
 		if (notExist(audio?.src)) {
@@ -124,7 +128,7 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 
 			if (notExist(audio?.src)) {
 				this.audioEventEmitter.emit(null);
-				return exist(notFoundHandler) ? notFoundHandler() : undefined;
+				return exist(notFoundOperator) ? notFoundOperator() : undefined;
 			}
 		}
 

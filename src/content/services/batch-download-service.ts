@@ -104,10 +104,20 @@ const parseCollectionItem = (
 			''
 		);
 
+	const coverArtUrl =
+		container
+			.querySelector<HTMLImageElement>('img.collection-item-art')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('img[src*="bcbits.com"]')
+			?.getAttribute('src') ||
+		null;
+
 	return {
 		id,
 		title: title || id,
 		url: redownloadAnchor.href,
+		coverArtUrl,
 	};
 };
 
@@ -133,10 +143,23 @@ const parsePurchaseItem = (
 		title = split[0];
 	}
 
+	const coverArtUrl =
+		container
+			.querySelector<HTMLImageElement>('.purchases-item-art img')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('.item-art img')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('img[src*="bcbits.com"]')
+			?.getAttribute('src') ||
+		undefined;
+
 	return {
 		id,
 		title: String(title || id).trim(),
 		url: downloadAnchor.href,
+		coverArtUrl,
 	};
 };
 
@@ -473,6 +496,8 @@ export class BatchDownloadService {
 	): void {
 		const all = getAllCheckboxes();
 		const index = all.indexOf(target);
+		const baseCollectionIndex = index >= 0 ? index + 1 : undefined;
+		const selectionCreatedAt = Date.now();
 
 		if ((shiftKey || metaKey) && all.length > 0) {
 			const start = Math.min(
@@ -491,13 +516,27 @@ export class BatchDownloadService {
 				}
 
 				const item = this.getItemByCheckbox(cb);
-				this.stateRef.current.selected[id] =
-					cb.checked && exist(item) ? item : null;
+				this.stateRef.current.selected[id] = cb.checked
+					? exist(item)
+						? {
+								...item,
+								collectionIndex: i + 1,
+								createdAt: selectionCreatedAt,
+							}
+						: null
+					: null;
 			}
 		} else {
 			const item = this.getItemByCheckbox(target);
-			this.stateRef.current.selected[itemId] =
-				target.checked && exist(item) ? item : null;
+			this.stateRef.current.selected[itemId] = target.checked
+				? exist(item)
+					? {
+							...item,
+							collectionIndex: baseCollectionIndex,
+							createdAt: selectionCreatedAt,
+						}
+					: null
+				: null;
 			this.stateRef.current.lastClickedIndex = index;
 		}
 
@@ -507,7 +546,7 @@ export class BatchDownloadService {
 	private handleDownload(): void {
 		const selected = Object.values(this.stateRef.current.selected).filter(
 			(x) => exist(x)
-		) as BatchDownloadPendingItemModel[];
+		);
 
 		if (selected.length === 0) {
 			return;
@@ -536,17 +575,18 @@ export class BatchDownloadService {
 		}
 
 		if (page === 'collection') {
-			const target = parseInt(
+			const target = Number.parseInt(
 				document.querySelector('#grid-tabs>.active .count')
 					?.textContent || '0'
 			);
 
-			const showMore = document.querySelector(
+			const showMore = document.querySelector<HTMLElement>(
 				'.expand-container.show-button > button'
-			) as HTMLElement;
+			);
 
-			const container = (document.getElementById('collection-grid') ||
-				document.getElementById('wishlist-grid')) as HTMLElement;
+			const container =
+				document.getElementById('collection-grid') ??
+				document.getElementById('wishlist-grid');
 
 			if (showMore) {
 				showMore.click();
@@ -562,16 +602,15 @@ export class BatchDownloadService {
 		}
 
 		if (page === 'purchases') {
-			const target = parseInt(
+			const target = Number.parseInt(
 				(
 					document.querySelector('.page-items-number')?.parentElement
 						?.textContent || ''
 				).match(/of (\d+)/)?.[1] || '0'
 			);
 
-			const showMore = document.querySelector(
-				'.view-all-button'
-			) as HTMLElement;
+			const showMore =
+				document.querySelector<HTMLElement>('.view-all-button');
 			const container = document.getElementsByClassName(
 				'purchases'
 			)[0] as HTMLElement;

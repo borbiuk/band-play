@@ -13,9 +13,7 @@ export class UpdateAvailableBackgroundService {
 						code: MessageCode.NewUpdateAvailable,
 						data: details,
 					})
-					.catch((e) => {
-						console.error(e);
-					});
+					.catch((e) => console.error(e));
 			});
 		});
 	}

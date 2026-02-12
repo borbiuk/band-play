@@ -84,7 +84,7 @@ A resource within the inspected page, such as a document, a script, or an image.
   void
   Gets the content of the resource.
 
-                              The `getContent` function looks like:
+                                The `getContent` function looks like:
 
 ```
 (callback: function) => {...}
@@ -93,7 +93,7 @@ A resource within the inspected page, such as a document, a script, or an image.
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (content: string, encoding: string) => void
@@ -109,7 +109,7 @@ A resource within the inspected page, such as a document, a script, or an image.
   void
   Sets the content of the resource.
 
-                              The `setContent` function looks like:
+                                The `setContent` function looks like:
 
 ```
 (content: string, commit: boolean, callback?: function) => {...}
@@ -124,7 +124,7 @@ A resource within the inspected page, such as a document, a script, or an image.
 - callback
   function optional
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (error?: object) => void
@@ -181,7 +181,7 @@ Evaluate the expression in the context of a content script of an extension that 
 - callback
   function optional
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (result: object, exceptionInfo: object) => void
@@ -228,7 +228,7 @@ Retrieves the list of resources from the inspected page.
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (resources: [Resource](#type-Resource)[]) => void
@@ -279,7 +279,7 @@ Fired when a new resource is added to the inspected page.
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (resource: [Resource](#type-Resource)) => void
@@ -303,7 +303,7 @@ Fired when a new revision of the resource is committed (e.g. user saves an edite
 - callback
   function
 
-                              The `callback` parameter looks like:
+                                The `callback` parameter looks like:
 
 ```
 (resource: [Resource](#type-Resource), content: string) => void

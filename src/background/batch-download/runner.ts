@@ -29,6 +29,71 @@ export class BatchDownloadRunner {
 	private pollingLastProgressByDownloadId: Record<number, number> = {};
 	private pollingLastProgressUpdateAt: Record<number, number> = {};
 
+	private async pauseIfDuplicateDownload(
+		downloadId: number,
+		itemId: string,
+		attemptsLeft: number = 5
+	): Promise<void> {
+		await new Promise((resolve) => {
+			setTimeout(resolve, 400);
+		});
+
+		const results = await chrome.downloads.search({ id: downloadId });
+		const d = results[0];
+		if (!d) {
+			return;
+		}
+
+		if (d.state !== 'in_progress') {
+			return;
+		}
+
+		if (!d.filename) {
+			if (attemptsLeft > 0) {
+				this.pauseIfDuplicateDownload(
+					downloadId,
+					itemId,
+					attemptsLeft - 1
+				).catch(() => void 0);
+			}
+			return;
+		}
+
+		const fileName =
+			d.filename.split('/').pop()?.split('\\').pop() || d.filename;
+		const isUniquifiedDuplicate = /\(\d+\)(\.[^./\\]+)?$/.test(fileName);
+		if (!isUniquifiedDuplicate) {
+			if (attemptsLeft > 0) {
+				this.pauseIfDuplicateDownload(
+					downloadId,
+					itemId,
+					attemptsLeft - 1
+				).catch(() => void 0);
+			}
+			return;
+		}
+
+		try {
+			await chrome.downloads.pause(downloadId);
+		} catch (_e) {
+			return;
+		}
+
+		const check = await chrome.downloads.search({ id: downloadId });
+		if (!check[0]?.paused) {
+			return;
+		}
+
+		await this.updateItems((current) =>
+			current.map((x) =>
+				x.id === itemId && x.type === DownloadType.Single
+					? { ...x, status: DownloadStatus.Duplicate }
+					: x
+			)
+		);
+		this.scheduleBatchTickSoon(0);
+	}
+
 	private async updateItems(
 		update: (items: BatchDownloadItemModel[]) => BatchDownloadItemModel[]
 	): Promise<BatchDownloadItemModel[]> {
@@ -138,6 +203,9 @@ export class BatchDownloadRunner {
 			>[];
 
 			for (const pending of toResolve) {
+				const { coverArtUrl, collectionIndex, createdAt, sourceId } =
+					pending;
+				const baseSourceId = sourceId ?? pending.id;
 				items = await this.updateItems((current) =>
 					current.map((x) =>
 						x.id === pending.id && x.type === DownloadType.Pending
@@ -189,6 +257,10 @@ export class BatchDownloadRunner {
 							return {
 								id: pending.id,
 								title: pending.title,
+								coverArtUrl,
+								collectionIndex,
+								createdAt,
+								sourceId: baseSourceId,
 								type: DownloadType.Single,
 								status: DownloadStatus.Resolved,
 								download: { ...download, progress: 0 },
@@ -204,8 +276,12 @@ export class BatchDownloadRunner {
 					);
 					const childItems: BatchDownloadItemModel[] = downloads.map(
 						(d) => ({
-							id: d.id,
+							id: `${pending.id}:${d.id}`,
 							title: d.title,
+							coverArtUrl,
+							collectionIndex,
+							createdAt,
+							sourceId: d.id,
 							type: DownloadType.Single,
 							status: DownloadStatus.Resolved,
 							parentId: pending.id,
@@ -215,10 +291,14 @@ export class BatchDownloadRunner {
 					const parent: BatchDownloadItemModel = {
 						id: pending.id,
 						title: pending.title,
+						coverArtUrl,
+						collectionIndex,
+						createdAt,
+						sourceId: baseSourceId,
 						type: DownloadType.Multiple,
 						status: DownloadStatus.Resolved,
 						progress: 0,
-						children: toChildrenIds(downloads),
+						children: toChildrenIds(downloads, pending.id),
 					};
 					return [...withoutParent, parent, ...childItems];
 				});
@@ -292,6 +372,10 @@ export class BatchDownloadRunner {
 						available--;
 
 						this.startDownloadsProgressPoller();
+						this.pauseIfDuplicateDownload(
+							downloadId,
+							item.id
+						).catch(() => void 0);
 					} catch (_e) {
 						items = await this.updateItems((current) =>
 							current.map((x) =>
@@ -390,6 +474,19 @@ export class BatchDownloadRunner {
 		const isCompleted = d.state === 'complete';
 		const isInterrupted = d.state === 'interrupted';
 		const isPaused = d.state === 'in_progress' && d.paused === true;
+		const fileName =
+			d.filename?.split('/').pop()?.split('\\').pop() || d.filename || '';
+		const isUniquifiedDuplicate =
+			fileName && /\(\d+\)(\.[^./\\]+)?$/.test(fileName);
+		let didPauseDuplicate = false;
+		if (isUniquifiedDuplicate && !isPaused && d.state === 'in_progress') {
+			try {
+				await chrome.downloads.pause(downloadId);
+				didPauseDuplicate = true;
+			} catch (_e) {
+				// ignore
+			}
+		}
 
 		const prevProgress =
 			this.pollingLastProgressByDownloadId[downloadId] ?? -1;
@@ -431,9 +528,21 @@ export class BatchDownloadRunner {
 				nextStatus = DownloadStatus.Completed;
 			} else if (isInterrupted) {
 				nextStatus = DownloadStatus.Failed;
+			} else if (
+				isUniquifiedDuplicate &&
+				(isPaused || didPauseDuplicate)
+			) {
+				nextStatus = DownloadStatus.Duplicate;
+				scheduleTick = true;
 			} else if (isPaused) {
-				nextStatus = DownloadStatus.Paused;
-			} else if (x.status === DownloadStatus.Paused) {
+				nextStatus =
+					x.status === DownloadStatus.Duplicate
+						? DownloadStatus.Duplicate
+						: DownloadStatus.Paused;
+			} else if (
+				x.status === DownloadStatus.Paused ||
+				x.status === DownloadStatus.Duplicate
+			) {
 				nextStatus = DownloadStatus.Downloading;
 			}
 
@@ -482,7 +591,8 @@ export class BatchDownloadRunner {
 			(x) =>
 				x.type === DownloadType.Single &&
 				(x.status === DownloadStatus.Downloading ||
-					x.status === DownloadStatus.Paused)
+					x.status === DownloadStatus.Paused ||
+					x.status === DownloadStatus.Duplicate)
 		) as Extract<BatchDownloadItemModel, { type: DownloadType.Single }>[];
 
 		if (active.length === 0) {

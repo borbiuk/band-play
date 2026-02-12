@@ -24,6 +24,8 @@ export enum MessageCode {
 	BatchDownloadPauseAll = 'band-play-BatchDownloadPauseAll',
 	/** Batch download: downloads -> background (resume all paused downloads) */
 	BatchDownloadResumeAll = 'band-play-BatchDownloadResumeAll',
+	/** Batch download: downloads -> background (resume single paused/duplicate item) */
+	BatchDownloadResumeItem = 'band-play-BatchDownloadResumeItem',
 	/** Batch download: downloads -> background (clear all completed items) */
 	BatchDownloadClearCompleted = 'band-play-BatchDownloadClearCompleted',
 	/** Batch download: downloads -> background (clear all items and cancel underlying chrome downloads if needed) */

@@ -3,16 +3,24 @@ import { BatchDownloadPendingItemModel } from './batch-download-pending-item-mod
 import { DownloadStatus } from './download-status';
 import { DownloadType } from './download-type';
 
+type BatchDownloadItemMeta = {
+	coverArtUrl?: string;
+	collectionIndex?: number;
+	createdAt?: number;
+	sourceId?: string;
+};
+
 export type BatchDownloadItemModel =
-	| (BatchDownloadPendingItemModel & {
-			type: DownloadType.Pending;
-			status:
-				| DownloadStatus.Pending
-				| DownloadStatus.Queued
-				| DownloadStatus.Resolving
-				| DownloadStatus.Failed;
-	  })
-	| {
+	| (BatchDownloadPendingItemModel &
+			BatchDownloadItemMeta & {
+				type: DownloadType.Pending;
+				status:
+					| DownloadStatus.Pending
+					| DownloadStatus.Queued
+					| DownloadStatus.Resolving
+					| DownloadStatus.Failed;
+			})
+	| (BatchDownloadItemMeta & {
 			id: string;
 			title: string;
 			type: DownloadType.Single;
@@ -21,12 +29,13 @@ export type BatchDownloadItemModel =
 				| DownloadStatus.Queued
 				| DownloadStatus.Downloading
 				| DownloadStatus.Paused
+				| DownloadStatus.Duplicate
 				| DownloadStatus.Completed
 				| DownloadStatus.Failed;
 			download: BatchDownloadFileModel;
 			parentId?: string;
-	  }
-	| {
+	  })
+	| (BatchDownloadItemMeta & {
 			id: string;
 			title: string;
 			type: DownloadType.Multiple;
@@ -37,4 +46,4 @@ export type BatchDownloadItemModel =
 				| DownloadStatus.Failed;
 			progress: number;
 			children: string[];
-	  };
+	  });

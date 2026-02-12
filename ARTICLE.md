@@ -45,59 +45,62 @@ Google Chrome Extension — це програма, яка запускаєтьс
 
 `manifest.json` — це контракт між вашим кодом і Chrome. [Manifest file format](https://developer.chrome.com/docs/extensions/reference/manifest)
 
-Мінімальний робочий `manifest.json` виглядає так:
+Такий вигляд має manifest у моєму розширенні:
 
 ```json
 {
 	"manifest_version": 3,
-	"name": "Extension Example",
-	"version": "1.0.0"
-}
-```
-
-Типовий “практичний” manifest для MV3 (background + content script + action/popup) виглядає так:
-
-```json
-{
-	"manifest_version": 3,
-	"name": "Extension Example",
-	"version": "1.0.0",
-	"description": "Example extension", // обовʼязково для публікації у Web Store
-	"icons": {
-		"16": "assets/logo-16.png", // логотип роширення із різною роздільною здатністю
-		"32": "assets/logo-32.png",
-		"48": "assets/logo-48.png",
-		"128": "assets/logo-128.png"
-	},
-	"permissions": ["storage"],
+	"name": "Bandcamp Play",
+	"short_name": "BandPlay",
+	"version": "10.0.0",
+	"description": "Enhanced playback for Bandcamp: autoplay, speed, pitch, hotkeys, history, batch download, and more.",
+	"homepage_url": "https://github.com/borbiuk/band-play",
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
+	"permissions": ["tabs", "storage", "power", "downloads", "downloads.shelf"],
 	"background": {
-		"service_worker": "background.js" // вхідна точка для service worker
+		"service_worker": "background.js"
 	},
 	"content_scripts": [
 		{
-			"js": ["content.js"], // вхідна точка для content script
+			"js": ["vendor.js", "content.js"],
 			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
 			"run_at": "document_idle"
 		}
 	],
 	"action": {
-		"default_title": "Extension Example",
-		"default_popup": "options.html" // вхідна точка для popup
-	}
+		"default_title": "Bandcamp Play settings",
+		"default_popup": "./options.html",
+		"default_icon": {
+			"16": "assets/logo-16.png",
+			 ...
+		}
+	},
+	"icons": {
+		"16": "assets/logo-16.png",
+		 ...
+	},
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"assets/logo-128.png",
+				...
+			],
+			"matches": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"]
+		}
+	]
 }
 ```
 
 Практичні поради щодо дозволів:
 
-- Не використовуйте `matches: ["https://*/*", "http://*/*"]` як “дефолт”. Це майже завжди створює зайві permission warnings і вбиває довіру.
+- Не використовуйте `matches: ["https://*/*", "http://*/*"]`. Це майже завжди створює зайві permission warnings і вбиває довіру.
 - Якщо вам потрібен доступ тільки після дії користувача, подивіться в бік `activeTab` і/або `optional_permissions`. [Declare permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions), [activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab), [Permission warnings](https://developer.chrome.com/docs/extensions/develop/concepts/permission-warnings)
 
 ### 2.2 Background (MV3 service worker)
 
 Background у MV3 — це extension service worker. Він обробляє події й координує роботу частин розширення.
 
-Мінімальний приклад: popup надсилає команду → background відкриває вкладку:
+Приклад 1: popup надсилає команду → background відкриває вкладку:
 
 ```ts
 chrome.runtime.onMessage.addListener((message) => {
@@ -107,13 +110,21 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 ```
 
+Приклад 2: background надсилає команду в content script активної вкладки
+
+```ts
+chrome.tabs.query({ active: true, currentWindow: true }).then(async (tabs) => {
+	await chrome.tabs.sendMessage(tabs[0].id, message);
+});
+```
+
 ### 2.3 Content scripts
 
 Content‑скрипти працюють на сторінках, які ви вказали у `matches`. Вони:
 
 - мають доступ до **DOM** через стандартні Web APIs (це не `chrome.dom`, а звичайний `document`, `window`, тощо);
 - виконуються **ізольовано** (їхній JS‑контекст відділений від JS сторінки);
-- мають доступ лише до частини `chrome.*` API; для решти — messaging. [Content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts)
+- мають доступ лише до частини `chrome.*` API; для решти - messaging. [Content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts)
 
 Приклад: зібрати дані з DOM і відправити в background:
 
@@ -130,14 +141,12 @@ chrome.runtime.sendMessage({
 
 ### 2.4 Popup та інші extension pages
 
-Popup задається через `"action"` → `"default_popup"` у `manifest.json`. Popup необовʼязковий: можна мати лише іконку без UI. [Action](https://developer.chrome.com/docs/extensions/reference/api/action)
+Popup задається через властивість `action.default_popup` у `manifest.json`. Popup необовʼязковий: можна мати лише іконку без UI. [Action](https://developer.chrome.com/docs/extensions/reference/api/action)
 
 Приклад: popup надсилає команду в background:
 
 ```ts
-const handleOpenTab = () => {
-	chrome.runtime.sendMessage({ type: 'PopupOpenTab' });
-};
+chrome.runtime.sendMessage({ type: 'PopupOpenTab' });
 ```
 
 Extension pages — це ваші HTML‑сторінки розширення (popup/options/власні вкладки). Вони працюють під CSP обмеженнями, тому підхід “підвантажити віддалений скрипт” для розширень не підходить. [Content security policy](https://developer.chrome.com/docs/extensions/reference/manifest/content-security-policy)
@@ -351,28 +360,21 @@ output: {
 
 Офіційно: [Declare permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions), [Permission warnings](https://developer.chrome.com/docs/extensions/develop/concepts/permission-warnings)
 
-### 7.2 Remote code та CSP
-
-- Весь код має бути в пакеті розширення.
-- Не завантажуйте віддалений JS “після інсталяції”.
-
-Офіційно: [Content security policy](https://developer.chrome.com/docs/extensions/reference/manifest/content-security-policy)
-
-### 7.3 Версія і збірка
+### 7.2 Версія і збірка
 
 - Підвищіть `version` у `manifest.json`.
 - Зберіть production build і переконайтесь, що `manifest.json` посилається на існуючі файли у build‑папці.
-- Якщо ви пакуєте реліз у zip, переконайтесь, що всередині архіву лежить саме build‑вміст (зазвичай `dist/`), а не сирці. У цьому репозиторію `npm run zip` викликає `zip.sh`.
+- Якщо ви пакуєте реліз у zip, переконайтесь, що всередині архіву лежить саме build‑вміст (зазвичай `dist/`), а не `src/`. У цьому репозиторію `npm run zip` викликає `zip.sh`.
 
 ## 8. Підсумки та бонус: “шаблон” для швидкого старту
 
 Ось що варто запамʼятати з MV3:
 
-- service worker подієвий і може “заснути” в будь‑який момент;
+- service worker запускається на певні події і може "заснути" в будь‑який момент;
 - DOM‑логіка живе в content scripts;
-- “важкі” API (tabs/downloads/etc.) зазвичай зручніше тримати в background/extension pages;
-- messaging — це ваш клей, і краще мати типовий message protocol;
-- Tailwind у content script треба **ізолювати** (utility‑only + scope), інакше будуть конфлікти.
+- багато з chrome API (tabs/downloads/etc.) доступні тільки в background;
+- messaging - це невідʼємна складова комплексних розширень, і краще мати єдиний message protocol;
+- Tailwind у content script треба **ізолювати** (utility‑only + scope), інакше зламаються стилі сайту.
 
 ### Практичний старт на базі цього репозиторію
 

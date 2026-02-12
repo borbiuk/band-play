@@ -7,6 +7,7 @@ import {
 	clearCompletedBatchDownloads,
 	pauseAllBatchDownloads,
 	resumeAllBatchDownloads,
+	resumeBatchDownloadItem,
 	removeBatchDownloadItem,
 	retryAllFailedBatchDownloads,
 	retryBatchDownloadItem,
@@ -69,6 +70,12 @@ export class BatchDownloadBackgroundService {
 
 	public async resumeAll(): Promise<void> {
 		await resumeAllBatchDownloads(() => this.runner.scheduleBatchTick());
+	}
+
+	public async resumeItem(id: string): Promise<void> {
+		await resumeBatchDownloadItem(String(id), () =>
+			this.runner.scheduleBatchTick()
+		);
 	}
 
 	public async clearCompleted(): Promise<void> {
