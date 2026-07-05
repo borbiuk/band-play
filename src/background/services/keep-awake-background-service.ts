@@ -8,15 +8,19 @@ export class KeepAwakeBackgroundService {
 	public start(): void {
 		let currentKeepAwake: boolean = null;
 
+		const isPowerApiAvailable = typeof chrome.power !== 'undefined';
+
 		const update = (keepAwake: boolean) => {
 			if (keepAwake === currentKeepAwake) {
 				return;
 			}
 
-			if (keepAwake) {
-				chrome.power.requestKeepAwake('display');
-			} else {
-				chrome.power.releaseKeepAwake();
+			if (isPowerApiAvailable) {
+				if (keepAwake) {
+					chrome.power.requestKeepAwake('display');
+				} else {
+					chrome.power.releaseKeepAwake();
+				}
 			}
 
 			currentKeepAwake = keepAwake;
