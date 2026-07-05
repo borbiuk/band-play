@@ -4,7 +4,7 @@
     <h1 style="margin-top: 10px; margin-bottom: -8px; color: rgb(17 24 39); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Band Play</h1>
 </div>
 
-Band Play is a **Google Chrome extension** that enhances the music experience on [Bandcamp](https://bandcamp.com)
+Band Play is a **browser extension for Chrome and Firefox** that enhances the music experience on [Bandcamp](https://bandcamp.com)
 by providing advanced playback controls, tempo adjustment, pitch preservation,
 keyboard shortcuts, autoplay functionality, batch downloads, and other automation features for seamless music control.
 
@@ -76,12 +76,24 @@ for more details.
 
 ### 🛠️ Installation
 
+#### Chrome
+
 1. Open the Google Chrome browser.
 2. Navigate to `chrome://extensions/` and enable Developer Mode by toggling the switch in the top right corner.
 3. Run `npm install` in the root of repository.
 4. Run `npm run build` in the root of repository.
 5. Click on `Load unpacked` and select the `dist` directory created after previous step.
 6. The extension should now appear in your list of installed extensions and is ready to use.
+
+#### Firefox
+
+1. Run `npm install` in the root of repository.
+2. Run `npm run build:firefox` in the root of repository.
+3. Navigate to `about:debugging#/runtime/this-firefox`.
+4. Click on `Load Temporary Add-on...` and select the `manifest.json` file inside the `dist-firefox` directory.
+5. The extension should now appear in your list of installed extensions and is ready to use.
+
+> **Note:** The Keep Awake feature is Chrome-only and will be silently disabled on Firefox.
 
 ### 📁 **File Structure**
 
