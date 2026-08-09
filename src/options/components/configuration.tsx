@@ -26,6 +26,9 @@ export const Configuration = () => {
 	/** Current configuration settings */
 	const [currentConfig, setCurrentConfig] = useState(null as ConfigModel);
 
+	/** Whether the power API is available (Chrome-only, not supported in Firefox) */
+	const isPowerApiAvailable = typeof chrome.power !== 'undefined';
+
 	/**
 	 * Updates a configuration setting in storage.
 	 *
@@ -86,13 +89,15 @@ export const Configuration = () => {
 					defaultValue={currentConfig.autoscroll}
 					onChange={updateStorage}
 				/>
-				<Checkbox
-					id="keepAwake"
-					label="Keep Awake"
-					tooltip="Keep your system or display from going to sleep"
-					defaultValue={currentConfig.keepAwake}
-					onChange={updateStorage}
-				/>
+				{isPowerApiAvailable && (
+					<Checkbox
+						id="keepAwake"
+						label="Keep Awake"
+						tooltip="Keep your system or display from going to sleep"
+						defaultValue={currentConfig.keepAwake}
+						onChange={updateStorage}
+					/>
+				)}
 				<Checkbox
 					id="showFeedPlayer"
 					label="Show feed player"
