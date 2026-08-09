@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "10.1.2",
+	"version": "10.1.3",
 	"description": "Bandcamp Play",
 	"main": "index.js",
 	"scripts": {
