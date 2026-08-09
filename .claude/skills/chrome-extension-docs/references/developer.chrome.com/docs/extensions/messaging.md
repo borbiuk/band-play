@@ -243,8 +243,8 @@ To create a reusable long-lived message passing channel, call:
 - ``[runtime.connect()](/docs/extensions/reference/api/runtime#method-connect) to pass messages from a content script
   to an extension page
 - ``[tabs.connect()](/docs/extensions/reference/api/tabs#method-connect) to pass messages from an extension page to a
-content script.
-You can name your channel by passing an options parameter with a `name` key to
+  content script.
+  You can name your channel by passing an options parameter with a `name` key to
   distinguish between different types of connections:
 
 ```
@@ -338,10 +338,10 @@ event fires when there are no valid ports at the other end of the channel, which
 - The frame where `connect()` was called has unloaded.
 - All frames that received the port (via ``[runtime.onConnect](/docs/extensions/reference/api/runtime#event-onConnect)) have unloaded.
 - ``[runtime.Port.disconnect()](/docs/extensions/reference/api/runtime#property-Port-disconnect) is called by the other end. If a
-`connect()`call results in multiple ports at the receiver's end, and`disconnect()`is called
-on any of these ports, then the`onDisconnect`event only fires at the sending port, not at the
-other ports.Warning: Be aware that a Port can have multiple receivers connected at any given
-time. As a result,`onDisconnect` may fire more than once and you may not want
+  `connect()`call results in multiple ports at the receiver's end, and`disconnect()`is called
+  on any of these ports, then the`onDisconnect`event only fires at the sending port, not at the
+  other ports.Warning: Be aware that a Port can have multiple receivers connected at any given
+  time. As a result,`onDisconnect` may fire more than once and you may not want
   to stop sending messages on a Port just because there has been a single
   disconnection.
 

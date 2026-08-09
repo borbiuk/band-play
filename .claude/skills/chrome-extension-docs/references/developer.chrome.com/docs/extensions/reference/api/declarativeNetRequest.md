@@ -940,8 +940,8 @@ List of `[tabs.Tab.id](https://developer.chrome.com/docs/extensions/reference/ta
   Therefore `urlFilter`is composed of the following parts: (optional Left/Domain name anchor) + pattern + (optional Right anchor).
   If omitted, all urls are matched. An empty string is not allowed.
   A pattern beginning with`||\_`is not allowed. Use`\*`instead.
-Note: Only one of`urlFilter`or`regexFilter`can be specified.
-Note: The`urlFilter`must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is http://abc.рф?q=ф, the`urlFilter` will be matched against the url http://abc.xn--p1ai/?q=%D1%84.
+  Note: Only one of`urlFilter`or`regexFilter`can be specified.
+  Note: The`urlFilter`must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is http://abc.рф?q=ф, the`urlFilter` will be matched against the url http://abc.xn--p1ai/?q=%D1%84.
 
 ### RuleConditionKeys
 
@@ -1572,6 +1572,6 @@ Fired when a rule is matched with a request. Only available for unpacked extensi
 
 - info
   [MatchedRuleInfoDebug](#type-MatchedRuleInfoDebug)
-  Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
-  Last updated 2026-01-07 UTC.
-  [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2026-01-07 UTC."],[],[]]
+      Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+      Last updated 2026-01-07 UTC.
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2026-01-07 UTC."],[],[]]

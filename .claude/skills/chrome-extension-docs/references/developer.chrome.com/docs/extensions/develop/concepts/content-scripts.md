@@ -16,9 +16,9 @@ Content scripts can access the following extension APIs directly:
 - ``[runtime.onConnect](/docs/extensions/reference/api/runtime#event-onConnect)
 - ``[runtime.onMessage](/docs/extensions/reference/api/runtime#event-onMessage)
 - ``[runtime.sendMessage()](/docs/extensions/reference/api/runtime#method-sendMessage)
-Content scripts are unable to access other APIs directly. But they can access them indirectly by [exchanging messages](/docs/extensions/develop/concepts/messaging) with other parts of your extension.
-You can also access other files in your extension from a content script, using
-APIs like `fetch()`. To do this, you need to declare them as
+  Content scripts are unable to access other APIs directly. But they can access them indirectly by [exchanging messages](/docs/extensions/develop/concepts/messaging) with other parts of your extension.
+  You can also access other files in your extension from a content script, using
+  APIs like `fetch()`. To do this, you need to declare them as
   [web-accessible resources](/docs/extensions/reference/manifest/web-accessible-resources). Note that this also exposes the resources to any
   first-party or third-party scripts running on the same site.
 
@@ -439,8 +439,8 @@ running at `"document_idle"` don't need to listen for the
 `window.onload` event, they are guaranteed to run after the DOM is complete. If a
 script definitely needs to run after `window.onload`, the extension can check if
 `onload` has already fired by using the ``[document.readyState](https://developer.mozilla.org/docs/Web/API/Document/readyState)
-        property.`document_start`stringScripts are injected after any files from `css`, but before any other DOM is
-        constructed or any other script is run.`document_end`stringScripts are injected immediately after the DOM is complete, but before subresources like
+property.`document_start`stringScripts are injected after any files from `css`, but before any other DOM is
+constructed or any other script is run.`document_end`stringScripts are injected immediately after the DOM is complete, but before subresources like
 images and frames have loaded.
 
 ### Specify frames

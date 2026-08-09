@@ -49,13 +49,13 @@ If you want to request hosts that you only discover at runtime, include `"https:
 scheme.
 Permissions that can not be specified as optional
 Most Chrome extension permissions can be specified as optional, with the following exceptions.PermissionDescription`"debugger"`The [chrome.debugger](/docs/extensions/reference/api/debugger) API serves as an
-        alternate transport for Chrome's [remote debugging
-            protocol](https://chromedevtools.github.io/devtools-protocol/).`"declarativeNetRequest"`Grants the extension access to the [chrome.declarativeNetRequest](/docs/extensions/reference/api/declarativeNetRequest) API.`"devtools"`Allows extension to expand [Chrome DevTools](/docs/extensions/how-to/devtools/extend-devtools)
-        functionality.`"geolocation"`Allows the extension to use the HTML5 [geolocation](https://w3c.github.io/geolocation-api/) API.`"mdns"`Grants the extension access to the
-        [chrome.mdns](/docs/apps/reference/mdns) API.`"proxy"`Grants the extension access to the [chrome.proxy](/docs/extensions/reference/api/proxy) API to manage Chrome's proxy
-        settings.`"tts"`The [chrome.tts](/docs/extensions/reference/api/tts) API plays synthesized
-        text-to-speech (TTS).`"ttsEngine"`The [chrome.ttsEngine](/docs/extensions/reference/api/ttsEngine) API implements a
-        text-to-speech (TTS) engine using an extension.`"wallpaper"`ChromeOS only. Use the [chrome.wallpaper](/docs/extensions/reference/api/wallpaper) API change the ChromeOS
+alternate transport for Chrome's [remote debugging
+protocol](https://chromedevtools.github.io/devtools-protocol/).`"declarativeNetRequest"`Grants the extension access to the [chrome.declarativeNetRequest](/docs/extensions/reference/api/declarativeNetRequest) API.`"devtools"`Allows extension to expand [Chrome DevTools](/docs/extensions/how-to/devtools/extend-devtools)
+functionality.`"geolocation"`Allows the extension to use the HTML5 [geolocation](https://w3c.github.io/geolocation-api/) API.`"mdns"`Grants the extension access to the
+[chrome.mdns](/docs/apps/reference/mdns) API.`"proxy"`Grants the extension access to the [chrome.proxy](/docs/extensions/reference/api/proxy) API to manage Chrome's proxy
+settings.`"tts"`The [chrome.tts](/docs/extensions/reference/api/tts) API plays synthesized
+text-to-speech (TTS).`"ttsEngine"`The [chrome.ttsEngine](/docs/extensions/reference/api/ttsEngine) API implements a
+text-to-speech (TTS) engine using an extension.`"wallpaper"`ChromeOS only. Use the [chrome.wallpaper](/docs/extensions/reference/api/wallpaper) API change the ChromeOS
 wallpaper.
 View [Declare Permissions](/docs/extensions/develop/concepts/declare-permissions) for further information on available permissions and
 their warnings.
@@ -323,6 +323,6 @@ Fired when access to permissions has been removed from the extension.
 
 - permissions
   [Permissions](#type-Permissions)
-  Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
-  Last updated 2026-01-07 UTC.
-  [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2026-01-07 UTC."],[],[]]
+      Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+      Last updated 2026-01-07 UTC.
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2026-01-07 UTC."],[],[]]
