@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "10.1.3",
+	"version": "10.2.0",
 	"description": "Bandcamp Play",
 	"main": "index.js",
 	"scripts": {
@@ -8,7 +8,7 @@
 		"build": "webpack --config webpack/webpack.prod.js",
 		"build:firefox": "webpack --config webpack/webpack.firefox.js",
 		"analyze": "webpack --config webpack/webpack.analize.js",
-		"clean": "rimraf dist",
+		"clean": "rimraf dist dist-firefox",
 		"zip": "./zip.sh",
 		"lint": "eslint \"./**/*.{ts,tsx}\"",
 		"lint:fix": "eslint --fix \"./**/*.{ts,tsx}\"",
