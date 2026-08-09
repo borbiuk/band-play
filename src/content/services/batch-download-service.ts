@@ -1,5 +1,4 @@
 import { MessageCode } from '@shared/enums';
-import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
 import {
 	BatchDownloadItemsMessage,
 	MessageModel,
@@ -9,6 +8,7 @@ import { exist, notExist } from '@shared/utils';
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
+import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
 import { BatchDownloadCheckboxesLayer } from '../components/batch-download-checkboxes-layer';
 import { BatchDownloadOverlay } from '../components/batch-download-overlay';
 
@@ -104,10 +104,20 @@ const parseCollectionItem = (
 			''
 		);
 
+	const coverArtUrl =
+		container
+			.querySelector<HTMLImageElement>('img.collection-item-art')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('img[src*="bcbits.com"]')
+			?.getAttribute('src') ||
+		null;
+
 	return {
 		id,
 		title: title || id,
 		url: redownloadAnchor.href,
+		coverArtUrl,
 	};
 };
 
@@ -133,63 +143,24 @@ const parsePurchaseItem = (
 		title = split[0];
 	}
 
+	const coverArtUrl =
+		container
+			.querySelector<HTMLImageElement>('.purchases-item-art img')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('.item-art img')
+			?.getAttribute('src') ||
+		container
+			.querySelector<HTMLImageElement>('img[src*="bcbits.com"]')
+			?.getAttribute('src') ||
+		undefined;
+
 	return {
 		id,
 		title: String(title || id).trim(),
 		url: downloadAnchor.href,
+		coverArtUrl,
 	};
-};
-
-const createCheckbox = (
-	itemId: string,
-	stateRef: { current: SelectionState },
-	getItemByCheckbox: (
-		checkbox: HTMLInputElement
-	) => BatchDownloadPendingItemModel | null,
-	onSelectionChanged: () => void
-) => {
-	const checkbox = document.createElement('input');
-	checkbox.type = 'checkbox';
-	checkbox.className = CHECKBOX_CLASS;
-	checkbox.setAttribute(CHECKBOX_ATTR, itemId);
-
-	checkbox.addEventListener('click', (event: MouseEvent) => {
-		const target = event.target;
-		if (!(target instanceof HTMLInputElement)) {
-			return;
-		}
-
-		const all = getAllCheckboxes();
-		const index = all.indexOf(target);
-
-		if ((event.shiftKey || event.metaKey) && all.length > 0) {
-			const start = Math.min(index, stateRef.current.lastClickedIndex);
-			const end = Math.max(index, stateRef.current.lastClickedIndex);
-
-			for (let i = start; i <= end; i++) {
-				const cb = all[i];
-				cb.checked = target.checked;
-
-				const id = cb.getAttribute(CHECKBOX_ATTR);
-				if (!id) {
-					continue;
-				}
-
-				const item = getItemByCheckbox(cb);
-				stateRef.current.selected[id] =
-					cb.checked && exist(item) ? item : null;
-			}
-		} else {
-			const item = getItemByCheckbox(target);
-			stateRef.current.selected[itemId] =
-				target.checked && exist(item) ? item : null;
-			stateRef.current.lastClickedIndex = index;
-		}
-
-		onSelectionChanged();
-	});
-
-	return checkbox;
 };
 
 export class BatchDownloadService {
@@ -473,6 +444,8 @@ export class BatchDownloadService {
 	): void {
 		const all = getAllCheckboxes();
 		const index = all.indexOf(target);
+		const baseCollectionIndex = index >= 0 ? index + 1 : undefined;
+		const selectionCreatedAt = Date.now();
 
 		if ((shiftKey || metaKey) && all.length > 0) {
 			const start = Math.min(
@@ -491,13 +464,27 @@ export class BatchDownloadService {
 				}
 
 				const item = this.getItemByCheckbox(cb);
-				this.stateRef.current.selected[id] =
-					cb.checked && exist(item) ? item : null;
+				this.stateRef.current.selected[id] = cb.checked
+					? exist(item)
+						? {
+								...item,
+								collectionIndex: i + 1,
+								createdAt: selectionCreatedAt,
+							}
+						: null
+					: null;
 			}
 		} else {
 			const item = this.getItemByCheckbox(target);
-			this.stateRef.current.selected[itemId] =
-				target.checked && exist(item) ? item : null;
+			this.stateRef.current.selected[itemId] = target.checked
+				? exist(item)
+					? {
+							...item,
+							collectionIndex: baseCollectionIndex,
+							createdAt: selectionCreatedAt,
+						}
+					: null
+				: null;
 			this.stateRef.current.lastClickedIndex = index;
 		}
 
@@ -507,7 +494,7 @@ export class BatchDownloadService {
 	private handleDownload(): void {
 		const selected = Object.values(this.stateRef.current.selected).filter(
 			(x) => exist(x)
-		) as BatchDownloadPendingItemModel[];
+		);
 
 		if (selected.length === 0) {
 			return;
@@ -536,17 +523,18 @@ export class BatchDownloadService {
 		}
 
 		if (page === 'collection') {
-			const target = parseInt(
+			const target = Number.parseInt(
 				document.querySelector('#grid-tabs>.active .count')
 					?.textContent || '0'
 			);
 
-			const showMore = document.querySelector(
+			const showMore = document.querySelector<HTMLElement>(
 				'.expand-container.show-button > button'
-			) as HTMLElement;
+			);
 
-			const container = (document.getElementById('collection-grid') ||
-				document.getElementById('wishlist-grid')) as HTMLElement;
+			const container =
+				document.getElementById('collection-grid') ??
+				document.getElementById('wishlist-grid');
 
 			if (showMore) {
 				showMore.click();
@@ -562,16 +550,15 @@ export class BatchDownloadService {
 		}
 
 		if (page === 'purchases') {
-			const target = parseInt(
+			const target = Number.parseInt(
 				(
 					document.querySelector('.page-items-number')?.parentElement
 						?.textContent || ''
 				).match(/of (\d+)/)?.[1] || '0'
 			);
 
-			const showMore = document.querySelector(
-				'.view-all-button'
-			) as HTMLElement;
+			const showMore =
+				document.querySelector<HTMLElement>('.view-all-button');
 			const container = document.getElementsByClassName(
 				'purchases'
 			)[0] as HTMLElement;

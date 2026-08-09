@@ -5,6 +5,7 @@ export enum DownloadStatus {
 	Resolved = 'resolved',
 	Downloading = 'downloading',
 	Paused = 'paused',
+	Duplicate = 'duplicate',
 	Completed = 'completed',
 	Failed = 'failed',
 }

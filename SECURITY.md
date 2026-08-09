@@ -4,10 +4,10 @@
 
 Only the latest released version of this extension is supported with security updates.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| Latest  | :white_check_mark: |
-| Older versions | :x:        |
+| Version        | Supported          |
+| -------------- | ------------------ |
+| Latest         | :white_check_mark: |
+| Older versions | :x:                |
 
 Users are strongly encouraged to always run the most recent version available in the Chrome Web Store.
 

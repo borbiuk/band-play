@@ -1,10 +1,12 @@
 import configService from '@shared/services/config-service';
 
+import { IBackgroundService } from './base/i-background-service';
+
 /**
  * Prevents the display from being turned off or dimmed, or the system from sleeping in response
  * to user inactivity (based on configuration).
  */
-export class KeepAwakeBackgroundService {
+export class KeepAwakeBackgroundService implements IBackgroundService {
 	public start(): void {
 		let currentKeepAwake: boolean = null;
 

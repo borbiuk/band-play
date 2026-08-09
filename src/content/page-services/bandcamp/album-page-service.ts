@@ -22,7 +22,7 @@ export class AlbumPageService
 		this.audioOperator<void>(
 			(audio: HTMLAudioElement) => {
 				if (audio.paused) {
-					audio.play();
+					audio.play().catch((e) => console.error(e));
 				} else {
 					audio.pause();
 				}

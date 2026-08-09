@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"strict": false,
 		"strictNullChecks": false,
-		"target": "es6",
+		"target": "ES2021",
 		"moduleResolution": "bundler",
 		"module": "ES6",
 		"esModuleInterop": true,
@@ -12,6 +12,7 @@
 		"noEmitOnError": true,
 		"jsx": "react",
 		"typeRoots": ["node_modules/@types"],
+		"types": ["chrome", "node"],
 		"paths": {
 			"@shared/*": ["./src/shared/*"]
 		}

@@ -16,4 +16,6 @@ npm-debug.log
 
 # dependencies
 node_modules/
-package-lock.json
+
+# local agent settings
+.claude/settings.local.json

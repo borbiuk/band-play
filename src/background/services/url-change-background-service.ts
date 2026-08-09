@@ -2,10 +2,12 @@ import { MessageCode } from '@shared/enums';
 import messageService from '@shared/services/message-service';
 import { notExist } from '@shared/utils';
 
+import { IBackgroundService } from './base/i-background-service';
+
 /**
  * Sends a URL-changed notification to content scripts on Bandcamp navigation.
  */
-export class UrlChangeBackgroundService {
+export class UrlChangeBackgroundService implements IBackgroundService {
 	public start(): void {
 		chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
 			// url not changed

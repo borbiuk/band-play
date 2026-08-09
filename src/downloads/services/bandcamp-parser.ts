@@ -1,4 +1,5 @@
 import { BatchDownloadFormat } from '@shared/enums';
+
 import { BatchDownloadFileModel } from '../batch-download-file-model';
 
 const FETCH_TIMEOUT_MS = 15000;
@@ -42,7 +43,7 @@ export const parseBandcampDownloads = async (
 		return [];
 	}
 
-	let json: any = null;
+	let json: any;
 	try {
 		json = JSON.parse(blob);
 	} catch (_e) {

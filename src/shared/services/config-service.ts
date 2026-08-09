@@ -1,5 +1,5 @@
 import { BatchDownloadFormat, KeyCode, ShortcutType } from '@shared/enums';
-import { exist, notExist } from '@shared/utils';
+import { exist } from '@shared/utils';
 
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
 
@@ -76,7 +76,7 @@ class ConfigService {
 				: true,
 			keepAwake: exist(config.keepAwake)
 				? Boolean(config.keepAwake)
-				: true,
+				: false,
 			highlightVisited: exist(config.highlightVisited)
 				? Boolean(config.highlightVisited)
 				: true,
