@@ -1,63 +1,80 @@
 #!/bin/bash
 
-# Re-create a build of extension by webpack to dist directory
-if [ -d "dist" ]; then
-	rm -r "dist"
-	echo "'dist' removed"
-else
-	echo "'dist' no found"
-fi
-npm run build
-
-##########################################################
-# Create a .zip file of Google Chrome extension package  #
-##########################################################
-
-current_date_time=$(date +'%d-%m-%Y_%H:%M:%S')
-version=$(jq '.version' dist/manifest.json | tr -d '"')
-zip_filename="band-play-build_${current_date_time}_${version}.zip"
-temp_dir="band-play-build"
-
-# Files that will be included to .zip
+# Files that will be included to .zip (paths are relative to the build directory)
 include_files=(
-	"dist/assets/buymeacoffee.png"
-	"dist/assets/github.png"
-	"dist/assets/logo-16.png"
-	"dist/assets/logo-32.png"
-	"dist/assets/logo-48.png"
-	"dist/assets/logo-128.png"
-	"dist/assets/nextprev.png"
-	"dist/assets/rate.png"
-	"dist/background.js"
-	"dist/content.js"
-	"dist/manifest.json"
-	"dist/options.html"
-	"dist/options.js"
-	"dist/vendor.js"
+	"assets/buymeacoffee.png"
+	"assets/github.png"
+	"assets/logo-16.png"
+	"assets/logo-32.png"
+	"assets/logo-48.png"
+	"assets/logo-128.png"
+	"assets/nextprev.png"
+	"assets/rate.png"
+	"background.js"
+	"content.js"
+	"downloads.html"
+	"downloads.js"
+	"manifest.json"
+	"options.html"
+	"options.js"
+	"vendor.js"
 )
 
-# Create a temporary directory
-mkdir "$temp_dir"
+# Re-create a build of extension by webpack and create a .zip file of the extension package.
+# $1 - browser name used in the .zip file name (chrome | firefox)
+# $2 - build directory created by webpack (dist | dist-firefox)
+# $3 - npm script that builds the extension (build | build:firefox)
+create_package() {
+	local browser="$1"
+	local build_dir="$2"
+	local build_script="$3"
 
-# Copy to the temporary directory
-for file in "${include_files[@]}"; do
-	# Remove the 'dist/' prefix from the file path
-	file_without_dist="${file#dist/}"
-
-	# Create the destination directory
-	destination_dir="$temp_dir/$(dirname "$file_without_dist")"
-	if [ ! -d "$destination_dir" ]; then
-		mkdir -p "$destination_dir"
+	# Re-create a build of extension by webpack to the build directory
+	if [ -d "$build_dir" ]; then
+		rm -r "$build_dir"
+		echo "'$build_dir' removed"
+	else
+		echo "'$build_dir' no found"
 	fi
+	npm run "$build_script"
 
-	# Copy the file to the temporary directory
-	cp "$file" "$destination_dir/"
-done
+	local current_date_time
+	current_date_time=$(date +'%d-%m-%Y_%H:%M:%S')
 
-# Create a .zip file
-zip -r "$zip_filename" "$temp_dir"
+	local version
+	version=$(jq '.version' "$build_dir/manifest.json" | tr -d '"')
 
-# Clean up the temporary directory
-rm -r "$temp_dir"
+	local zip_filename="band-play-build-${browser}_${current_date_time}_${version}.zip"
+	local temp_dir="band-play-build-${browser}"
 
-echo "'$zip_filename' was created."
+	# Create a temporary directory
+	mkdir "$temp_dir"
+
+	# Copy to the temporary directory
+	for file in "${include_files[@]}"; do
+		# Create the destination directory
+		local destination_dir="$temp_dir/$(dirname "$file")"
+		if [ ! -d "$destination_dir" ]; then
+			mkdir -p "$destination_dir"
+		fi
+
+		# Copy the file to the temporary directory
+		cp "$build_dir/$file" "$destination_dir/"
+	done
+
+	# Create a .zip file with the extension files at the archive root
+	# (required by addons.mozilla.org, accepted by Chrome Web Store)
+	(cd "$temp_dir" && zip -r "../$zip_filename" .)
+
+	# Clean up the temporary directory
+	rm -r "$temp_dir"
+
+	echo "'$zip_filename' was created."
+}
+
+###############################################################
+# Create .zip files of Chrome and Firefox extension packages  #
+###############################################################
+
+create_package "chrome" "dist" "build"
+create_package "firefox" "dist-firefox" "build:firefox"

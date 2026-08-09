@@ -7,6 +7,7 @@
 # builds
 *.zip
 dist/
+dist-firefox/
 tmp/
 band-play-build*
 
