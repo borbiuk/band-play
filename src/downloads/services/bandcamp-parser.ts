@@ -43,7 +43,7 @@ export const parseBandcampDownloads = async (
 		return [];
 	}
 
-	let json: any = null;
+	let json: any;
 	try {
 		json = JSON.parse(blob);
 	} catch (_e) {

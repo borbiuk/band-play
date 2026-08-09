@@ -50,8 +50,8 @@ Values in the manifest can be customized in the following ways:
 
 - All values of the `search_provider`, `homepage`, and `startup_pages` properties can be localized
   using the ``[chrome.i18n API](/docs/extensions/reference/i18n).
-For [external extensions](/docs/extensions/mv3/external_extensions), the `search_provider`, `homepage`and`startup_pages`URL values can
-be parametrized using a registry key. Create a new registry entry next to the`"update_url"`key (see instructions [here](/docs/extensions/mv3/external_extensions#registry)). The key name is`"install_parameter"`, the value
+  For [external extensions](/docs/extensions/mv3/external_extensions), the `search_provider`, `homepage`and`startup_pages`URL values can
+  be parametrized using a registry key. Create a new registry entry next to the`"update_url"`key (see instructions [here](/docs/extensions/mv3/external_extensions#registry)). The key name is`"install_parameter"`, the value
   is an arbitrary string:
 
 ```

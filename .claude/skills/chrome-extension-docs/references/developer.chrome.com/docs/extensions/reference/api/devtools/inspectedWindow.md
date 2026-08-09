@@ -37,14 +37,14 @@ Here are the main differences between the`eval`and`tabs.executeScript` methods:
   references to other JSON objects). Please observe extra care while processing the data received
   from the inspected page—the execution context is essentially controlled by the inspected page; a
   malicious page may affect the data being returned to the extension.Caution: Due to the security considerations explained above, the ``[scripting.executeScript](/docs/extensions/reference/api/scripting#method-executeScript)
-method is the preferred way for an extension to access DOM data of the inspected page in cases where
-the access to JavaScript state of the inspected page is not required.
-Note that a page can include multiple different JavaScript execution contexts. Each frame has its
-own context, plus an additional context for each extension that has content scripts running in that
-frame.
-By default, the `eval`method executes in the context of the main frame of the inspected page.
-The`eval` method takes an optional second argument that you can use to specify the context in which
-the code is evaluated. This options object can contain one or more of the following keys:`frameURL`Use to specify a frame other than the inspected page's main frame.`contextSecurityOrigin`Use to select a context within the specified frame according to its [web origin](https://www.ietf.org/rfc/rfc6454.txt).`useContentScriptContext`If true, execute the script in the same context as the extensions's content scripts. (Equivalent to
+  method is the preferred way for an extension to access DOM data of the inspected page in cases where
+  the access to JavaScript state of the inspected page is not required.
+  Note that a page can include multiple different JavaScript execution contexts. Each frame has its
+  own context, plus an additional context for each extension that has content scripts running in that
+  frame.
+  By default, the `eval`method executes in the context of the main frame of the inspected page.
+  The`eval` method takes an optional second argument that you can use to specify the context in which
+  the code is evaluated. This options object can contain one or more of the following keys:`frameURL`Use to specify a frame other than the inspected page's main frame.`contextSecurityOrigin`Use to select a context within the specified frame according to its [web origin](https://www.ietf.org/rfc/rfc6454.txt).`useContentScriptContext`If true, execute the script in the same context as the extensions's content scripts. (Equivalent to
   specifying the extensions's own web orgin as the context security origin.) This can be used to
   exchange data with the content script.
 
@@ -312,7 +312,7 @@ Fired when a new revision of the resource is committed (e.g. user saves an edite
 - resource
   [Resource](#type-Resource)
 - content
-  string
-  Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
-  Last updated 2025-08-11 UTC.
-  [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2025-08-11 UTC."],[],[]]
+      string
+      Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+      Last updated 2025-08-11 UTC.
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2025-08-11 UTC."],[],[]]

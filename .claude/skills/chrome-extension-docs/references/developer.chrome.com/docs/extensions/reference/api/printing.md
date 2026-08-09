@@ -78,7 +78,7 @@ The `submitJob()` method requires three things.
 - A `SubmitJobRequest` structure, which specifies the printer to use, and the file or data to print. This structure contains a reference to the `ticket` structure.
 - A blob of the file or data to print.
   Calling `submitJob()` triggers a dialog box asking the user to confirm printing. Use the ``[PrintingAPIExtensionsAllowlist](https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist%22) to bypass confirmation.
-This is a simplified version of the printing example. Notice that the `ticket`is attached to the`SubmitJobRequest` structure (line 8) and that the data to print is converted to a blob (line 10). Getting the ID of the printer (line 1) is more complicated [in the sample](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/api-samples/printing) than is shown here.
+  This is a simplified version of the printing example. Notice that the `ticket`is attached to the`SubmitJobRequest` structure (line 8) and that the data to print is converted to a blob (line 10). Getting the ID of the printer (line 1) is more complicated [in the sample](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/api-samples/printing) than is shown here.
 
 ```
 const defaultPrinter = getDefaultPrinter();
@@ -433,6 +433,6 @@ Event fired when the status of the job is changed. This is only fired for the jo
   string
 - status
   [JobStatus](#type-JobStatus)
-  Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
-  Last updated 2025-09-22 UTC.
-  [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2025-09-22 UTC."],[],[]]
+      Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+      Last updated 2025-09-22 UTC.
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2025-09-22 UTC."],[],[]]

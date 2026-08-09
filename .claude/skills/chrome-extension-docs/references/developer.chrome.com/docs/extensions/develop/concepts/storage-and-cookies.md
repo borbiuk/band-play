@@ -74,15 +74,15 @@ to a third-party origin, cookies behave the same as the web except in two ways:
 - Third-party cookies are never blocked even in subframes if the top-level page
   for a given tab is a `chrome-extension://` page.
 - Requests from an extension to a third-party are treated as same-site if the
-  extension has host permissions for the third-party. This means `SameSite=Strict`
-  cookies can be sent. Note that this only applies to network requests, not access
-  through `document.cookie` in JavaScript, and does not apply if third-party cookies are
-  blocked.
-  Note that settings around third-party cookies are affected by the Privacy
-  Sandbox work and are [adjusted according to its timeline](https://privacysandbox.com/open-web/#open-web-timeline-3pc).
-  The ``[chrome.cookies](/docs/extensions/reference/cookies) API provides control over the partition
-  key to use with each API method. For more information, see the
-  [API reference](/docs/extensions/reference/cookies#partitioning).
-  Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
-  Last updated 2023-09-28 UTC.
-  [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2023-09-28 UTC."],[],[]]
+      extension has host permissions for the third-party. This means `SameSite=Strict`
+      cookies can be sent. Note that this only applies to network requests, not access
+      through `document.cookie` in JavaScript, and does not apply if third-party cookies are
+      blocked.
+      Note that settings around third-party cookies are affected by the Privacy
+      Sandbox work and are [adjusted according to its timeline](https://privacysandbox.com/open-web/#open-web-timeline-3pc).
+      The ``[chrome.cookies](/docs/extensions/reference/cookies) API provides control over the partition
+      key to use with each API method. For more information, see the
+    [API reference](/docs/extensions/reference/cookies#partitioning).
+      Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/), and code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0). For details, see the [Google Developers Site Policies](https://developers.google.com/site-policies). Java is a registered trademark of Oracle and/or its affiliates.
+      Last updated 2023-09-28 UTC.
+      [[["Easy to understand","easyToUnderstand","thumb-up"],["Solved my problem","solvedMyProblem","thumb-up"],["Other","otherUp","thumb-up"]],[["Missing the information I need","missingTheInformationINeed","thumb-down"],["Too complicated / too many steps","tooComplicatedTooManySteps","thumb-down"],["Out of date","outOfDate","thumb-down"],["Samples / code issue","samplesCodeIssue","thumb-down"],["Other","otherDown","thumb-down"]],["Last updated 2023-09-28 UTC."],[],[]]
