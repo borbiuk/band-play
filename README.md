@@ -93,7 +93,7 @@ for more details.
 4. Click on `Load Temporary Add-on...` and select the `manifest.json` file inside the `dist-firefox` directory.
 5. The extension should now appear in your list of installed extensions and is ready to use.
 
-> **Note:** The Keep Awake feature is Chrome-only and will be silently disabled on Firefox.
+> **Note:** The Keep Awake feature relies on the Chrome-only `chrome.power` API, so it is disabled on Firefox and its toggle is hidden in the extension popup.
 
 ### 📁 **File Structure**
 

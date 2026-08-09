@@ -137,6 +137,7 @@ module.exports = {
 							'**/logo.png',
 							'**/.DS_Store',
 						'**/manifest.json', // Exclude manifest.json from common
+						'**/manifest.firefox.json', // Copied as manifest.json by the Firefox config
 						],
 					},
 					// Caching for faster copy
