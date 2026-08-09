@@ -9,11 +9,13 @@ import messageService from '@shared/services/message-service';
 
 import { BatchDownloadBackgroundService } from '../batch-download/batch-download-background-service';
 
+import { IBackgroundService } from './base/i-background-service';
+
 /**
  * Handles inter-component communication.
  * Processes messages from content scripts and UI pages.
  */
-export class MessagesBackgroundService {
+export class MessagesBackgroundService implements IBackgroundService {
 	public constructor(
 		private readonly batchDownload: BatchDownloadBackgroundService
 	) {}
@@ -26,9 +28,7 @@ export class MessagesBackgroundService {
 					const { url, active } = message.data as NewTabMessage;
 					chrome.tabs
 						.create({ url: String(url), active })
-						.catch((e) => {
-							console.error(e);
-						});
+						.catch((e) => console.error(e));
 					break;
 				}
 
@@ -76,6 +76,15 @@ export class MessagesBackgroundService {
 
 				case MessageCode.BatchDownloadResumeAll: {
 					await this.batchDownload.resumeAll();
+					break;
+				}
+				case MessageCode.BatchDownloadResumeItem: {
+					const data = message.data as BatchDownloadItemIdMessage;
+					if (!data?.id) {
+						break;
+					}
+
+					await this.batchDownload.resumeItem(String(data.id));
 					break;
 				}
 

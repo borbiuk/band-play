@@ -51,9 +51,7 @@ export class PageServiceWorker {
 	public start(): void {
 		console.log('[Start]: Band Play');
 
-		this.startAsync().catch((error: Error) => {
-			console.error(error);
-		});
+		this.startAsync().catch((e) => console.error(e));
 	}
 
 	/**

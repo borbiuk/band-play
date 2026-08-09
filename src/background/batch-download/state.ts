@@ -1,8 +1,9 @@
+import { exist } from '@shared/utils';
+
 import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
 import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
 import { DownloadStatus } from '../../downloads/download-status';
 import { DownloadType } from '../../downloads/download-type';
-import { exist } from '@shared/utils';
 
 export const BATCH_DOWNLOAD_TAB_ID_KEY = 'batchDownloadTabId';
 export const BATCH_DOWNLOAD_QUEUED_ITEMS_KEY = 'batchDownloadQueuedItems';
@@ -12,19 +13,6 @@ const isDownloadsShelfAvailable =
 	typeof chrome.downloads?.setShelfEnabled !== 'undefined';
 
 export type QueuedItems = BatchDownloadPendingItemModel[];
-
-export const uniqById = (items: BatchDownloadPendingItemModel[]) => {
-	const map = new Map<string, BatchDownloadPendingItemModel>();
-	for (const item of items) {
-		if (!item?.id) {
-			continue;
-		}
-		if (!map.has(item.id)) {
-			map.set(item.id, item);
-		}
-	}
-	return Array.from(map.values());
-};
 
 export const createPendingItem = (
 	x: BatchDownloadPendingItemModel
@@ -36,8 +24,8 @@ export const createPendingItem = (
 	};
 };
 
-export const toChildrenIds = (downloads: { id: string }[]) =>
-	downloads.map((x) => x.id);
+export const toChildrenIds = (downloads: { id: string }[], parentId: string) =>
+	downloads.map((x) => `${parentId}:${x.id}`);
 
 export const getBatchDownloadTabId = async (): Promise<number | null> => {
 	const data = await chrome.storage.local.get([BATCH_DOWNLOAD_TAB_ID_KEY]);
@@ -119,10 +107,11 @@ export const mergePendingIntoState = (
 ): BatchDownloadItemModel[] => {
 	const existingIds = new Set(current.map((x) => x.id));
 	const next = [...current];
-	for (const item of uniqById(pending)) {
-		if (!existingIds.has(item.id)) {
-			next.push(createPendingItem(item));
+	for (const item of pending) {
+		if (existingIds.has(item.id)) {
+			continue;
 		}
+		next.push(createPendingItem(item));
 	}
 	return next;
 };

@@ -4,6 +4,7 @@
 */
 
 import { BatchDownloadBackgroundService } from './batch-download/batch-download-background-service';
+import { IBackgroundService } from './services/base/i-background-service';
 import { KeepAwakeBackgroundService } from './services/keep-awake-background-service';
 import { MessagesBackgroundService } from './services/messages-background-service';
 import { UpdateAvailableBackgroundService } from './services/update-available-background-service';
@@ -38,7 +39,7 @@ const keepAwakeService = new KeepAwakeBackgroundService();
 	keepAwakeService,
 	batchDownloadService,
 	messagesService,
-].forEach((service) => {
+].forEach((service: IBackgroundService) => {
 	try {
 		service.start();
 	} catch (e) {
