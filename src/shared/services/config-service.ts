@@ -76,7 +76,7 @@ class ConfigService {
 				: true,
 			keepAwake: exist(config.keepAwake)
 				? Boolean(config.keepAwake)
-				: true,
+				: false,
 			highlightVisited: exist(config.highlightVisited)
 				? Boolean(config.highlightVisited)
 				: true,
