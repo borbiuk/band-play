@@ -1,4 +1,5 @@
 import { BatchDownloadFormat } from '@shared/enums';
+
 import { BatchDownloadFileModel } from '../batch-download-file-model';
 
 const FETCH_TIMEOUT_MS = 15000;

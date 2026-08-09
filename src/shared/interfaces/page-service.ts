@@ -1,6 +1,5 @@
-import { PlaybackPitchAction } from '../enums/playback-pitch-action';
-import { PlaybackSpeedAction } from '../enums/playback-speed-action';
-import { ConfigModel } from '../models/config-model';
+import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
+import { ConfigModel } from '@shared/models';
 
 /**
  * Interface defining the contract for page-specific services.

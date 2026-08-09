@@ -5,4 +5,8 @@ export interface BatchDownloadPendingItemModel {
 	id: string;
 	title: string;
 	url: string;
+	sourceId?: string;
+	coverArtUrl?: string;
+	collectionIndex?: number;
+	createdAt?: number;
 }

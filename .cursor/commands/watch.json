@@ -1,7 +1,0 @@
-{
-	"name": "Watch extension (dev)",
-	"command": "npm run watch",
-	"description": "Run webpack in watch mode for development builds.",
-	"category": "Dev",
-	"args": []
-}

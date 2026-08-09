@@ -1,4 +1,5 @@
 import { BatchDownloadControls } from '@shared/components/batch-download';
+import { LabelButton } from '@shared/components/button';
 import { MessageCode } from '@shared/enums/message-code';
 import messageService from '@shared/services/message-service';
 import React, { useEffect, useState } from 'react';
@@ -6,8 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
 import { DownloadStatus } from '../../downloads/download-status';
 import { DownloadType } from '../../downloads/download-type';
-
-import { LabelButton } from '@shared/components/button';
 
 const BATCH_DOWNLOAD_ITEMS_KEY = 'batchDownloadItems';
 

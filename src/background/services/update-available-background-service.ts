@@ -1,10 +1,12 @@
 import { MessageCode } from '@shared/enums';
 import messageService from '@shared/services/message-service';
 
+import { IBackgroundService } from './base/i-background-service';
+
 /**
  * Notifies content scripts when a new extension update is available.
  */
-export class UpdateAvailableBackgroundService {
+export class UpdateAvailableBackgroundService implements IBackgroundService {
 	public start(): void {
 		chrome.runtime.onUpdateAvailable.addListener((details) => {
 			this.executeInCurrentTab((tabId) => {
@@ -13,9 +15,7 @@ export class UpdateAvailableBackgroundService {
 						code: MessageCode.NewUpdateAvailable,
 						data: details,
 					})
-					.catch((e) => {
-						console.error(e);
-					});
+					.catch((e) => console.error(e));
 			});
 		});
 	}

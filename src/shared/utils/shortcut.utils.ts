@@ -17,17 +17,17 @@ export const mapShortcutToString = (value: string): string => {
 		return KeyCode.Shift.toLowerCase();
 	}
 
-	if (value.includes('digit')) {
-		return KeyCode.Digit;
-	}
-	if (value.includes('meta')) {
-		value = 'meta';
-	}
-	if (value.includes('alt')) {
-		value = 'alt';
-	}
-	if (value.includes('control')) {
-		value = 'control';
+	const KEY_MAP: Record<string, () => string> = {
+		digit: () => KeyCode.Digit,
+		meta: () => 'meta',
+		alt: () => 'alt',
+		control: () => 'control',
+	};
+
+	const key = Object.keys(KEY_MAP).find((k) => value.includes(k));
+
+	if (key) {
+		return KEY_MAP[key]();
 	}
 
 	return value;
@@ -41,52 +41,29 @@ export const mapShortcutToString = (value: string): string => {
  * @returns Human-readable representation of the key
  */
 export const mapToHumanString = (value: string) => {
-	if (value.includes('Key')) {
-		return value.split('Key')[1];
+	const KEY_MAP: Record<string, () => string> = {
+		Key: () => value.split('Key')[1],
+		Digit: () => 'Digit',
+		Meta: () => (isMac() ? '⌘' : '⊞'),
+		Alt: () => (isMac() ? '⌥' : 'Alt'),
+		Control: () => (isMac() ? '^' : 'Ctrl'),
+		Shift: () => '⇧',
+		Backspace: () => '⌫',
+		CapsLock: () => '⇪',
+		ArrowUp: () => '↑',
+		ArrowDown: () => '↓',
+		ArrowRight: () => '→',
+		ArrowLeft: () => '←',
+	};
+
+	const key = Object.keys(KEY_MAP).find((k) => value.includes(k));
+
+	if (key) {
+		return KEY_MAP[key]();
 	}
 
-	if (value.includes('Digit') || isNumeric(value)) {
+	if (isNumeric(value)) {
 		return 'Digit';
-	}
-
-	if (value.includes('Meta')) {
-		return isMac() ? '⌘' : '⊞';
-	}
-
-	if (value.includes('Alt')) {
-		return isMac() ? '⌥' : 'Alt';
-	}
-
-	if (value.includes('Control')) {
-		return isMac() ? '^' : 'Ctrl';
-	}
-
-	if (value.includes('Shift')) {
-		return '⇧';
-	}
-
-	if (value.includes('Backspace')) {
-		return '⌫';
-	}
-
-	if (value.includes('CapsLock')) {
-		return '⇪';
-	}
-
-	if (value.includes('ArrowUp')) {
-		return '↑';
-	}
-
-	if (value.includes('ArrowDow')) {
-		return '↓';
-	}
-
-	if (value.includes('ArrowRight')) {
-		return '→';
-	}
-
-	if (value.includes('ArrowLeft')) {
-		return '←';
 	}
 
 	return value;
