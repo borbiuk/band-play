@@ -1,0 +1,26 @@
+# Messaging conventions
+
+> Messaging conventions between background/content/options/downloads parts of the extension.
+> Applies to: `src/**/*.{ts,tsx}`.
+
+- **Use a typed message model**
+    - Messages must use `MessageModel<T>` from `src/shared/models/messages/base/message-model.ts`.
+    - Message codes must be defined in `MessageCode` (`src/shared/enums/message-code.ts`).
+
+- **Adding a new message**
+    - Add a new `MessageCode` enum member with the `band-play-` prefix.
+    - Add/extend a typed payload model under `src/shared/models/messages/` if needed.
+    - Export the payload model from `src/shared/models/messages/index.ts`.
+    - Handle the message in the background listener (`src/background/services/messages-background-service.ts`) when appropriate.
+
+- **Error handling**
+    - Background handlers should avoid throwing; handle errors locally and log intentionally.
+    - Keep message handlers small; delegate real work to services (e.g., batch download service).
+
+- **DO**
+    - Keep message `data` payloads small and serializable.
+    - Prefer explicit payload types over `unknown` when adding new flows.
+
+- **DON'T**
+    - Don't use ad-hoc string message codes outside `MessageCode`.
+    - Don't pass DOM nodes or non-serializable data in `data`.

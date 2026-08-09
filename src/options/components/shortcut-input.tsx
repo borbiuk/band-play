@@ -1,11 +1,10 @@
+import { LabelButton } from '@shared/components/button';
 import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist } from '@shared/utils/guard.utils';
 import { mapToHumanString } from '@shared/utils/shortcut.utils';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-
-import { LabelButton } from '@shared/components/button';
 
 /**
  * ShortcutInput component for managing keyboard shortcuts configuration.

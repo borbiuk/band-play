@@ -1,7 +1,11 @@
-import { NewTabMessageDataModel } from './new-tab-message-data-model';
-
 /**
- * Message data payload for creating a new browser tab.
- * Kept as a named alias to match existing imports (`NewTabMessage`).
+ * Message data for creating new browser tabs.
+ * Used when opening tracks or albums in new tabs.
  */
-export type NewTabMessage = NewTabMessageDataModel;
+export interface NewTabMessage {
+	/** URL to open in the new tab */
+	url: string;
+
+	/** Whether the new tab should be focused/active */
+	active: boolean;
+}

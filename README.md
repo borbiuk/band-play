@@ -99,16 +99,23 @@ for more details.
 
 - `public/`: Contains `manifest.json`, images and icons used by the extension.
 - `src/`:
-    - `background/background.ts`: Contains the TypeScript files for background script (single instance for Chrome).
+    - `background/`:
+        - `batch-download/`: Contains the batch download queue (state, runner, actions).
+        - `services/`: Contains background services (messages, keep-awake, update, URL change).
+        - `background.ts`: The TypeScript file for background script (single service worker instance for Chrome).
     - `content/`:
+        - `components/`: Contains React components injected into Bandcamp pages.
         - `page-services/`: Contains services for handling different pages of site.
         - `services/`: Contains core services.
         - `shortcut/`: Contains keyboard shortcut handling.
         - `content.ts`: The TypeScript file for content script (running on each site page).
     - `downloads/`: Contains the batch download manager page.
     - `options/`: Contains extension pop-up React component.
-    - `shared/`: Contains shared models, enums, interfaces, services and utils.
+    - `shared/`: Contains shared components, models, enums, interfaces, services and utils.
 - `webpack/`: Configuration of webpack for different type of builds.
+- `scripts/`: Maintenance scripts (e.g. `tag-releases.sh` for tagging released versions).
+- `.github/workflows/`: CI configuration (build + lint on pushes and pull requests to `master`).
+- `.claude/`: Agent context for AI-assisted development (rules, skills, commands), see [AGENTS.md](AGENTS.md).
 - `zip.sh`: A script for creating a `.zip` file with build for publishing.
 
 ### 🤝 Contributing
