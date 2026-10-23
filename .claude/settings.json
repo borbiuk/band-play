@@ -1,0 +1,56 @@
+{
+	"$schema": "https://json.schemastore.org/claude-code-settings.json",
+	"permissions": {
+		"allow": [
+			"Bash(npm run build)",
+			"Bash(npm run build:firefox)",
+			"Bash(npm run watch)",
+			"Bash(npm run lint)",
+			"Bash(npm run lint:fix)",
+			"Bash(npm run lint:firefox)",
+			"Bash(npm run typecheck)",
+			"Bash(npm run format)",
+			"Bash(npm run format:check)",
+			"Bash(npm run check:versions)",
+			"Bash(npm run check:outdated)",
+			"Bash(npm run zip)",
+			"Bash(npm run clean)",
+			"Bash(npm test)",
+			"Bash(npm run test)",
+			"Bash(npm run test:unit)",
+			"Bash(npm run test:e2e)",
+			"Bash(npx prettier --check *)"
+		],
+		"ask": [
+			"Bash(git commit *)",
+			"Bash(git push *)",
+			"Bash(git pull *)",
+			"Bash(git merge *)",
+			"Bash(git stash *)",
+			"Bash(git rebase *)",
+			"Bash(npm install *)"
+		],
+		"deny": [
+			"Bash(git push --force *)",
+			"Bash(git reset --hard *)",
+			"Bash(git clean *)",
+			"Bash(git checkout --force *)"
+		]
+	},
+	"attribution": {
+		"commit": "",
+		"pr": ""
+	},
+	"includeCoAuthoredBy": false,
+	"extraKnownMarketplaces": {
+		"googlechrome": {
+			"source": {
+				"source": "github",
+				"repo": "GoogleChrome/modern-web-guidance"
+			}
+		}
+	},
+	"enabledPlugins": {
+		"modern-web-guidance@googlechrome": true
+	}
+}

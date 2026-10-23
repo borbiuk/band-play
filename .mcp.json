@@ -1,0 +1,17 @@
+{
+	"mcpServers": {
+		"chrome-devtools": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"chrome-devtools-mcp@1.11.0",
+				"--categoryExtensions",
+				"--no-usage-statistics"
+			]
+		},
+		"playwright-test": {
+			"command": "npx",
+			"args": ["playwright", "run-test-mcp-server"]
+		}
+	}
+}
