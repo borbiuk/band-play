@@ -27,7 +27,7 @@ import {
 import {
 	drainQueuedBatchDownloadItems,
 	getBatchDownloadItems,
-	isActiveBatchDownloadItem,
+	isRunningBatchDownloadItem,
 	setDownloadsShelfEnabledSafe,
 	toChildrenIds,
 	updateBatchDownloadItems,
@@ -96,8 +96,9 @@ export class BatchDownloadRunner {
 	/**
 	 * Detects whether the browser uniquified the download's filename because
 	 * the target file already existed. Compares against the pre-uniquify name
-	 * recorded in onDeterminingFilename when available; falls back to the
-	 * " (n)" suffix heuristic on Firefox where that event does not exist.
+	 * recorded in onDeterminingFilename when available; otherwise (Firefox,
+	 * or after a browser restart) it looks for the file without the " (n)"
+	 * suffix in the browser's downloads.
 	 */
 	private async isUniquifiedDuplicateFile(
 		d: chrome.downloads.DownloadItem
@@ -112,7 +113,22 @@ export class BatchDownloadRunner {
 			return isUniquifiedVariantOf(expected, fileName);
 		}
 
-		return /\(\d+\)(\.[^./\\]+)?$/.test(fileName);
+		// No recorded name (Firefox, or the entry was evicted): "Album (2).zip" can be a real
+		// title, so it is a duplicate only when the browser already has the file without " (n)"
+		const match = /^(.*?) ?\(\d+\)(\.[^./\\]+)?$/.exec(d.filename ?? '');
+		if (notExist(match)) {
+			return false;
+		}
+
+		const original = `${match[1]}${match[2] ?? ''}`;
+		try {
+			const existing = await chrome.downloads.search({
+				filename: original,
+			});
+			return existing.some((x) => x.id !== d.id && x.exists !== false);
+		} catch {
+			return false;
+		}
 	}
 
 	private async pauseIfDuplicateDownload(
@@ -216,9 +232,12 @@ export class BatchDownloadRunner {
 			return false;
 		}
 
+		// A paused item holds a slot only when its browser download exists; one paused
+		// before it started has nothing to resume and must not block the queue
 		return (
 			x.status === DownloadStatus.Downloading ||
-			x.status === DownloadStatus.Paused
+			(x.status === DownloadStatus.Paused &&
+				exist(x.download.browserDownloadId))
 		);
 	};
 
@@ -289,6 +308,11 @@ export class BatchDownloadRunner {
 							return x;
 						}
 
+						// A pause or cancel while the page was fetched wins
+						if (x.status !== DownloadStatus.Resolved) {
+							return x;
+						}
+
 						return { ...x, status: DownloadStatus.Failed };
 					})
 				);
@@ -321,6 +345,11 @@ export class BatchDownloadRunner {
 			await this.updateItems((current) =>
 				current.map((x): BatchDownloadItemModel => {
 					if (x.id !== item.id || x.type !== DownloadType.Single) {
+						return x;
+					}
+
+					// A pause or cancel while the page was fetched wins
+					if (x.status !== DownloadStatus.Resolved) {
 						return x;
 					}
 
@@ -693,8 +722,8 @@ export class BatchDownloadRunner {
 			// 1.5) Recover transient states from a mid-tick worker shutdown.
 			items = await this.recoverStaleTransientItems(items);
 
-			// 2) Ensure downloads shelf is disabled while there is active work.
-			const hasActive = items.some(isActiveBatchDownloadItem);
+			// 2) Ensure downloads shelf is disabled while there is running work.
+			const hasActive = items.some(isRunningBatchDownloadItem);
 			if (hasActive) {
 				setDownloadsShelfEnabledSafe(false);
 				this.ensureWatchdogAlarm();
@@ -925,13 +954,25 @@ export class BatchDownloadRunner {
 					}
 					const downloadUrl = downloadFile.url;
 
+					// The loop awaits between items: a pause or cancel made meanwhile wins
+					let isQueued = false;
 					items = await this.updateItems((current) =>
-						current.map((x) =>
-							x.id === item.id && x.type === DownloadType.Single
-								? { ...x, status: DownloadStatus.Queued }
-								: x
-						)
+						current.map((x) => {
+							if (
+								x.id !== item.id ||
+								x.type !== DownloadType.Single ||
+								x.status !== DownloadStatus.Resolved
+							) {
+								return x;
+							}
+
+							isQueued = true;
+							return { ...x, status: DownloadStatus.Queued };
+						})
 					);
+					if (!isQueued) {
+						continue;
+					}
 
 					const desiredBaseName = renderConfiguredFilename(
 						config.batchDownloadFilenameTemplate,
@@ -948,6 +989,8 @@ export class BatchDownloadRunner {
 						const downloadId = await chrome.downloads.download({
 							url: downloadUrl,
 							conflictAction: 'uniquify',
+							// A batch must not open a save dialog per file
+							saveAs: false,
 						});
 
 						// The user may have paused, cancelled or removed the item
@@ -1034,9 +1077,9 @@ export class BatchDownloadRunner {
 			// 5) Update parent progress (derived).
 			await this.updateItems((current) => updateParentsProgress(current));
 
-			// 6) Re-enable shelf when everything is done.
+			// 6) Re-enable shelf when nothing runs any more (paused and duplicate items wait for the user).
 			const finalItems = await getBatchDownloadItems();
-			const stillActive = finalItems.some(isActiveBatchDownloadItem);
+			const stillActive = finalItems.some(isRunningBatchDownloadItem);
 			if (!stillActive) {
 				setDownloadsShelfEnabledSafe(true);
 				this.stopDownloadsProgressPoller();

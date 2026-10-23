@@ -69,6 +69,17 @@ export const isActiveBatchDownloadItem = (
 	);
 };
 
+/**
+ * True for an item the extension is working on. Paused and Duplicate items wait for the user:
+ * they do not keep the browser's download UI off or the watchdog alarm running.
+ */
+export const isRunningBatchDownloadItem = (
+	x: BatchDownloadItemModel
+): boolean =>
+	isActiveBatchDownloadItem(x) &&
+	x.status !== DownloadStatus.Paused &&
+	x.status !== DownloadStatus.Duplicate;
+
 export const getBatchDownloadItems = async (): Promise<
 	BatchDownloadItemModel[]
 > => {

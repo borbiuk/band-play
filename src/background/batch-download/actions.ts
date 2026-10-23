@@ -548,6 +548,10 @@ export const enqueuePendingItems = async (
 	});
 	await appendQueuedBatchDownloadItems(normalized);
 
-	await openOrFocusDownloadsTab();
-	scheduleBatchTick();
+	// The queue starts even when the downloads tab cannot be opened
+	try {
+		await openOrFocusDownloadsTab();
+	} finally {
+		scheduleBatchTick();
+	}
 };
