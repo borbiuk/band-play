@@ -1,0 +1,102 @@
+name: bandcamp-markup
+
+# Daily check against the current Bandcamp markup:
+# 1. capture fresh snapshots of the Bandcamp pages the e2e tests use,
+# 2. commit them to master when they changed,
+# 3. run the e2e tests on them and the live smoke tests on bandcamp.com.
+# When any step fails, one open issue labelled `markup-drift` tracks it: it is created once and
+# later failures add a comment to it. Close the issue after fixing the selectors.
+on:
+    schedule:
+        # Not at minute 0, the busiest time of the GitHub scheduler (runs there are delayed or dropped more often)
+        - cron: '17 5 * * *'
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    issues: write
+
+concurrency:
+    group: bandcamp-markup
+    cancel-in-progress: false
+
+jobs:
+    markup:
+        runs-on: ubuntu-latest
+        # Two Playwright runs of up to 10 minutes each (globalTimeout in playwright.config.ts) plus setup and capture
+        timeout-minutes: 40
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  ref: master
+            - name: Use Node.js 24.x
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24.x
+                  cache: npm
+            - run: npm ci
+            - name: Install Playwright Chromium
+              run: npx --no playwright install --with-deps chromium
+
+            - name: Capture fresh snapshots of bandcamp.com
+              run: npm run test:snapshots
+
+            - name: Commit changed snapshots
+              env:
+                  # The Husky pre-commit hook (format, build, zip) is for local commits
+                  HUSKY: '0'
+              run: |
+                  if git diff --quiet -- tests/e2e/fixtures/pages; then
+                      echo "The snapshots did not change."
+                      exit 0
+                  fi
+                  git config user.name 'github-actions[bot]'
+                  git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+                  git add tests/e2e/fixtures/pages
+                  git commit -m "Refresh Bandcamp page snapshots"
+                  git pull --rebase origin master
+                  git push origin HEAD:master
+
+            - name: Run e2e tests on the fresh snapshots
+              id: e2e
+              run: npm run test:e2e
+
+            # Runs also when the e2e tests failed, so the report shows whether bandcamp.com itself broke the extension
+            - name: Run live smoke tests on bandcamp.com
+              if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
+              env:
+                  # Own report folders, so the live run does not replace the e2e report
+                  PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-live
+              run: npm run test:live -- --output=test-results-live
+
+            - name: Upload the Playwright report
+              if: failure()
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: playwright-report-markup
+                  path: |
+                      playwright-report/
+                      test-results/
+                      playwright-report-live/
+                      test-results-live/
+                  retention-days: 14
+
+            - name: Open or update the markup-drift issue
+              if: failure()
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              run: |
+                  gh label create markup-drift --color D93F0B \
+                      --description "The daily check against the current Bandcamp markup failed" --force
+                  number=$(gh issue list --label markup-drift --state open --limit 1 --json number --jq '.[0].number // empty')
+                  if [ -n "$number" ]; then
+                      gh issue comment "$number" --body "The daily markup check failed again: $RUN_URL"
+                      exit 0
+                  fi
+                  gh issue create --label markup-drift \
+                      --title "Tests fail on the current Bandcamp markup" \
+                      --body "The daily markup check failed: $RUN_URL
+
+                  Bandcamp probably changed the markup of a page the extension or its tests depend on. Open the run, download the \`playwright-report-markup\` artifact (\`npx playwright show-report\`), update the selectors in \`src/content\` and the tests, then close this issue. Later failures are added here as comments until it is closed."
