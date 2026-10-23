@@ -32,6 +32,10 @@ const updateAvailableService = new UpdateAvailableBackgroundService();
 /** Prevents the service worker from going to sleep during active operations */
 const keepAwakeService = new KeepAwakeBackgroundService();
 
+// An event listener at the top level wakes the worker after a browser restart, so the
+// batch download queue continues (alarms may be cleared on restart)
+chrome.runtime.onStartup.addListener(() => void 0);
+
 // run services:
 [
 	urlChangeService,
