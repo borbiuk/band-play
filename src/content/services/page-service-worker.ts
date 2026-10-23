@@ -39,6 +39,9 @@ export class PageServiceWorker {
 	/** Currently active page service for the current page */
 	public pageService: PageService = null;
 
+	/** Called after the active page service changed (the media keys follow it) */
+	public onPageServiceChange: (() => void) | null = null;
+
 	/** Timer of the periodic track initialization */
 	private initTracksInterval: ReturnType<typeof setInterval> = null;
 
@@ -65,12 +68,14 @@ export class PageServiceWorker {
 	 */
 	private async startAsync(): Promise<void> {
 		this.pageService = await this.currentService();
+		this.onPageServiceChange?.();
 
 		// Register URL changes listener
 		messageService.addListener(
 			async (message: MessageModel<unknown>) => {
 				if (message.code === MessageCode.UrlChanged) {
 					this.pageService = await this.currentService();
+					this.onPageServiceChange?.();
 				}
 			},
 			(error: Error) => console.error(error)
@@ -150,7 +155,12 @@ export class PageServiceWorker {
 		);
 		if (exist(service)) {
 			service.config = await configService.getAll();
-			service.initTracks();
+			// A failing page service must not stop the listeners and timers
+			try {
+				service.initTracks();
+			} catch (error) {
+				console.error(error);
+			}
 		}
 
 		return service;

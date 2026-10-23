@@ -234,8 +234,6 @@ export class UserInputService {
 	private listenNavigator(serviceWorker: PageServiceWorker): void {
 		const { mediaSession } = navigator;
 
-		// Media keys work only on pages with a page service; elsewhere they do
-		// nothing (the handlers replace the browser's own media key handling)
 		const withService =
 			(action: (service: PageService) => void) => (): void => {
 				const service = serviceWorker.pageService;
@@ -246,34 +244,47 @@ export class UserInputService {
 				action(service);
 			};
 
-		// Playlist control:
-		mediaSession.setActionHandler(
-			'nexttrack',
-			withService((service) => service.playNextTrack(true))
-		);
-		mediaSession.setActionHandler(
-			'previoustrack',
-			withService((service) => service.playNextTrack(false))
-		);
+		const handlers: [MediaSessionAction, () => void][] = [
+			// Playlist control:
+			[
+				'nexttrack',
+				withService((service) => service.playNextTrack(true)),
+			],
+			[
+				'previoustrack',
+				withService((service) => service.playNextTrack(false)),
+			],
+			// Playback control:
+			[
+				'seekforward',
+				withService((service) => service.seekForward(true)),
+			],
+			[
+				'seekbackward',
+				withService((service) => service.seekForward(false)),
+			],
+			// Play/Pause:
+			['play', withService((service) => service.playPause())],
+			['pause', withService((service) => service.playPause())],
+		];
 
-		// Playback control:
-		mediaSession.setActionHandler(
-			'seekforward',
-			withService((service) => service.seekForward(true))
-		);
-		mediaSession.setActionHandler(
-			'seekbackward',
-			withService((service) => service.seekForward(false))
-		);
+		// A registered handler replaces the browser's own media key handling, so the
+		// handlers exist only while the page has a page service
+		const syncHandlers = (): void => {
+			const hasService = exist(serviceWorker.pageService);
+			for (const [action, handler] of handlers) {
+				try {
+					mediaSession.setActionHandler(
+						action,
+						hasService ? handler : null
+					);
+				} catch (error) {
+					console.error(error);
+				}
+			}
+		};
 
-		// Play/Pause:
-		mediaSession.setActionHandler(
-			'play',
-			withService((service) => service.playPause())
-		);
-		mediaSession.setActionHandler(
-			'pause',
-			withService((service) => service.playPause())
-		);
+		serviceWorker.onPageServiceChange = syncHandlers;
+		syncHandlers();
 	}
 }

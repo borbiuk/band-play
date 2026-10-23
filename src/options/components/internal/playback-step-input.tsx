@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 export interface PlaybackStepInputOptions {
 	// The unique identifier for the input.
@@ -35,16 +35,15 @@ export const PlaybackStepInput = ({
 }: PlaybackStepInputOptions) => {
 	const [value, setValue] = useState(defaultValue);
 
-	// Opening the popup must not write the stored value back
-	const isFirstRender = useRef(true);
-	useEffect(() => {
-		if (isFirstRender.current) {
-			isFirstRender.current = false;
+	// The setting is saved by the user's action: opening the popup writes nothing
+	const commit = (next: number) => {
+		if (next === value) {
 			return;
 		}
 
-		onChange(id, value);
-	}, [value]);
+		setValue(next);
+		onChange(id, next);
+	};
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = Number(event.target.value);
@@ -53,11 +52,11 @@ export const PlaybackStepInput = ({
 		}
 
 		if (newValue > max) {
-			setValue(max);
+			commit(max);
 		} else if (newValue < min) {
-			setValue(min);
+			commit(min);
 		} else {
-			setValue(newValue);
+			commit(newValue);
 		}
 	};
 
@@ -74,9 +73,9 @@ export const PlaybackStepInput = ({
 	};
 
 	const handleIncrement = () =>
-		setValue(Math.min(max, round(value, 'increment')));
+		commit(Math.min(max, round(value, 'increment')));
 	const handleDecrement = () =>
-		setValue(Math.max(min, round(value, 'decrement')));
+		commit(Math.max(min, round(value, 'decrement')));
 
 	return (
 		<div className="w-full">
@@ -85,7 +84,8 @@ export const PlaybackStepInput = ({
 				<button
 					type="button"
 					id={`${id}-decrement-button`}
-					className="h-6 rounded-s-lg border border-band-200 bg-band-200 px-2 pt-1 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					aria-label="Decrease playback step"
+					className="h-6 rounded-s-lg border border-band-200 bg-band-200 px-2 pt-1 outline-none duration-300 hover:scale-110 hover:bg-band-400 focus-visible:ring-2 focus-visible:ring-band-700"
 					onClick={handleDecrement}
 				>
 					<svg
@@ -104,10 +104,11 @@ export const PlaybackStepInput = ({
 					<input
 						type="number"
 						id={`${id}-number-input`}
+						aria-label="Playback step in seconds"
 						min={min}
 						max={max}
 						value={value}
-						className="block h-full w-full border-y border-band-200 bg-band-100 text-center text-sm font-normal tabular-nums text-gray-900 outline-none"
+						className="block h-full w-full border-y border-band-200 bg-band-100 text-center text-sm font-normal tabular-nums text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-band-700"
 						placeholder={max.toString()}
 						onChange={handleChange}
 						required
@@ -121,7 +122,8 @@ export const PlaybackStepInput = ({
 				<button
 					type="button"
 					id={`${id}-increment-button`}
-					className="h-6 rounded-e-lg border border-band-200 bg-band-200 px-2 outline-none duration-300 hover:scale-110 hover:bg-band-400"
+					aria-label="Increase playback step"
+					className="h-6 rounded-e-lg border border-band-200 bg-band-200 px-2 outline-none duration-300 hover:scale-110 hover:bg-band-400 focus-visible:ring-2 focus-visible:ring-band-700"
 					onClick={handleIncrement}
 				>
 					<svg

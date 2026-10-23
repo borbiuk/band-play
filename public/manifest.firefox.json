@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Bandcamp Play",
 	"short_name": "BandPlay",
-	"version": "10.2.2",
+	"version": "10.3.0",
 	"description": "Enhanced playback for Bandcamp: autoplay, speed, pitch, hotkeys, history, batch download, and more.",
 	"homepage_url": "https://github.com/borbiuk/band-play",
 	"browser_specific_settings": {
@@ -15,7 +15,7 @@
 		}
 	},
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
-	"permissions": ["tabs", "storage", "downloads", "alarms"],
+	"permissions": ["storage", "downloads", "alarms"],
 	"background": {
 		"scripts": ["background.js"]
 	},

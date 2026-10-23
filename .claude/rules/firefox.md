@@ -14,7 +14,7 @@ paths:
 - The Firefox manifest differs from `public/manifest.json` only in:
     - `background`: `{ "scripts": ["background.js"] }` (an event page; Firefox MV3 has no service worker) instead of `{ "service_worker": "background.js" }`;
     - `browser_specific_settings.gecko`: `id` `borbiuk.n@gmail.com` (the ID of the existing add-on on addons.mozilla.org; AMO rejects an upload with another ID), `strict_min_version` `128.0`, `data_collection_permissions` `{ "required": ["none"] }` (no data collection; AMO requires the key);
-    - `permissions`: `["tabs", "storage", "downloads", "alarms"]`, without the Chrome-only `power`, `downloads.shelf` and `downloads.ui`.
+    - `permissions`: `["storage", "downloads", "alarms"]`, without the Chrome-only `power`, `downloads.shelf` and `downloads.ui`.
 - There is no `gecko_android` entry.
 - **Why 128**: the album page uses the CSS `:has()` selector (`td.play-col > a:not(:has(...))`, Firefox 121+), and Firefox grants MV3 `host_permissions` at install only from version 127. Raise the minimum when a feature needs a newer Firefox, and write the reason here.
 - The version is synced from `public/manifest.json` by `.husky/set-version.sh`; `publish-firefox.yml` fails when the two versions differ.

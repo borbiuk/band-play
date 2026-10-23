@@ -27,14 +27,17 @@ export const ImageButton = ({
 	onClick,
 }: ImageButtonProps) => {
 	return (
-		<button
-			id={id}
-			type="button"
-			data-tooltip-id={id}
-			className="flex h-9 w-9 justify-center rounded-full transition-all duration-300 ease-in-out hover:scale-102 hover:cursor-pointer hover:bg-band-400"
-			onClick={onClick}
-		>
-			<img src={image} alt="icon" className="h-9 p-1" />
+		<>
+			<button
+				id={id}
+				type="button"
+				aria-label={tooltip}
+				data-tooltip-id={id}
+				className="flex h-9 w-9 justify-center rounded-full outline-none transition-all duration-300 ease-in-out hover:scale-102 hover:cursor-pointer hover:bg-band-400 focus-visible:ring-2 focus-visible:ring-band-700"
+				onClick={onClick}
+			>
+				<img src={image} alt="" className="h-9 p-1" />
+			</button>
 			<Tooltip
 				id={id}
 				className="!z-[9999] max-w-32"
@@ -46,6 +49,6 @@ export const ImageButton = ({
 			>
 				<span className="text-sm text-gray-900">{tooltip}</span>
 			</Tooltip>
-		</button>
+		</>
 	);
 };

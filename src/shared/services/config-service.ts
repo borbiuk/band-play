@@ -57,9 +57,12 @@ class ConfigService {
 	 * Adds a listener for changes to the local storage, specifically designed for tracking changes in configuration settings.
 	 *
 	 * @param callback - The callback function to handle the updated configuration.
+	 * @returns A function that removes the listener.
 	 */
-	public addListener(callback: (newConfig: ConfigModel) => void): void {
-		chrome.storage.local.onChanged.addListener((changes) => {
+	public addListener(callback: (newConfig: ConfigModel) => void): () => void {
+		const handler = (changes: {
+			[key: string]: chrome.storage.StorageChange;
+		}): void => {
 			// Batch download progress and the visited history are written often:
 			// only a change of a configuration key reloads the configuration
 			if (!CONFIG_KEYS.some((key) => key in changes)) {
@@ -67,7 +70,10 @@ class ConfigService {
 			}
 
 			this.getAll().then(callback, () => void 0);
-		});
+		};
+
+		chrome.storage.local.onChanged.addListener(handler);
+		return () => chrome.storage.local.onChanged.removeListener(handler);
 	}
 
 	/**

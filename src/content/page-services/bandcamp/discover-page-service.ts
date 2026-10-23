@@ -69,7 +69,14 @@ export class DiscoverPageService
 		setTimeout(() => this.updateVisitedHighlighting(), 0);
 
 		const list = document.querySelectorAll('.results-grid-item');
-		if (notExist(list) || list.length === this.tracks.length) {
+		// A new result list can have the same size: compare the first and last elements too
+		if (
+			notExist(list) ||
+			(list.length === this.tracks.length &&
+				this.tracks[0]?.element === list[0] &&
+				this.tracks[this.tracks.length - 1]?.element ===
+					list[list.length - 1])
+		) {
 			return;
 		}
 

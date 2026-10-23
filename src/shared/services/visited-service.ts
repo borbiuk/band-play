@@ -24,6 +24,12 @@ class VisitedService {
 	/** In-memory cache of visited hashes to minimize storage reads */
 	private visitedCache: Set<string> = null;
 
+	/** Grows when the cache gets new hashes; elements are checked again after that */
+	private visitedVersion: number = 0;
+
+	/** The cache version and id each element was last checked with */
+	private readonly checkedElements: WeakMap<Element, string> = new WeakMap();
+
 	/** Debounce timer id */
 	private persistTimerId: number = null;
 
@@ -43,6 +49,14 @@ class VisitedService {
 			if (notExist(element)) {
 				continue;
 			}
+
+			// The page services call this every 300 ms: skip what is already checked
+			const checkKey = `${this.visitedVersion}|${id}`;
+			if (this.checkedElements.get(element) === checkKey) {
+				continue;
+			}
+
+			this.checkedElements.set(element, checkKey);
 
 			// Compute candidate hashes for this element
 			const candidateHashes =
@@ -64,6 +78,10 @@ class VisitedService {
 			return;
 		}
 		for (const { element } of tracks) {
+			if (exist(element)) {
+				this.checkedElements.delete(element);
+			}
+
 			if (
 				exist(element) &&
 				element.classList.contains('band-play-visited')
@@ -295,6 +313,8 @@ class VisitedService {
 						this.visitedCache.add(hash);
 					}
 				}
+
+				this.visitedVersion++;
 			});
 		}
 
@@ -315,6 +335,7 @@ class VisitedService {
 				visited.add(h);
 				this.pendingToPersist.add(h);
 				changed = true;
+				this.visitedVersion++;
 			}
 		}
 		if (!changed) {

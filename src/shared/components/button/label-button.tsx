@@ -34,7 +34,7 @@ export const LabelButton = ({
 	className,
 }: LabelButtonProps) => {
 	const baseClassName =
-		'flex items-center justify-center rounded-lg outline-none transition-all duration-300 ease-in-out h-6 border border-band-200 bg-band-200 px-3 text-gray-900';
+		'flex items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-band-700 transition-all duration-300 ease-in-out h-6 border border-band-200 bg-band-200 px-3 text-gray-900';
 
 	return (
 		<button

@@ -104,8 +104,9 @@ export class CollectionPageService
 			?.querySelectorAll('[data-tralbumid]');
 		if (
 			notExist(allTracksOnPage) ||
-			(this.tracks.length === allTracksOnPage?.length &&
-				this.tracks[0].id ===
+			allTracksOnPage.length === 0 ||
+			(this.tracks.length === allTracksOnPage.length &&
+				this.tracks[0]?.id ===
 					allTracksOnPage[0].getAttribute('data-tralbumid'))
 		) {
 			return;

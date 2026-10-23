@@ -1,5 +1,5 @@
 import { BatchDownloadFormat } from '@shared/enums';
-import { exist } from '@shared/utils';
+import { exist, isBandcampFileUrl, isBandcampUrl } from '@shared/utils';
 
 import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
 import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
@@ -532,18 +532,44 @@ export const enqueuePendingItems = async (
 		return;
 	}
 
+	// The items come from the page: only Bandcamp download pages are accepted
+	const validItems = items.filter(
+		(item) =>
+			item &&
+			typeof item.id === 'string' &&
+			item.id !== '' &&
+			isBandcampUrl(item.url)
+	);
+	if (validItems.length === 0) {
+		return;
+	}
+
+	const validFormat = Object.values(BatchDownloadFormat).includes(
+		format as BatchDownloadFormat
+	)
+		? format
+		: undefined;
+
 	setDownloadsShelfEnabledSafe(false);
 
 	// Use chrome.storage.local as a reliable transport channel.
 	// (content scripts can send to background; UI reads state from storage.)
 	const createdAt = Date.now();
-	const normalized = items.map((item, index) => {
+	const normalized = validItems.map((item, index) => {
 		const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+		const itemFormat = Object.values(BatchDownloadFormat).includes(
+			item.format as BatchDownloadFormat
+		)
+			? item.format
+			: undefined;
 		return {
 			...item,
+			coverArtUrl: isBandcampFileUrl(item.coverArtUrl)
+				? item.coverArtUrl
+				: undefined,
 			sourceId: item.sourceId ?? item.id,
 			id: `${item.id}-${createdAt}-${index}-${uniqueSuffix}`,
-			format: item.format ?? format,
+			format: itemFormat ?? validFormat,
 		};
 	});
 	await appendQueuedBatchDownloadItems(normalized);

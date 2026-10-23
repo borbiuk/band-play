@@ -93,9 +93,13 @@ export class FeedPageService
 			.getElementById(collectionId)
 			?.querySelectorAll('[data-tralbumid]');
 
+		// The feed can render a list of the same size again: compare the first and last elements too
 		if (
 			notExist(allTracksOnPage) ||
-			this.tracks.length === allTracksOnPage?.length
+			(this.tracks.length === allTracksOnPage.length &&
+				this.tracks[0]?.element === allTracksOnPage[0] &&
+				this.tracks[this.tracks.length - 1]?.element ===
+					allTracksOnPage[allTracksOnPage.length - 1])
 		) {
 			return;
 		}

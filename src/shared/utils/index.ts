@@ -4,3 +4,4 @@ export * from './guard.utils';
 export * from './platfor.utils';
 export * from './shortcut.utils';
 export * from './time.utils';
+export * from './url.utils';

@@ -191,7 +191,7 @@ export const ShortcutInput = () => {
 		};
 
 		configService.getAll().then(updateConfig, () => void 0);
-		configService.addListener(updateConfig);
+		return configService.addListener(updateConfig);
 	}, []);
 
 	const savedKeys =
@@ -331,7 +331,7 @@ export const ShortcutInput = () => {
 			<select
 				id={'shortcut-type'}
 				aria-label="Shortcut to change"
-				className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none"
+				className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-band-700"
 				value={shortcutType || ''}
 				onChange={(event) => updateShortcutType(event)}
 			>
@@ -351,7 +351,7 @@ export const ShortcutInput = () => {
 				type="text"
 				aria-label="Key combination"
 				readOnly
-				className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-center text-sm font-normal tabular-nums text-gray-900 outline-none"
+				className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-center text-sm font-normal tabular-nums text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-band-700"
 				value={shortcutValue}
 				disabled={!shortcutType}
 				placeholder="Press keys for shortcut"
