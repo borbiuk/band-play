@@ -36,7 +36,8 @@ export const sanitizeFilenameComponent = (value: string): string => {
 	}
 
 	if (result.length > MAX_COMPONENT_LENGTH) {
-		result = result.slice(0, MAX_COMPONENT_LENGTH).trim();
+		// The cut can leave a trailing dot or space again
+		result = result.slice(0, MAX_COMPONENT_LENGTH).replace(/[.\s]+$/, '');
 	}
 
 	return result;
