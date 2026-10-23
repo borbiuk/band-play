@@ -34,8 +34,8 @@ export const ShortcutInput = () => {
 	const currentKeys: Set<string> = useRef<Set<string>>(new Set()).current;
 
 	/** Timeout reference for saving shortcuts with debounce */
-	let saveShortcutTimeout: NodeJS.Timeout =
-		useRef<NodeJS.Timeout>(null).current;
+	let saveShortcutTimeout: ReturnType<typeof setTimeout> =
+		useRef<ReturnType<typeof setTimeout>>(null).current;
 
 	// Init Config and subscribe on it changes
 	useEffect(() => {

@@ -3,18 +3,18 @@
 		"strict": false,
 		"strictNullChecks": false,
 		"target": "ES2021",
+		"lib": ["ES2021", "DOM", "DOM.Iterable"],
 		"moduleResolution": "bundler",
-		"module": "ES6",
+		"module": "ESNext",
 		"esModuleInterop": true,
-		"sourceMap": false,
-		"rootDir": "src",
-		"outDir": "dist/js",
-		"noEmitOnError": true,
-		"jsx": "react",
-		"typeRoots": ["node_modules/@types"],
-		"types": ["chrome", "node"],
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"types": ["chrome"],
 		"paths": {
 			"@shared/*": ["./src/shared/*"]
 		}
-	}
+	},
+	"include": ["src"]
 }

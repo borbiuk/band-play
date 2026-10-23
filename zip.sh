@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop at the first failing command, so a failed build or zip never reports success
+set -euo pipefail
+
 # Files that will be included to .zip (paths are relative to the build directory)
 include_files=(
 	"assets/buymeacoffee.png"
@@ -17,7 +20,6 @@ include_files=(
 	"manifest.json"
 	"options.html"
 	"options.js"
-	"vendor.js"
 )
 
 # Re-create a build of extension by webpack and create a .zip file of the extension package.
@@ -34,21 +36,24 @@ create_package() {
 		rm -r "$build_dir"
 		echo "'$build_dir' removed"
 	else
-		echo "'$build_dir' no found"
+		echo "'$build_dir' not found"
 	fi
-	npm run "$build_script"
+	npm run "$build_script" || exit 1
 
 	local current_date_time
 	current_date_time=$(date +'%d-%m-%Y_%H:%M:%S')
 
 	local version
-	version=$(jq '.version' "$build_dir/manifest.json" | tr -d '"')
+	version=$(jq -r '.version' "$build_dir/manifest.json")
 
 	local zip_filename="band-play-build-${browser}_${current_date_time}_${version}.zip"
 	local temp_dir="band-play-build-${browser}"
 
-	# Create a temporary directory
+	# Create a temporary directory (removed again when a later step fails)
+	rm -rf "$temp_dir"
 	mkdir "$temp_dir"
+	# Expanded now: the local variable is gone when the trap runs
+	trap "rm -rf '${temp_dir}'" EXIT
 
 	# Copy to the temporary directory
 	for file in "${include_files[@]}"; do
@@ -59,15 +64,16 @@ create_package() {
 		fi
 
 		# Copy the file to the temporary directory
-		cp "$build_dir/$file" "$destination_dir/"
+		cp "$build_dir/$file" "$destination_dir/" || exit 1
 	done
 
 	# Create a .zip file with the extension files at the archive root
 	# (required by addons.mozilla.org, accepted by Chrome Web Store)
-	(cd "$temp_dir" && zip -r "../$zip_filename" .)
+	(cd "$temp_dir" && zip -r "../$zip_filename" .) || exit 1
 
 	# Clean up the temporary directory
 	rm -r "$temp_dir"
+	trap - EXIT
 
 	echo "'$zip_filename' was created."
 }
