@@ -51,10 +51,10 @@ export class PageServiceWorker {
 	 * Starts the page service worker.
 	 * Initializes the service and sets up all event listeners and intervals.
 	 */
-	public start(): void {
+	public start(): Promise<void> {
 		console.log('[Start]: Band Play');
 
-		this.startAsync().catch((e) => console.error(e));
+		return this.startAsync().catch((e) => console.error(e));
 	}
 
 	/**

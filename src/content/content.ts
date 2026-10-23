@@ -25,6 +25,10 @@ const userInputService = new UserInputService();
 const batchDownloadService = new BatchDownloadService();
 
 // run core services:
-serviceWorker.start();
-userInputService.start(serviceWorker);
+Promise.all([serviceWorker.start(), userInputService.start(serviceWorker)])
+	.then(() => {
+		// The settings are loaded and the shortcuts work (the e2e tests wait for this)
+		document.documentElement.setAttribute('data-band-play', 'ready');
+	})
+	.catch((e) => console.error(e));
 batchDownloadService.start();
