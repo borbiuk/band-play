@@ -9,26 +9,30 @@ Only the latest released version of this extension is supported with security up
 | Latest         | :white_check_mark: |
 | Older versions | :x:                |
 
-Users are strongly encouraged to always run the most recent version available in the Chrome Web Store.
+Always use the most recent version from the Chrome Web Store or Firefox Add-ons. Both stores update the extension automatically.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in this project, please report it using **GitHub Issues**.
+Please **do not report security vulnerabilities in public GitHub issues**.
 
-When reporting a vulnerability, please include as much information as possible:
+Report them privately with GitHub private vulnerability reporting:
+
+1. Open https://github.com/borbiuk/band-play/security
+2. Click **Report a vulnerability**.
+3. Fill in the form and submit it. Only you and the maintainers can see the report.
+
+Include as much information as possible:
 
 - Description of the issue
 - Steps to reproduce
+- Affected version and browser (Chrome or Firefox)
 - Potential impact
 - Suggested fix (if available)
 
-You can open a report here:
-https://github.com/borbiuk/band-play/issues
-
 ### Response Process
 
-1. The issue will be reviewed as soon as possible.
-2. If the vulnerability is confirmed, a fix will be prepared and released in the next update.
-3. Once the fix is available, the issue may be closed and referenced in the release notes.
+1. The report will be reviewed as soon as possible.
+2. If the vulnerability is confirmed, a fix will be prepared and released in the next update to both stores.
+3. Once the fix is available, the report may be published as a security advisory and referenced in the release notes.
 
-Please avoid publicly disclosing security vulnerabilities before they are reviewed and addressed.
+Please do not disclose the vulnerability publicly before it is reviewed and fixed.

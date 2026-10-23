@@ -59,8 +59,10 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-.
+reported to the community leaders responsible for enforcement privately,
+with GitHub private vulnerability reporting
+(https://github.com/borbiuk/band-play/security, **Report a vulnerability**),
+or by contacting the repository owner (https://github.com/borbiuk).
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
