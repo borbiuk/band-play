@@ -3,6 +3,52 @@ import { exist } from '@shared/utils';
 
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
 
+/** Storage keys of the configuration (storage.local also holds downloads and history). */
+const CONFIG_KEYS: (keyof ConfigModel)[] = [
+	'autoplay',
+	'autoscroll',
+	'keepAwake',
+	'highlightVisited',
+	'playbackStep',
+	'loopTrack',
+	'showFeedPlayer',
+	'shortcuts',
+	'batchDownloadFormat',
+	'batchDownloadConcurrency',
+	'batchDownloadFilenameTemplate',
+];
+
+/** A stored number, or null when the value is missing or not a finite number. */
+const toNumberOrNull = (value: unknown): number | null => {
+	if (!exist(value)) {
+		return null;
+	}
+
+	const number = Number(value);
+	return Number.isFinite(number) ? number : null;
+};
+
+/** Parses a stored combination; null when the value is not a JSON array of strings. */
+const parseCombination = (value: unknown): string[] | null => {
+	if (typeof value !== 'string') {
+		return null;
+	}
+
+	try {
+		const parsed: unknown = JSON.parse(value);
+		if (
+			Array.isArray(parsed) &&
+			parsed.every((x) => typeof x === 'string')
+		) {
+			return parsed as string[];
+		}
+	} catch {
+		// A corrupt value falls back to the default combination
+	}
+
+	return null;
+};
+
 /**
  * Service for managing and handling configuration settings stored in local storage.
  */
@@ -13,9 +59,15 @@ class ConfigService {
 	 * @param callback - The callback function to handle the updated configuration.
 	 */
 	public addListener(callback: (newConfig: ConfigModel) => void): void {
-		chrome.storage.local.onChanged.addListener(() =>
-			this.getAll().then(callback)
-		);
+		chrome.storage.local.onChanged.addListener((changes) => {
+			// Batch download progress and the visited history are written often:
+			// only a change of a configuration key reloads the configuration
+			if (!CONFIG_KEYS.some((key) => key in changes)) {
+				return;
+			}
+
+			this.getAll().then(callback, () => void 0);
+		});
 	}
 
 	/**
@@ -35,19 +87,7 @@ class ConfigService {
 	 * @returns A promise that resolves with the complete configuration object.
 	 */
 	public async getAll(): Promise<ConfigModel> {
-		const config = await chrome.storage.local.get([
-			'autoplay',
-			'autoscroll',
-			'keepAwake',
-			'highlightVisited',
-			'playbackStep',
-			'loopTrack',
-			'showFeedPlayer',
-			'shortcuts',
-			'batchDownloadFormat',
-			'batchDownloadConcurrency',
-			'batchDownloadFilenameTemplate',
-		]);
+		const config = await chrome.storage.local.get(CONFIG_KEYS);
 
 		return this.getWithDefaults(config as unknown as ConfigModel);
 	}
@@ -81,7 +121,7 @@ class ConfigService {
 			highlightVisited: exist(config.highlightVisited)
 				? Boolean(config.highlightVisited)
 				: true,
-			playbackStep: exist(config.playbackStep) ? config.playbackStep : 10,
+			playbackStep: toNumberOrNull(config.playbackStep) ?? 10,
 			loopTrack: exist(config.loopTrack)
 				? Boolean(config.loopTrack)
 				: false,
@@ -89,12 +129,13 @@ class ConfigService {
 				? Boolean(config.showFeedPlayer)
 				: true,
 			shortcuts: this.mergeShortcuts(config.shortcuts),
-			batchDownloadFormat: exist(config.batchDownloadFormat)
+			batchDownloadFormat: Object.values(BatchDownloadFormat).includes(
+				config.batchDownloadFormat
+			)
 				? config.batchDownloadFormat
 				: BatchDownloadFormat.Wav,
-			batchDownloadConcurrency: exist(config.batchDownloadConcurrency)
-				? config.batchDownloadConcurrency
-				: 8,
+			batchDownloadConcurrency:
+				toNumberOrNull(config.batchDownloadConcurrency) ?? 8,
 			batchDownloadFilenameTemplate: exist(
 				config.batchDownloadFilenameTemplate
 			)
@@ -102,7 +143,7 @@ class ConfigService {
 				: '',
 		};
 
-		if (config.playbackStep < 1 || config.playbackStep > 60) {
+		if (config.playbackStep < 1 || config.playbackStep > 120) {
 			config.playbackStep = 10;
 		}
 
@@ -120,11 +161,10 @@ class ConfigService {
 		const defaultShortcuts = this.defaultShortcuts();
 
 		if (exist(shortcuts)) {
-			Object.keys(shortcuts)
+			// Unknown keys are dropped; an empty or corrupt combination means "use the default"
+			Object.values(ShortcutType)
 				.filter(
-					(key) =>
-						exist(shortcuts[key]) &&
-						(JSON.parse(shortcuts[key]) as string[]).length > 0
+					(key) => (parseCombination(shortcuts[key])?.length ?? 0) > 0
 				)
 				.forEach((key) => {
 					defaultShortcuts[key] = shortcuts[key];
@@ -134,7 +174,12 @@ class ConfigService {
 		return defaultShortcuts;
 	}
 
-	private defaultShortcuts(): ShortcutConfig {
+	/**
+	 * The default key combinations (JSON arrays of key codes).
+	 *
+	 * @returns A new object on every call.
+	 */
+	public defaultShortcuts(): ShortcutConfig {
 		const shortcuts = {
 			[ShortcutType.PlaybackSpeedIncrease]: [KeyCode.ArrowUp],
 			[ShortcutType.PlaybackSpeedDecrease]: [KeyCode.ArrowDown],
