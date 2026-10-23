@@ -47,13 +47,15 @@ export class FeedPageService
 			return;
 		}
 
-		const nextIndex =
-			this.tracks
-				.map(({ element }, index) => ({ element, index }))
-				.find(({ element }) => element === this.nowPlaying.element)
-				.index + (next ? 1 : -1);
+		// The feed may have been rendered again since the track started
+		const currentIndex = this.tracks.findIndex(
+			({ element }) => element === this.nowPlaying.element
+		);
+		if (currentIndex < 0) {
+			return;
+		}
 
-		this.playTrackByIndex(nextIndex);
+		this.playTrackByIndex(currentIndex + (next ? 1 : -1));
 	}
 
 	playTrackByIndex(index: number): void {
@@ -68,6 +70,10 @@ export class FeedPageService
 			this.tracks[index].element.querySelector<HTMLElement>(
 				'.play-button'
 			);
+		if (notExist(playPauseButton)) {
+			return;
+		}
+
 		playPauseButton.click();
 		if (this.config.autoscroll) {
 			playPauseButton.scrollIntoView({
