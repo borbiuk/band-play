@@ -39,23 +39,26 @@ const Options = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-row gap-4">
+			<div className="mb-2 flex flex-row items-stretch gap-4">
 				<div className="w-46">
 					<Configuration />
 				</div>
 
-				<div className="flex w-46 flex-col justify-between">
-					<BatchDownload />
+				<div className="flex w-46 flex-col gap-4">
+					<div className="grow">
+						<ShortcutInput />
+					</div>
 					<PlaybackStep />
 				</div>
 
-				<div className="flex w-46 flex-col justify-between">
-					<ShortcutInput />
-					<span className="-mb-3 -mr-1 text-end text-[10px] text-gray-500">
-						by borbiuk
-					</span>
+				<div className="w-46">
+					<BatchDownload />
 				</div>
 			</div>
+
+			<span className="absolute bottom-0.5 right-2 text-[10px] text-gray-500">
+				by borbiuk
+			</span>
 		</div>
 	);
 };

@@ -68,8 +68,8 @@ export const Configuration = () => {
 	}
 
 	return (
-		<div className="flex w-full flex-col gap-y-6">
-			<div className="relative flex flex-col gap-y-1 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
+		<div className="flex h-full w-full flex-col gap-y-6">
+			<div className="relative flex h-full flex-col gap-y-1 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
 				<span className="absolute left-1 -mt-7.5 rounded-xl p-0.5 text-base text-gray-500 backdrop-blur-sm">
 					Common
 				</span>
