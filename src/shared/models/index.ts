@@ -1,4 +1,4 @@
 // @shared/models/index.ts
 
-export { BandcampTrackModel } from './bandcamp-track-model';
-export { ConfigModel } from './config-model';
+export type { BandcampTrackModel } from './bandcamp-track-model';
+export type { ConfigModel } from './config-model';

@@ -1,80 +1,56 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
-const srcDir = path.join(__dirname, '..', 'src');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+
+const rootDir = path.join(__dirname, '..');
+const srcDir = path.join(rootDir, 'src');
 
 module.exports = {
 	entry: {
-		options: path.join(srcDir, './options/options.tsx'),
-		background: path.join(srcDir, './background/background.ts'),
-		content: path.join(srcDir, './content/content.ts'),
-		downloads: path.join(srcDir, './downloads/downloads.tsx'),
+		options: path.join(srcDir, 'options', 'options.tsx'),
+		background: path.join(srcDir, 'background', 'background.ts'),
+		content: path.join(srcDir, 'content', 'content.ts'),
+		downloads: path.join(srcDir, 'downloads', 'downloads.tsx'),
 	},
 	output: {
-		path: path.join(__dirname, './../dist'),
+		path: path.join(rootDir, 'dist'),
+		// Manifests reference exact file names, so no hashes are used
 		filename: '[name].js',
 		clean: true,
-		// For Chrome Extensions, do not use hashed file names
-		// because manifest.json references exact file names
 	},
 	optimization: {
-		splitChunks: {
-			chunks(chunk) {
-				// Background script must not include vendor dependencies (service worker)
-				if (chunk.name === 'background') {
-					return false;
-				}
-				// Only the content script should include vendor dependencies
-				return chunk.name === 'content';
-			},
-			minSize: 20000,
-			maxSize: 244000,
-			cacheGroups: {
-				// Vendor libraries only for content scripts
-				vendor: {
-					test: /[\\/]node_modules[\\/]/,
-					name: 'vendor',
-						// Extract vendor only from the 'content' entry
-						// to avoid splitting the popup (options) and requiring vendor.js in options.html
-						chunks: (chunk) => chunk.name === 'content',
-					priority: 10,
-					enforce: true,
-				},
-			},
-		},
-		usedExports: true,
-		sideEffects: false,
+		// Every entry is a single self-contained file (no vendor chunks, no runtime chunk)
+		splitChunks: false,
+		runtimeChunk: false,
 		moduleIds: 'deterministic',
-		runtimeChunk: false, // Runtime chunk is not needed for extensions
 	},
 	cache: {
 		type: 'filesystem',
 		buildDependencies: {
 			config: [__filename],
 		},
-		cacheDirectory: path.resolve(__dirname, '../node_modules/.cache/webpack'),
-		compression: 'gzip',
+		cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
 	},
 	module: {
 		rules: [
 			{
 				test: /\.tsx?$/,
+				exclude: /node_modules/,
 				use: [
 					{
 						loader: 'ts-loader',
 						options: {
+							// Type checking is done by `tsc --noEmit` (npm run typecheck)
 							transpileOnly: true,
-							experimentalWatchApi: true,
 							compilerOptions: {
 								noEmit: false,
 							},
 						},
 					},
 				],
-				exclude: /node_modules/,
 			},
 			{
 				test: /\.s[ac]ss$/i,
+				exclude: /node_modules/,
 				use: [
 					'style-loader',
 					{
@@ -84,18 +60,8 @@ module.exports = {
 							sourceMap: false,
 						},
 					},
-					{
-						loader: 'postcss-loader',
-						options: {
-							postcssOptions: {
-								plugins: [
-									'tailwindcss',
-									'autoprefixer',
-									'postcss-preset-env',
-								],
-							},
-						},
-					},
+					// Plugins come from postcss.config.js
+					'postcss-loader',
 					{
 						loader: 'sass-loader',
 						options: {
@@ -105,22 +71,13 @@ module.exports = {
 						},
 					},
 				],
-				exclude: /node_modules/,
 			},
 		],
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.json'],
-		plugins: [
-			new TsconfigPathsPlugin({
-				configFile: './tsconfig.json',
-			})
-		],
-		// Cache modules for faster resolution
-		cacheWithContext: false,
-		// Aliases for faster access
 		alias: {
-			'@shared': path.resolve(__dirname, '../src/shared'),
+			'@shared': path.join(srcDir, 'shared'),
 		},
 	},
 	plugins: [
@@ -129,29 +86,21 @@ module.exports = {
 				{
 					from: '.',
 					to: './',
-					context: 'public',
+					context: path.join(rootDir, 'public'),
 					globOptions: {
-						gitignore: true,
 						ignore: [
 							'**/logo-full.png',
 							'**/logo.png',
 							'**/.DS_Store',
-						'**/manifest.json', // Exclude manifest.json from common
-						'**/manifest.firefox.json', // Copied as manifest.json by the Firefox config
+							// Manifests are copied as manifest.json by the per-target configs
+							'**/manifest.json',
+							'**/manifest.firefox.json',
 						],
 					},
-					// Caching for faster copy
-					noErrorOnMissing: true,
 				},
 			],
-			options: {
-				concurrency: 100,
-			},
 		}),
 	],
-	// Chrome Extension specific settings
-	target: ['web', 'es2020'], // Support modern browsers
-	experiments: {
-		topLevelAwait: true, // Enable top-level await for service workers
-	},
+	// Browser extension specific settings
+	target: ['web', 'es2021'],
 };

@@ -1,3 +1,3 @@
 // @shared/interfaces/index.ts
 
-export { PageService } from './page-service';
+export type { PageService } from './page-service';
