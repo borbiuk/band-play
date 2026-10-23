@@ -116,7 +116,7 @@ export const ShortcutInput = () => {
 	};
 
 	return (
-		<div className="relative flex flex-col gap-y-2 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
+		<div className="relative flex h-full flex-col gap-y-2 rounded-xl border border-gray-300 p-2 pt-4 shadow-md shadow-gray-300">
 			<span className="absolute left-1 z-20 -mt-8 rounded-xl p-1 text-base text-gray-500 backdrop-blur-sm">
 				Shortcuts
 			</span>
