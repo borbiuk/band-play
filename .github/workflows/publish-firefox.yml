@@ -1,0 +1,64 @@
+name: publish-firefox
+
+# Manually triggered publishing to Firefox Add-ons (AMO).
+# Run it from the Actions tab: select the branch and press "Run workflow".
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# Prevent two publish runs from racing each other
+concurrency:
+    group: publish-firefox
+    cancel-in-progress: false
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24.x
+                  cache: npm
+            - run: npm ci
+            - name: Check that Chrome and Firefox manifest versions match
+              run: |
+                  chrome_version=$(jq -r '.version' public/manifest.json)
+                  firefox_version=$(jq -r '.version' public/manifest.firefox.json)
+                  if [ "$chrome_version" != "$firefox_version" ]; then
+                    echo "Manifest versions do not match: chrome=$chrome_version, firefox=$firefox_version"
+                    exit 1
+                  fi
+                  echo "Publishing version **$firefox_version** to Firefox Add-ons (AMO)" >> "$GITHUB_STEP_SUMMARY"
+            # zip.sh packages both browsers; only the Firefox package is used here
+            - name: Build and package (zip.sh)
+              run: npm run zip
+            - name: Rename the package and archive sources for AMO review
+              run: |
+                  mv band-play-build-firefox_*.zip firefox.zip
+                  git archive -o source.zip HEAD
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: firefox-package
+                  path: |
+                      firefox.zip
+                      source.zip
+                  if-no-files-found: error
+            # web-ext sign expects an unpacked extension directory, so unpack
+            # the exact package produced by zip.sh instead of re-listing files here
+            - name: Unpack the package for web-ext
+              run: unzip -q firefox.zip -d firefox-package
+            # --approval-timeout 0: exit right after the submission instead of
+            # waiting for the AMO review, which takes longer than a CI job
+            - name: Submit to Firefox Add-ons (AMO)
+              run: |
+                  npx --yes web-ext@8 sign \
+                    --source-dir firefox-package \
+                    --channel listed \
+                    --upload-source-code source.zip \
+                    --approval-timeout 0
+              env:
+                  WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+                  WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
