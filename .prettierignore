@@ -5,9 +5,6 @@ package-lock.json
 *.zip
 band-play-build*
 
-# Copied documentation, kept as published
-.claude/skills/chrome-extension-docs
-
 # Page snapshots are saved as captured
 tests/e2e/fixtures/pages
 test-results
