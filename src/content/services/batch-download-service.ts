@@ -21,6 +21,14 @@ import { BatchDownloadOverlay } from '../components/batch-download-overlay';
 const BATCH_OVERLAY_ROOT_ID = 'band-play-batch-overlay-root';
 
 const CHECKBOX_CLASS = 'band-play-batch-checkbox';
+
+/** True when a mutation only adds or removes the checkboxes this service renders. */
+const isOwnCheckboxMutation = (record: MutationRecord): boolean =>
+	[...record.addedNodes, ...record.removedNodes].every(
+		(node) =>
+			node instanceof HTMLElement &&
+			node.hasAttribute('data-band-play-batch-checkbox')
+	);
 const CHECKBOX_ATTR = 'data-band-play-batch-id';
 const PURCHASES_CHECKBOX_MOUNT_ATTR = 'data-band-play-batch-checkbox-mount';
 
@@ -40,7 +48,8 @@ type SelectionState = {
 
 const createInitialState = (): SelectionState => ({
 	selected: {},
-	lastClickedIndex: 0,
+	// No checkbox clicked yet: the first Shift+click toggles one item
+	lastClickedIndex: -1,
 });
 
 const getActiveCheckboxContainer = (): Element | null => {
@@ -271,8 +280,24 @@ export class BatchDownloadService {
 			this.collectionObserver.disconnect();
 		}
 
-		this.collectionObserver = new MutationObserver(() => {
-			this.attachCollectionCheckboxes();
+		let scheduled = false;
+		this.collectionObserver = new MutationObserver((records) => {
+			// The checkboxes are rendered into the observed grid: their own insertions
+			// must not start another pass
+			if (records.every(isOwnCheckboxMutation)) {
+				return;
+			}
+
+			// One pass per frame, however many nodes Bandcamp adds
+			if (scheduled) {
+				return;
+			}
+
+			scheduled = true;
+			requestAnimationFrame(() => {
+				scheduled = false;
+				this.attachCollectionCheckboxes();
+			});
 		});
 
 		this.collectionObserver.observe(container, {
@@ -429,18 +454,8 @@ export class BatchDownloadService {
 						page: this.overlayPage,
 						checkboxClass: CHECKBOX_CLASS,
 						downloadedSourceIds: this.downloadedSourceIds,
-						onCheckboxClick: (
-							itemId,
-							target,
-							shiftKey,
-							metaKey
-						) => {
-							this.handleCheckboxClick(
-								itemId,
-								target,
-								shiftKey,
-								metaKey
-							);
+						onCheckboxClick: (itemId, target, shiftKey) => {
+							this.handleCheckboxClick(itemId, target, shiftKey);
 						},
 					}),
 					React.createElement(BatchDownloadOverlay, {
@@ -494,15 +509,22 @@ export class BatchDownloadService {
 	private handleCheckboxClick(
 		itemId: string,
 		target: HTMLInputElement,
-		shiftKey: boolean,
-		metaKey: boolean
+		shiftKey: boolean
 	): void {
 		const all = getAllCheckboxes();
 		const index = all.indexOf(target);
 		const baseCollectionIndex = index >= 0 ? index + 1 : undefined;
 		const selectionCreatedAt = Date.now();
 
-		if ((shiftKey || metaKey) && all.length > 0) {
+		// Shift+click selects the range from the last clicked checkbox; Cmd/Ctrl+click and a
+		// click without a known start (another grid, first click) toggle one item
+		const lastIndex = this.stateRef.current.lastClickedIndex;
+		const hasRangeStart =
+			index >= 0 &&
+			typeof lastIndex === 'number' &&
+			lastIndex >= 0 &&
+			lastIndex < all.length;
+		if (shiftKey && hasRangeStart) {
 			const start = Math.min(
 				index,
 				this.stateRef.current.lastClickedIndex

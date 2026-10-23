@@ -1,6 +1,9 @@
 import { BandcampTrackModel } from '@shared/models/bandcamp-track-model';
 import { exist, notExist } from '@shared/utils';
 
+/** Most visited items kept (about 0.7 MB of the 10 MB storage.local quota). */
+const MAX_VISITED_ENTRIES = 50_000;
+
 /**
  * Service responsible for tracking and highlighting previously visited/listened to items.
  * Uses chrome.storage.local (already permitted) and avoids the history API or new permissions.
@@ -101,10 +104,11 @@ class VisitedService {
 				}
 				this.boundAudios.add(audio);
 
-				const markFromContext = () =>
+				const markFromContext = (): void => {
 					this.markCurrentBandcampContextVisited().catch(
 						() => void 0
 					);
+				};
 				audio.addEventListener('playing', markFromContext, {
 					passive: true,
 				});
@@ -112,8 +116,8 @@ class VisitedService {
 					passive: true,
 				});
 				// timeupdate fires frequently; use it as a fallback, but only once per audio due to boundAudios guard
-				const onFirstProgress = async () => {
-					await markFromContext();
+				const onFirstProgress = (): void => {
+					markFromContext();
 					audio.removeEventListener('timeupdate', onFirstProgress);
 				};
 				audio.addEventListener('timeupdate', onFirstProgress, {
@@ -258,23 +262,43 @@ class VisitedService {
 	}
 
 	/**
+	 * Reads the visited hashes stored by all tabs.
+	 */
+	private async readStoredVisited(): Promise<Array<string>> {
+		const result = await chrome.storage.local.get([this.storageKey]);
+		const value: unknown = result?.[this.storageKey];
+		return Array.isArray(value)
+			? value.filter((x): x is string => typeof x === 'string')
+			: [];
+	}
+
+	/**
 	 * Read visited set from storage with in-memory cache.
+	 * The cache follows the writes of other Bandcamp tabs.
 	 */
 	private async getVisited(): Promise<Set<string>> {
 		if (exist(this.visitedCache)) {
 			return this.visitedCache;
 		}
-		return new Promise<Set<string>>((resolve) => {
-			chrome.storage.local.get([this.storageKey], (result) => {
-				const arr: Array<string> = Array.isArray(
-					result?.[this.storageKey]
-				)
-					? (result[this.storageKey] as Array<string>)
-					: [];
-				this.visitedCache = new Set<string>(arr);
-				resolve(this.visitedCache);
+
+		const stored = await this.readStoredVisited();
+		if (notExist(this.visitedCache)) {
+			this.visitedCache = new Set<string>(stored);
+			chrome.storage.local.onChanged.addListener((changes) => {
+				const value: unknown = changes[this.storageKey]?.newValue;
+				if (!Array.isArray(value)) {
+					return;
+				}
+
+				for (const hash of value) {
+					if (typeof hash === 'string') {
+						this.visitedCache.add(hash);
+					}
+				}
 			});
-		});
+		}
+
+		return this.visitedCache;
 	}
 
 	/**
@@ -313,14 +337,25 @@ class VisitedService {
 		if (this.pendingToPersist.size === 0) {
 			return;
 		}
-		this.pendingToPersist.clear();
-		const visited = await this.getVisited();
-		const arr = Array.from(visited);
-		await new Promise<void>((resolve) => {
-			chrome.storage.local.set({ [this.storageKey]: arr }, () =>
-				resolve()
-			);
-		});
+
+		// Read the current list again: another tab may have added hashes since this tab
+		// loaded it, and writing the cached copy would drop them
+		const pending = Array.from(this.pendingToPersist);
+		const merged = new Set<string>(await this.readStoredVisited());
+		for (const hash of pending) {
+			merged.add(hash);
+		}
+
+		// Keep the newest entries only, so the list cannot fill the storage
+		const all = Array.from(merged);
+		const kept =
+			all.length > MAX_VISITED_ENTRIES
+				? all.slice(all.length - MAX_VISITED_ENTRIES)
+				: all;
+		await chrome.storage.local.set({ [this.storageKey]: kept });
+		for (const hash of pending) {
+			this.pendingToPersist.delete(hash);
+		}
 	}
 
 	/**

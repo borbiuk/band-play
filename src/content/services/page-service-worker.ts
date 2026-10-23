@@ -39,6 +39,9 @@ export class PageServiceWorker {
 	/** Currently active page service for the current page */
 	public pageService: PageService = null;
 
+	/** Timer of the periodic track initialization */
+	private initTracksInterval: ReturnType<typeof setInterval> = null;
+
 	/**
 	 * Creates a new PageServiceWorker instance.
 	 */
@@ -75,11 +78,18 @@ export class PageServiceWorker {
 
 		// Add config changes listener
 		configService.addListener((newConfig: ConfigModel) => {
+			// Bandcamp pages without a page service (an artist home page) have nothing to update
+			if (notExist(this.pageService)) {
+				return;
+			}
+
 			this.pageService.config = newConfig;
 		});
 
 		// Register autoplay with cleanup
-		const autoplayInterval = setInterval(() => {
+		// Autoplay uses only the page and the cached config, so it keeps working after
+		// an extension update in tabs that were already open
+		setInterval(() => {
 			if (
 				notExist(this.pageService) ||
 				!this.pageService.config.autoplay
@@ -95,17 +105,34 @@ export class PageServiceWorker {
 		}, this.autoplayDelay);
 
 		// Register track initialization with cleanup
-		const initTracksInterval = setInterval(() => {
+		this.initTracksInterval = setInterval(() => {
+			if (this.stopIfOrphaned()) {
+				return;
+			}
+
 			try {
 				this.pageService?.initTracks();
 			} catch (error) {
 				console.error(error);
 			}
 		}, this.initTracksDelay);
+	}
 
-		// Store intervals for potential cleanup
-		(this as any).autoplayInterval = autoplayInterval;
-		(this as any).initTracksInterval = initTracksInterval;
+	/**
+	 * After an extension update or reload this content script is orphaned: its `chrome.*`
+	 * calls throw "Extension context invalidated". Track initialization (it writes the
+	 * visited history) is stopped then.
+	 *
+	 * @returns True when the timer was stopped.
+	 * @private
+	 */
+	private stopIfOrphaned(): boolean {
+		if (exist(chrome.runtime?.id)) {
+			return false;
+		}
+
+		clearInterval(this.initTracksInterval);
+		return true;
 	}
 
 	/**

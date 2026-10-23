@@ -12,6 +12,8 @@ export class FeedPageService
 	implements PageService
 {
 	public isPreviousTrackAvailable: boolean = false;
+	/** Play buttons that already have the "now playing" click listener */
+	private readonly boundPlayButtons = new WeakSet<HTMLElement>();
 	public nowPlayingEventEmitter: EventEmitter<{
 		id: string;
 		title: string;
@@ -102,6 +104,12 @@ export class FeedPageService
 		this.tracks.forEach(({ element }) => {
 			const playButton =
 				element.querySelector<HTMLElement>('.play-button');
+			// The list is rescanned as the feed grows: bind every button once
+			if (notExist(playButton) || this.boundPlayButtons.has(playButton)) {
+				return;
+			}
+
+			this.boundPlayButtons.add(playButton);
 
 			const setNowPlaying = () => {
 				this.nowPlaying = {
@@ -137,7 +145,6 @@ export class FeedPageService
 					.catch(() => void 0);
 			};
 
-			playButton.removeEventListener('click', setNowPlaying);
 			playButton.addEventListener('click', setNowPlaying);
 		});
 	}

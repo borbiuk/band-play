@@ -1,6 +1,12 @@
 import configService from '@shared/services/config-service';
 import { exist, notExist } from '@shared/utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
 import './feed-player.scss';
@@ -50,6 +56,9 @@ export const FeedPlayer = ({
 	const [isPreviousTrackAvailable, setIsPreviousTrackAvailable] =
 		useState<boolean>(false);
 	const [seeking, setSeeking] = useState(false);
+	// The audio listeners are added once; they read the current value from the ref
+	const seekingRef = useRef(false);
+	seekingRef.current = seeking;
 	const [trackTitle, setTrackTitle] = useState<string>('');
 	const [trackArtist, setTrackArtist] = useState<string>('');
 	const [coverArtUrl, setCoverArtUrl] = useState<string>('');
@@ -63,16 +72,17 @@ export const FeedPlayer = ({
 	}, []);
 
 	useEffect(() => {
-		feedPageService.audioEventEmitter.on((audio: HTMLAudioElement) => {
+		const onAudio = (audio: HTMLAudioElement) => {
 			if (notExist(audio)) {
 				setShow(false);
 				return;
 			}
 
-			feedPageService.audioEventEmitter.removeAllListeners();
+			// Only this listener: the visited history keeps its own one
+			feedPageService.audioEventEmitter.off(onAudio);
 
 			audio.addEventListener('timeupdate', () => {
-				if (!seeking) {
+				if (!seekingRef.current) {
 					setCurrentTime(audio.currentTime);
 				}
 			});
@@ -103,7 +113,9 @@ export const FeedPlayer = ({
 			setIsPreviousTrackAvailable(
 				feedPageService.isPreviousTrackAvailable
 			);
-		});
+		};
+		feedPageService.audioEventEmitter.on(onAudio);
+		return () => feedPageService.audioEventEmitter.off(onAudio);
 	}, []);
 
 	useEffect(() => {
