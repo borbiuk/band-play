@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 # update package.json version from ./public/manifest.json
 . "$(dirname -- "$0")/set-version.sh"
@@ -6,8 +7,8 @@
 # format files
 npm run format
 
-# add prettier changes
-git add .
+# add prettier changes (tracked files only: new files must be staged on purpose)
+git add -u
 
 # create .zip file
 ./zip.sh
