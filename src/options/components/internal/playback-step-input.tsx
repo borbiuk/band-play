@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export interface PlaybackStepInputOptions {
 	// The unique identifier for the input.
@@ -35,7 +35,14 @@ export const PlaybackStepInput = ({
 }: PlaybackStepInputOptions) => {
 	const [value, setValue] = useState(defaultValue);
 
+	// Opening the popup must not write the stored value back
+	const isFirstRender = useRef(true);
 	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
+		}
+
 		onChange(id, value);
 	}, [value]);
 

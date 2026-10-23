@@ -1,5 +1,5 @@
 import { ConfigModel } from '@shared/models/config-model';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 
 export interface CheckBoxOptions {
@@ -33,7 +33,14 @@ export const Checkbox = ({
 }: CheckBoxOptions) => {
 	const [isChecked, setIsChecked] = useState(defaultValue);
 
+	// Opening the popup must not write the stored value back
+	const isFirstRender = useRef(true);
 	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
+		}
+
 		onChange(id, isChecked);
 	}, [isChecked]);
 

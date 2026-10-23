@@ -13,6 +13,69 @@ import { ShortcutSet } from '../shortcut/shortcut-set';
 
 import { PageServiceWorker } from './page-service-worker';
 
+/** Physical modifier keys (`event.code`). */
+const MODIFIER_CODES = [
+	'ShiftLeft',
+	'ShiftRight',
+	'ControlLeft',
+	'ControlRight',
+	'AltLeft',
+	'AltRight',
+	'MetaLeft',
+	'MetaRight',
+];
+
+/** Elements Bandcamp uses for typing besides the standard form fields. */
+const BANDCAMP_INPUT_ELEMENTS = ['menu-bar'];
+
+/**
+ * True when the key press belongs to typing: a text field, a select, an editable element,
+ * an input method composing text, or a key the page already handled.
+ */
+const isTypingEvent = (event: KeyboardEvent): boolean => {
+	if (event.isComposing || event.defaultPrevented) {
+		return true;
+	}
+
+	// The first element of the path is the real target, also inside shadow DOM
+	const target = event.composedPath()[0];
+	if (!(target instanceof HTMLElement)) {
+		return false;
+	}
+
+	if (target.isContentEditable) {
+		return true;
+	}
+
+	return (
+		['input', 'textarea', 'select'].includes(target.localName) ||
+		BANDCAMP_INPUT_ELEMENTS.includes(target.localName)
+	);
+};
+
+/** The pressed combination: every held modifier plus the main key. */
+const toShortcutSet = (event: KeyboardEvent): ShortcutSet => {
+	const keys = new ShortcutSet();
+	if (event.ctrlKey) {
+		keys.add('Control');
+	}
+
+	if (event.metaKey) {
+		keys.add('Meta');
+	}
+
+	if (event.altKey) {
+		keys.add('Alt');
+	}
+
+	if (event.shiftKey) {
+		keys.add('Shift');
+	}
+
+	keys.add(event.code);
+	return keys;
+};
+
 /**
  * Service for handling user input and keyboard shortcuts.
  *
@@ -39,7 +102,8 @@ export class UserInputService {
 
 		configService
 			.get<ShortcutConfig>('shortcuts')
-			.then(updateShortcutHandlers);
+			.then(updateShortcutHandlers)
+			.catch((e) => console.error(e));
 		configService.addListener(({ shortcuts }: ConfigModel) =>
 			updateShortcutHandlers(shortcuts)
 		);
@@ -57,69 +121,44 @@ export class UserInputService {
 	}
 
 	private listenHotkeys(serviceWorker: PageServiceWorker): void {
-		const keysPressed = new ShortcutSet();
-
-		const bandcampInputElements = ['input', 'textarea', 'menu-bar'];
+		// The shortcut runs on keydown: macOS sends no keyup for a key pressed with Cmd
 		document.addEventListener(
 			'keydown',
 			(event: KeyboardEvent) => {
-				const targetName = (event.target as HTMLElement)?.localName;
-				if (bandcampInputElements.includes(targetName)) {
+				if (isTypingEvent(event)) {
 					return;
 				}
 
-				const isShortcut = this.shortcutHandlers.some(
-					({ set }) => exist(set) && set.has(event.code)
+				// A lone modifier is never a shortcut; it is left to the page and the browser
+				if (MODIFIER_CODES.includes(event.code)) {
+					return;
+				}
+
+				// Pages without a page service keep their keys (arrows and Space scroll)
+				const service = serviceWorker.pageService;
+				if (notExist(service)) {
+					return;
+				}
+
+				const keys = toShortcutSet(event);
+				const handler = this.shortcutHandlers.find(
+					({ set }) => exist(set) && set.equal(keys)
 				);
-				if (!isShortcut) {
+				if (notExist(handler)) {
 					return;
 				}
 
+				// Only a full match is taken from the page (Ctrl+P stays print)
 				event.preventDefault();
+				// A held key runs the shortcut once, as before
+				if (event.repeat) {
+					return;
+				}
 
-				keysPressed.add(event.code);
+				handler.handle(service, keys);
 			},
 			{ capture: true }
 		);
-		document.addEventListener(
-			'keyup',
-			(event: KeyboardEvent) => {
-				if (keysPressed.size === 0) {
-					return;
-				}
-
-				const targetName = (event.target as HTMLElement)?.localName;
-				if (bandcampInputElements.includes(targetName)) {
-					return;
-				}
-
-				event.preventDefault();
-
-				this.handleShortcut(serviceWorker, keysPressed, event);
-				keysPressed.clear();
-			},
-			{ capture: true }
-		);
-	}
-
-	private handleShortcut(
-		serviceWorker: PageServiceWorker,
-		keysPressed: ShortcutSet,
-		event: KeyboardEvent
-	): void {
-		if (notExist(serviceWorker.pageService)) {
-			return;
-		}
-
-		const shortcut = this.shortcutHandlers.find((x) =>
-			x.set.equal(keysPressed)
-		);
-		if (notExist(shortcut)) {
-			return;
-		}
-
-		event.preventDefault();
-		shortcut.handle(serviceWorker.pageService, keysPressed);
 	}
 
 	private readonly shortcutHandlers: ShortcutHandler[] = [
@@ -175,9 +214,11 @@ export class UserInputService {
 			(service: PageService, shortcut) =>
 				service.playTrackByIndex(shortcut.digit - 1)
 		),
-		new ShortcutHandler(ShortcutType.LoopTrack, (service: PageService) =>
-			configService.update('loopTrack', !service.config.loopTrack)
-		),
+		new ShortcutHandler(ShortcutType.LoopTrack, (service: PageService) => {
+			configService
+				.update('loopTrack', !service.config.loopTrack)
+				.catch((e) => console.error(e));
+		}),
 		new ShortcutHandler(
 			ShortcutType.AutoPitchSwitch,
 			(service: PageService) =>
@@ -193,28 +234,46 @@ export class UserInputService {
 	private listenNavigator(serviceWorker: PageServiceWorker): void {
 		const { mediaSession } = navigator;
 
+		// Media keys work only on pages with a page service; elsewhere they do
+		// nothing (the handlers replace the browser's own media key handling)
+		const withService =
+			(action: (service: PageService) => void) => (): void => {
+				const service = serviceWorker.pageService;
+				if (notExist(service)) {
+					return;
+				}
+
+				action(service);
+			};
+
 		// Playlist control:
-		mediaSession.setActionHandler('nexttrack', () => {
-			serviceWorker.pageService.playNextTrack(true);
-		});
-		mediaSession.setActionHandler('previoustrack', () => {
-			serviceWorker.pageService.playNextTrack(false);
-		});
+		mediaSession.setActionHandler(
+			'nexttrack',
+			withService((service) => service.playNextTrack(true))
+		);
+		mediaSession.setActionHandler(
+			'previoustrack',
+			withService((service) => service.playNextTrack(false))
+		);
 
 		// Playback control:
-		mediaSession.setActionHandler('seekforward', () => {
-			serviceWorker.pageService.seekForward(true);
-		});
-		mediaSession.setActionHandler('seekbackward', () => {
-			serviceWorker.pageService.seekForward(false);
-		});
+		mediaSession.setActionHandler(
+			'seekforward',
+			withService((service) => service.seekForward(true))
+		);
+		mediaSession.setActionHandler(
+			'seekbackward',
+			withService((service) => service.seekForward(false))
+		);
 
 		// Play/Pause:
-		mediaSession.setActionHandler('play', () => {
-			serviceWorker.pageService.playPause();
-		});
-		mediaSession.setActionHandler('pause', () => {
-			serviceWorker.pageService.playPause();
-		});
+		mediaSession.setActionHandler(
+			'play',
+			withService((service) => service.playPause())
+		);
+		mediaSession.setActionHandler(
+			'pause',
+			withService((service) => service.playPause())
+		);
 	}
 }
