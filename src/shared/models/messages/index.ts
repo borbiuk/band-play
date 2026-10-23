@@ -3,4 +3,5 @@
 export { MessageModel } from './base/message-model';
 export { BatchDownloadItemsMessage } from './batch-download-items-message';
 export { BatchDownloadItemIdMessage } from './batch-download-item-id-message';
+export { BatchDownloadProgressMessage } from './batch-download-progress-message';
 export { NewTabMessage } from './new-tab-message';

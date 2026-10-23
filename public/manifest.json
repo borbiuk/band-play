@@ -6,7 +6,15 @@
 	"description": "Enhanced playback for Bandcamp: autoplay, speed, pitch, hotkeys, history, batch download, and more.",
 	"homepage_url": "https://github.com/borbiuk/band-play",
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
-	"permissions": ["tabs", "storage", "power", "downloads", "downloads.shelf"],
+	"permissions": [
+		"tabs",
+		"storage",
+		"power",
+		"downloads",
+		"downloads.shelf",
+		"downloads.ui",
+		"alarms"
+	],
 	"background": {
 		"service_worker": "background.js"
 	},

@@ -1,21 +1,23 @@
 import { IconButton } from '@shared/components/button';
-import { MessageCode } from '@shared/enums';
-import { BatchDownloadItemIdMessage } from '@shared/models/messages';
-import messageService from '@shared/services/message-service';
+import { exist } from '@shared/utils';
 import {
 	CheckCircle2,
 	Circle,
+	Clock3,
+	Copy,
 	Download,
+	FileX,
+	FolderOpen,
+	Link,
+	Pause,
 	PauseCircle,
 	Play,
-	Copy,
-	XCircle,
-	FolderOpen,
 	RotateCcw,
 	Trash2,
+	X,
+	XCircle,
 } from 'lucide-react';
 import React from 'react';
-import { Tooltip } from 'react-tooltip';
 
 import { BatchDownloadItemModel } from '../batch-download-item-model';
 import { DownloadStatus } from '../download-status';
@@ -31,10 +33,16 @@ type Props = {
 	onRetry: (id: string) => void;
 	onRemove: (id: string) => void;
 	onResume: (id: string) => void;
+	onPause: (id: string) => void;
+	onCancel: (id: string) => void;
+	onDeleteFile: (id: string) => void;
+	onShowInFolder: (id: string) => void;
 };
 
+type DisplayStatus = DownloadStatus | 'retrying';
+
 const statusIconByStatus: Record<
-	DownloadStatus,
+	DisplayStatus,
 	{ icon: React.ElementType; className: string }
 > = {
 	[DownloadStatus.Pending]: { icon: Circle, className: 'text-gray-400' },
@@ -44,6 +52,11 @@ const statusIconByStatus: Record<
 		className: 'text-yellow-500',
 	},
 	[DownloadStatus.Duplicate]: { icon: Copy, className: 'text-amber-500' },
+	[DownloadStatus.RateLimited]: {
+		icon: Clock3,
+		className: 'text-orange-500',
+	},
+	retrying: { icon: RotateCcw, className: 'text-sky-500' },
 	[DownloadStatus.Completed]: {
 		icon: CheckCircle2,
 		className: 'text-emerald-500',
@@ -79,7 +92,7 @@ const StatusCell = ({
 	icon,
 	iconClassName,
 }: {
-	status: DownloadStatus;
+	status: DisplayStatus;
 	showIcon: boolean;
 	icon?: React.ElementType;
 	iconClassName?: string;
@@ -97,6 +110,37 @@ const StatusCell = ({
 	);
 };
 
+const ActionSlot = ({
+	visible,
+	title,
+	icon,
+	onClick,
+}: {
+	visible: boolean;
+	title: string;
+	icon: React.ReactNode;
+	onClick: () => void;
+}) => {
+	if (!visible) {
+		return (
+			<div className="invisible flex w-9 justify-center">
+				<IconButton ariaHidden tabIndex={-1} disabled icon={icon} />
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex w-9 justify-center">
+			<IconButton
+				title={title}
+				ariaLabel={title}
+				onClick={onClick}
+				icon={icon}
+			/>
+		</div>
+	);
+};
+
 export const DownloadItemRow = ({
 	item,
 	displayTitle,
@@ -107,6 +151,10 @@ export const DownloadItemRow = ({
 	onRetry,
 	onRemove,
 	onResume,
+	onPause,
+	onCancel,
+	onDeleteFile,
+	onShowInFolder,
 }: Props) => {
 	const isDownloading =
 		item.type === DownloadType.Single &&
@@ -122,35 +170,47 @@ export const DownloadItemRow = ({
 				? item.download.progress
 				: 0;
 
-	const canRetry =
-		(item.type === DownloadType.Pending &&
-			item.status === DownloadStatus.Failed) ||
-		(item.type === DownloadType.Single &&
-			item.status === DownloadStatus.Failed);
+	// Failed items of every type are retryable: retrying a failed Multiple
+	// parent re-queues all of its failed children.
+	const canRetry = item.status === DownloadStatus.Failed;
 	const canResume =
 		item.type === DownloadType.Single &&
 		(item.status === DownloadStatus.Paused ||
 			item.status === DownloadStatus.Duplicate);
-
+	const canPause = isDownloading;
+	const canCancel =
+		item.type === DownloadType.Single &&
+		(item.status === DownloadStatus.Downloading ||
+			item.status === DownloadStatus.Paused ||
+			item.status === DownloadStatus.Duplicate ||
+			item.status === DownloadStatus.Queued ||
+			item.status === DownloadStatus.Resolved);
 	const canShowInFolder =
 		item.type === DownloadType.Single &&
 		item.status === DownloadStatus.Completed &&
 		typeof item.download.browserDownloadId !== 'undefined';
+	const canDeleteFile = canShowInFolder;
+
+	const bandcampUrl =
+		item.type === DownloadType.Pending ? item.url : item.pageUrl;
 
 	const showInFolderLabel = navigator.platform.includes('Mac')
 		? 'Show in Finder'
 		: 'Show in folder';
 
 	const iconClass = 'h-4 w-4';
-	const showTooltipId = `downloads-show-${item.id}`;
-	const removeTooltipId = `downloads-remove-${item.id}`;
-	const retryTooltipId = `downloads-retry-${item.id}`;
-	const resumeTooltipId = `downloads-resume-${item.id}`;
 	const coverArtUrl = item.coverArtUrl;
-	const statusForDisplay =
-		item.status === DownloadStatus.Queued ||
-		item.status === DownloadStatus.Resolved ||
-		item.status === DownloadStatus.Resolving
+
+	// Distinguish a scheduled automatic retry from an ordinary queued item.
+	const isRetryScheduled =
+		item.type === DownloadType.Single &&
+		item.status === DownloadStatus.Resolved &&
+		(item.retryCount ?? 0) > 0;
+	const statusForDisplay: DisplayStatus = isRetryScheduled
+		? 'retrying'
+		: item.status === DownloadStatus.Queued ||
+			  item.status === DownloadStatus.Resolved ||
+			  item.status === DownloadStatus.Resolving
 			? DownloadStatus.Pending
 			: item.status;
 	const statusIconConfig = statusIconByStatus[statusForDisplay];
@@ -207,150 +267,100 @@ export const DownloadItemRow = ({
 				</div>
 			</td>
 			<td className="p-2">
-				<div className="grid grid-cols-4 justify-items-center gap-5">
-					{/* Slot 1: Show in folder */}
-					{canShowInFolder ? (
-						<div className="flex w-11 justify-center">
-							<IconButton
-								dataTooltipId={showTooltipId}
-								title={showInFolderLabel}
-								ariaLabel={showInFolderLabel}
-								onClick={async () => {
-									messageService
-										.sendToBackground<BatchDownloadItemIdMessage>(
-											{
-												code: MessageCode.BatchDownloadShowInFolder,
-												data: { id: item.id },
-											}
-										)
-										.catch(() => void 0);
-								}}
-								icon={<FolderOpen className={iconClass} />}
-							/>
-							<Tooltip
-								id={showTooltipId}
-								className="!z-[9999] max-w-32"
-								variant="light"
-								place="top"
-								opacity={1}
-								offset={6}
-								delayShow={100}
-							>
-								<span className="text-sm text-gray-900">
-									{showInFolderLabel}
-								</span>
-							</Tooltip>
-						</div>
-					) : (
-						<div className="invisible flex w-11 justify-center">
-							<IconButton
-								ariaHidden
-								tabIndex={-1}
-								disabled
-								icon={<FolderOpen className={iconClass} />}
-							/>
-						</div>
-					)}
-
-					{/* Slot 2: Remove */}
-					<div className="flex w-11 justify-center">
-						<IconButton
-							dataTooltipId={removeTooltipId}
-							title="Remove"
-							ariaLabel="Remove"
-							onClick={async () => {
-								onRemove(item.id);
-							}}
-							icon={<Trash2 className={iconClass} />}
-						/>
-						<Tooltip
-							id={removeTooltipId}
-							className="!z-[9999] max-w-32"
-							variant="light"
-							place="top"
-							opacity={1}
-							offset={6}
-							delayShow={100}
-						>
-							<span className="text-sm text-gray-900">
-								Remove
-							</span>
-						</Tooltip>
-					</div>
-
-					{/* Slot 3: Resume */}
+				<div className="grid grid-cols-5 justify-items-center gap-2">
+					{/* Slot 1: Pause / Resume */}
 					{canResume ? (
-						<div className="flex w-11 justify-center">
-							<IconButton
-								dataTooltipId={resumeTooltipId}
-								title="Resume"
-								ariaLabel="Resume"
-								onClick={async () => {
-									onResume(item.id);
-								}}
-								icon={<Play className={iconClass} />}
-							/>
-							<Tooltip
-								id={resumeTooltipId}
-								className="!z-[9999] max-w-32"
-								variant="light"
-								place="top"
-								opacity={1}
-								offset={6}
-								delayShow={100}
-							>
-								<span className="text-sm text-gray-900">
-									Resume
-								</span>
-							</Tooltip>
-						</div>
+						<ActionSlot
+							visible
+							title="Resume"
+							icon={<Play className={iconClass} />}
+							onClick={() => {
+								onResume(item.id);
+							}}
+						/>
 					) : (
-						<div className="invisible flex w-11 justify-center">
-							<IconButton
-								ariaHidden
-								tabIndex={-1}
-								disabled
-								icon={<Play className={iconClass} />}
-							/>
-						</div>
+						<ActionSlot
+							visible={canPause}
+							title="Pause"
+							icon={<Pause className={iconClass} />}
+							onClick={() => {
+								onPause(item.id);
+							}}
+						/>
 					)}
 
-					{/* Slot 4: Retry */}
-					{canRetry ? (
-						<div className="flex w-11 justify-center">
-							<IconButton
-								dataTooltipId={retryTooltipId}
-								title="Retry"
-								ariaLabel="Retry"
-								onClick={async () => {
-									onRetry(item.id);
-								}}
-								icon={<RotateCcw className={iconClass} />}
-							/>
-							<Tooltip
-								id={retryTooltipId}
-								className="!z-[9999] max-w-32"
-								variant="light"
-								place="top"
-								opacity={1}
-								offset={6}
-								delayShow={100}
-							>
-								<span className="text-sm text-gray-900">
-									Retry
-								</span>
-							</Tooltip>
-						</div>
+					{/* Slot 2: Show in folder / Cancel */}
+					{canShowInFolder ? (
+						<ActionSlot
+							visible
+							title={showInFolderLabel}
+							icon={<FolderOpen className={iconClass} />}
+							onClick={() => {
+								onShowInFolder(item.id);
+							}}
+						/>
 					) : (
-						<div className="invisible flex w-11 justify-center">
-							<IconButton
-								ariaHidden
-								tabIndex={-1}
-								disabled
-								icon={<RotateCcw className={iconClass} />}
-							/>
-						</div>
+						<ActionSlot
+							visible={canCancel}
+							title="Cancel"
+							icon={<X className={iconClass} />}
+							onClick={() => {
+								onCancel(item.id);
+							}}
+						/>
 					)}
+
+					{/* Slot 3: Copy Bandcamp URL */}
+					<ActionSlot
+						visible={exist(bandcampUrl)}
+						title="Copy Bandcamp URL"
+						icon={<Link className={iconClass} />}
+						onClick={() => {
+							navigator.clipboard
+								.writeText(bandcampUrl)
+								.catch(() => void 0);
+						}}
+					/>
+
+					{/* Slot 4: Retry / Delete file */}
+					{canRetry ? (
+						<ActionSlot
+							visible
+							title="Retry"
+							icon={<RotateCcw className={iconClass} />}
+							onClick={() => {
+								onRetry(item.id);
+							}}
+						/>
+					) : (
+						<ActionSlot
+							visible={canDeleteFile}
+							title="Delete file from disk"
+							icon={<FileX className={iconClass} />}
+							onClick={() => {
+								// The file is removed from disk for good
+								if (
+									!window.confirm(
+										'Delete the downloaded file from disk? This cannot be undone.'
+									)
+								) {
+									return;
+								}
+
+								onDeleteFile(item.id);
+							}}
+						/>
+					)}
+
+					{/* Slot 5: Remove */}
+					<ActionSlot
+						visible
+						title="Remove"
+						icon={<Trash2 className={iconClass} />}
+						onClick={() => {
+							onRemove(item.id);
+						}}
+					/>
 				</div>
 			</td>
 		</tr>

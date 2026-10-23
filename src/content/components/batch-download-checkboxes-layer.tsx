@@ -4,6 +4,8 @@ import { createPortal } from 'react-dom';
 type BatchDownloadCheckboxesLayerProps = {
 	page: 'collection' | 'purchases' | null;
 	checkboxClass: string;
+	/** Source ids already downloaded in the current format (history marks) */
+	downloadedSourceIds: Set<string>;
 	onCheckboxClick: (
 		itemId: string,
 		target: HTMLInputElement,
@@ -12,12 +14,14 @@ type BatchDownloadCheckboxesLayerProps = {
 	) => void;
 };
 
+const DOWNLOADED_CHECKBOX_CLASS = 'band-play-batch-checkbox-downloaded';
+
 const COLLECTION_SELECTOR =
 	'[id*="collection-item-container"], .collection-item-container';
 
 const getCollectionTargets = () => {
 	const elements = document.querySelectorAll(COLLECTION_SELECTOR);
-	const targets: { id: string; host: HTMLElement }[] = [];
+	const targets: { id: string; host: HTMLElement; label: string }[] = [];
 
 	for (const element of elements) {
 		const tralbumId = element.getAttribute('data-tralbumid');
@@ -30,7 +34,13 @@ const getCollectionTargets = () => {
 			continue;
 		}
 
-		targets.push({ id: tralbumId, host: element as HTMLElement });
+		const label =
+			element
+				.querySelector('.collection-item-title')
+				?.textContent?.split('\n')[0]
+				?.trim() || '';
+
+		targets.push({ id: tralbumId, host: element as HTMLElement, label });
 	}
 
 	return targets;
@@ -41,7 +51,7 @@ const PURCHASES_LINKS_SELECTOR = '[data-tid="links"]';
 
 const getPurchasesTargets = () => {
 	const items = document.querySelectorAll(PURCHASES_ITEM_SELECTOR);
-	const targets: { id: string; mount: HTMLElement }[] = [];
+	const targets: { id: string; mount: HTMLElement; label: string }[] = [];
 
 	for (const item of items) {
 		const id = item.getAttribute('sale_item_id');
@@ -61,7 +71,11 @@ const getPurchasesTargets = () => {
 			continue;
 		}
 
-		targets.push({ id, mount });
+		const label =
+			item.querySelector('.purchases-item-title')?.textContent?.trim() ||
+			'';
+
+		targets.push({ id, mount, label });
 	}
 
 	return targets;
@@ -70,21 +84,44 @@ const getPurchasesTargets = () => {
 export const BatchDownloadCheckboxesLayer = ({
 	page,
 	checkboxClass,
+	downloadedSourceIds,
 	onCheckboxClick,
 }: BatchDownloadCheckboxesLayerProps) => {
 	if (!page) {
 		return null;
 	}
 
+	const classNameFor = (id: string): string => {
+		if (downloadedSourceIds.has(id)) {
+			return `${checkboxClass} ${DOWNLOADED_CHECKBOX_CLASS}`;
+		}
+
+		return checkboxClass;
+	};
+
+	const titleFor = (id: string): string | undefined => {
+		if (downloadedSourceIds.has(id)) {
+			return 'Already downloaded';
+		}
+
+		return undefined;
+	};
+
+	const ariaLabelFor = (id: string, label: string): string => {
+		return `Select ${label || `item ${id}`} for download`;
+	};
+
 	if (page === 'collection') {
 		const targets = getCollectionTargets();
 		return (
 			<>
-				{targets.map(({ id, host }) =>
+				{targets.map(({ id, host, label }) =>
 					createPortal(
 						<input
 							type="checkbox"
-							className={checkboxClass}
+							className={classNameFor(id)}
+							title={titleFor(id)}
+							aria-label={ariaLabelFor(id, label)}
 							data-band-play-batch-checkbox="true"
 							data-band-play-batch-id={id}
 							style={{
@@ -113,11 +150,13 @@ export const BatchDownloadCheckboxesLayer = ({
 	const targets = getPurchasesTargets();
 	return (
 		<>
-			{targets.map(({ id, mount }) =>
+			{targets.map(({ id, mount, label }) =>
 				createPortal(
 					<input
 						type="checkbox"
-						className={checkboxClass}
+						className={classNameFor(id)}
+						title={titleFor(id)}
+						aria-label={ariaLabelFor(id, label)}
 						data-band-play-batch-checkbox="true"
 						data-band-play-batch-id={id}
 						onClick={(event) => {

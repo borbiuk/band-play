@@ -39,13 +39,10 @@ export class MessagesBackgroundService implements IBackgroundService {
 						break;
 					}
 
-					await this.batchDownload.enqueuePendingItems(data.items);
-					break;
-				}
-
-				case MessageCode.BatchDownloadTabOpened: {
-					// Downloads tab is storage-driven; keep message for compatibility.
-					this.batchDownload.scheduleTick();
+					await this.batchDownload.enqueuePendingItems(
+						data.items,
+						data.format
+					);
 					break;
 				}
 
@@ -85,6 +82,36 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					await this.batchDownload.resumeItem(String(data.id));
+					break;
+				}
+
+				case MessageCode.BatchDownloadPauseItem: {
+					const data = message.data as BatchDownloadItemIdMessage;
+					if (!data?.id) {
+						break;
+					}
+
+					await this.batchDownload.pauseItem(String(data.id));
+					break;
+				}
+
+				case MessageCode.BatchDownloadCancelItem: {
+					const data = message.data as BatchDownloadItemIdMessage;
+					if (!data?.id) {
+						break;
+					}
+
+					await this.batchDownload.cancelItem(String(data.id));
+					break;
+				}
+
+				case MessageCode.BatchDownloadDeleteFile: {
+					const data = message.data as BatchDownloadItemIdMessage;
+					if (!data?.id) {
+						break;
+					}
+
+					await this.batchDownload.deleteFile(String(data.id));
 					break;
 				}
 

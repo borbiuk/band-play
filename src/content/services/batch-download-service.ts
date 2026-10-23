@@ -1,8 +1,14 @@
-import { MessageCode } from '@shared/enums';
+import { BatchDownloadFormat, MessageCode } from '@shared/enums';
 import {
 	BatchDownloadItemsMessage,
 	MessageModel,
 } from '@shared/models/messages';
+import {
+	BATCH_DOWNLOAD_HISTORY_KEY,
+	downloadedSourceIdsForFormat,
+	getBatchDownloadHistory,
+} from '@shared/services/batch-download-history-service';
+import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
 import { exist, notExist } from '@shared/utils';
 import React from 'react';
@@ -59,12 +65,15 @@ const getAllCheckboxes = (): HTMLInputElement[] => {
 const loadTargetCount = async (
 	target: number,
 	container: HTMLElement,
-	itemClass: string
+	itemClass: string,
+	onProgress: (current: number) => void,
+	isAborted: () => boolean
 ) => {
 	let current = document.getElementsByClassName(itemClass).length;
 	let failed = 0;
+	onProgress(current);
 
-	while (current < target && failed < 5) {
+	while (current < target && failed < 5 && !isAborted()) {
 		container.scrollIntoView(false);
 		await wait(2500);
 
@@ -75,6 +84,8 @@ const loadTargetCount = async (
 			failed = 0;
 			current = amount;
 		}
+
+		onProgress(current);
 	}
 };
 
@@ -172,6 +183,9 @@ export class BatchDownloadService {
 	private overlayRoot: Root = null;
 	private overlayContainer: HTMLElement = null;
 	private overlayPage: 'collection' | 'purchases' = null;
+	private downloadedSourceIds = new Set<string>();
+	private selectionProgress: { current: number; target: number } = null;
+	private isSelectionAborted = false;
 
 	public start(): void {
 		if (!isBandcamp()) {
@@ -179,6 +193,24 @@ export class BatchDownloadService {
 		}
 
 		this.setupForCurrentPage();
+		this.refreshDownloadedSourceIds().catch(() => void 0);
+
+		// Keep "already downloaded" marks live while downloads complete
+		// and when the user switches the preferred format.
+		chrome.storage.onChanged.addListener((changes, areaName) => {
+			if (areaName !== 'local') {
+				return;
+			}
+
+			if (
+				notExist(changes[BATCH_DOWNLOAD_HISTORY_KEY]) &&
+				notExist(changes.batchDownloadFormat)
+			) {
+				return;
+			}
+
+			this.refreshDownloadedSourceIds().catch(() => void 0);
+		});
 
 		// Re-init on URL changes (Band Play background sends UrlChanged).
 		messageService.addListener(async (message: MessageModel<unknown>) => {
@@ -190,6 +222,19 @@ export class BatchDownloadService {
 			this.stateRef.current = createInitialState();
 			this.setupForCurrentPage();
 		});
+	}
+
+	private async refreshDownloadedSourceIds(): Promise<void> {
+		const [history, format] = await Promise.all([
+			getBatchDownloadHistory(),
+			configService.get<BatchDownloadFormat>('batchDownloadFormat'),
+		]);
+
+		this.downloadedSourceIds = downloadedSourceIdsForFormat(
+			history,
+			String(format)
+		);
+		this.renderOverlay();
 	}
 
 	private setupForCurrentPage(): void {
@@ -383,6 +428,7 @@ export class BatchDownloadService {
 					React.createElement(BatchDownloadCheckboxesLayer, {
 						page: this.overlayPage,
 						checkboxClass: CHECKBOX_CLASS,
+						downloadedSourceIds: this.downloadedSourceIds,
 						onCheckboxClick: (
 							itemId,
 							target,
@@ -399,11 +445,20 @@ export class BatchDownloadService {
 					}),
 					React.createElement(BatchDownloadOverlay, {
 						selectedCount,
+						showSelectUndownloaded:
+							this.downloadedSourceIds.size > 0,
+						selectionProgress: this.selectionProgress,
 						onSelectAllClick: async () => {
 							await this.handleSelectAll();
 						},
-						onDownloadClick: () => {
-							this.handleDownload();
+						onSelectUndownloadedClick: async () => {
+							await this.handleSelectAll(true);
+						},
+						onCancelSelectionClick: () => {
+							this.isSelectionAborted = true;
+						},
+						onDownloadClick: (format?: BatchDownloadFormat) => {
+							this.handleDownload(format);
 						},
 					})
 				)
@@ -491,7 +546,7 @@ export class BatchDownloadService {
 		this.onSelectionChanged();
 	}
 
-	private handleDownload(): void {
+	private handleDownload(format?: BatchDownloadFormat): void {
 		const selected = Object.values(this.stateRef.current.selected).filter(
 			(x) => exist(x)
 		);
@@ -503,7 +558,7 @@ export class BatchDownloadService {
 		messageService
 			.sendToBackground<BatchDownloadItemsMessage>({
 				code: MessageCode.BatchDownloadSendItemsToBackground,
-				data: { items: selected },
+				data: { items: selected, format },
 			})
 			.catch(() => void 0);
 
@@ -516,66 +571,97 @@ export class BatchDownloadService {
 		this.onSelectionChanged();
 	}
 
-	private async handleSelectAll(): Promise<void> {
+	private async handleSelectAll(
+		onlyUndownloaded: boolean = false
+	): Promise<void> {
 		const page = this.overlayPage;
 		if (!page) {
 			return;
 		}
 
-		if (page === 'collection') {
-			const target = Number.parseInt(
-				document.querySelector('#grid-tabs>.active .count')
-					?.textContent || '0'
-			);
+		this.isSelectionAborted = false;
+		const onProgress = (current: number, target: number) => {
+			this.selectionProgress = { current, target };
+			this.renderOverlay();
+		};
 
-			const showMore = document.querySelector<HTMLElement>(
-				'.expand-container.show-button > button'
-			);
-
-			const container =
-				document.getElementById('collection-grid') ??
-				document.getElementById('wishlist-grid');
-
-			if (showMore) {
-				showMore.click();
-			}
-
-			if (target && container) {
-				await loadTargetCount(
-					target,
-					container,
-					'collection-item-container'
+		try {
+			if (page === 'collection') {
+				const target = Number.parseInt(
+					document.querySelector('#grid-tabs>.active .count')
+						?.textContent || '0'
 				);
+
+				const showMore = document.querySelector<HTMLElement>(
+					'.expand-container.show-button > button'
+				);
+
+				const container =
+					document.getElementById('collection-grid') ??
+					document.getElementById('wishlist-grid');
+
+				if (showMore) {
+					showMore.click();
+				}
+
+				if (target && container) {
+					await loadTargetCount(
+						target,
+						container,
+						'collection-item-container',
+						(current) => onProgress(current, target),
+						() => this.isSelectionAborted
+					);
+				}
 			}
+
+			if (page === 'purchases') {
+				const target = Number.parseInt(
+					(
+						document.querySelector('.page-items-number')
+							?.parentElement?.textContent || ''
+					).match(/of (\d+)/)?.[1] || '0'
+				);
+
+				const showMore =
+					document.querySelector<HTMLElement>('.view-all-button');
+				const container = document.getElementsByClassName(
+					'purchases'
+				)[0] as HTMLElement;
+
+				if (showMore) {
+					showMore.click();
+				}
+
+				if (target && container) {
+					await loadTargetCount(
+						target,
+						container,
+						'purchases-item',
+						(current) => onProgress(current, target),
+						() => this.isSelectionAborted
+					);
+				}
+			}
+		} finally {
+			this.selectionProgress = null;
+			this.renderOverlay();
 		}
 
-		if (page === 'purchases') {
-			const target = Number.parseInt(
-				(
-					document.querySelector('.page-items-number')?.parentElement
-						?.textContent || ''
-				).match(/of (\d+)/)?.[1] || '0'
-			);
-
-			const showMore =
-				document.querySelector<HTMLElement>('.view-all-button');
-			const container = document.getElementsByClassName(
-				'purchases'
-			)[0] as HTMLElement;
-
-			if (showMore) {
-				showMore.click();
-			}
-
-			if (target && container) {
-				await loadTargetCount(target, container, 'purchases-item');
-			}
-		}
-
+		// Select whatever is loaded, even after a partial (stopped) load.
 		for (const checkbox of getAllCheckboxes()) {
-			if (!checkbox.checked) {
-				checkbox.click();
+			if (checkbox.checked) {
+				continue;
 			}
+
+			if (onlyUndownloaded) {
+				const id = checkbox.getAttribute(CHECKBOX_ATTR);
+				if (exist(id) && this.downloadedSourceIds.has(id)) {
+					continue;
+				}
+			}
+
+			checkbox.click();
 		}
 	}
 

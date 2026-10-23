@@ -1,12 +1,16 @@
 import { BatchDownloadInline } from '@shared/components/batch-download';
 import { LabelButton } from '@shared/components/button';
 import { ExternalLinksInline } from '@shared/components/external-links';
-import { MessageCode } from '@shared/enums';
+import { MessageCode, PortName } from '@shared/enums';
 import { ConfigModel } from '@shared/models/config-model';
-import { BatchDownloadItemIdMessage } from '@shared/models/messages';
+import {
+	BatchDownloadItemIdMessage,
+	BatchDownloadProgressMessage,
+	MessageModel,
+} from '@shared/models/messages';
 import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
-import { notExist } from '@shared/utils';
+import { exist, notExist } from '@shared/utils';
 import {
 	ArrowDown,
 	ArrowUp,
@@ -17,7 +21,7 @@ import {
 	RotateCcw,
 	Trash2,
 } from 'lucide-react';
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { BatchDownloadItemModel } from './batch-download-item-model';
 import { DownloadItemRow } from './components/download-item-row';
@@ -25,6 +29,45 @@ import { DownloadStatus } from './download-status';
 import { DownloadType } from './download-type';
 
 const BATCH_DOWNLOAD_ITEMS_KEY = 'batchDownloadItems';
+
+// Windowed rendering: rows have a fixed height (h-16), so only the visible
+// slice is rendered once the list grows beyond the threshold.
+const WINDOWED_THRESHOLD = 100;
+const ROW_HEIGHT = 64;
+const WINDOW_OVERSCAN = 10;
+
+// Speed / ETA sampling for the overall progress readout.
+const RATE_SAMPLE_INTERVAL_MS = 1000;
+const RATE_SAMPLE_WINDOW_MS = 5000;
+const RATE_MIN_WINDOW_MS = 3000;
+
+const formatSizeMb = (mb: number): string => {
+	if (mb >= 1024) {
+		return `${(mb / 1024).toFixed(1)} GB`;
+	}
+
+	return `${Math.max(Math.round(mb), 1)} MB`;
+};
+
+const formatSpeed = (mbPerSec: number): string => {
+	if (mbPerSec >= 1) {
+		return `${mbPerSec.toFixed(1)} MB/s`;
+	}
+
+	return `${Math.max(Math.round(mbPerSec * 1024), 1)} KB/s`;
+};
+
+const formatEta = (seconds: number): string => {
+	if (seconds >= 3600) {
+		return `~${Math.round(seconds / 3600)} h left`;
+	}
+
+	if (seconds >= 60) {
+		return `~${Math.round(seconds / 60)} min left`;
+	}
+
+	return `~${Math.max(Math.round(seconds), 1)} s left`;
+};
 
 type DownloadsState = {
 	items: BatchDownloadItemModel[];
@@ -60,7 +103,53 @@ export const DownloadsApp = () => {
 		direction: SortDirection;
 	}>({ key: null, direction: null });
 
-	const [{ items }, dispatch] = useReducer(downloadsReducer, initialState);
+	const [{ items: storedItems }, dispatch] = useReducer(
+		downloadsReducer,
+		initialState
+	);
+
+	// Volatile per-item progress pushed by the background over the UI port.
+	// Persisted items only carry progress captured at status transitions.
+	const [liveProgress, setLiveProgress] = useState(
+		{} as Record<string, number>
+	);
+
+	const items = useMemo(() => {
+		return storedItems.map((x): BatchDownloadItemModel => {
+			if (x.type !== DownloadType.Single) {
+				return x;
+			}
+
+			const live = liveProgress[x.id];
+			if (notExist(live)) {
+				return x;
+			}
+
+			if (x.status === DownloadStatus.Downloading) {
+				if (x.download.progress === live) {
+					return x;
+				}
+
+				return { ...x, download: { ...x.download, progress: live } };
+			}
+
+			if (
+				x.status === DownloadStatus.Paused ||
+				x.status === DownloadStatus.Duplicate
+			) {
+				// The persisted value was captured at the pause transition
+				// and can be fresher than the last pushed live value.
+				const progress = Math.max(x.download.progress ?? 0, live);
+				if (x.download.progress === progress) {
+					return x;
+				}
+
+				return { ...x, download: { ...x.download, progress } };
+			}
+
+			return x;
+		});
+	}, [storedItems, liveProgress]);
 
 	useEffect(() => {
 		configService.getAll().then((x) => {
@@ -100,6 +189,94 @@ export const DownloadsApp = () => {
 		return () => chrome.storage.onChanged.removeListener(onChanged);
 	}, []);
 
+	// Long-lived port to the background: signals that this page is open (the
+	// background runs its fine-grained progress poller only then) and carries
+	// volatile progress updates that are not written to storage.
+	useEffect(() => {
+		let port: chrome.runtime.Port = null;
+		let reconnectTimeoutId: number = null;
+		let disposed = false;
+
+		const scheduleReconnect = () => {
+			if (disposed || exist(reconnectTimeoutId)) {
+				return;
+			}
+
+			reconnectTimeoutId = setTimeout(() => {
+				reconnectTimeoutId = null;
+				connect();
+			}, 1000) as unknown as number;
+		};
+
+		const connect = () => {
+			if (disposed) {
+				return;
+			}
+
+			try {
+				port = chrome.runtime.connect({
+					name: PortName.BatchDownloadUi,
+				});
+			} catch {
+				port = null;
+				scheduleReconnect();
+				return;
+			}
+
+			port.onMessage.addListener(
+				(message: MessageModel<BatchDownloadProgressMessage>) => {
+					if (
+						message?.code !==
+						MessageCode.BatchDownloadProgressUpdate
+					) {
+						return;
+					}
+
+					const updates = message.data?.updates;
+					if (!Array.isArray(updates) || updates.length === 0) {
+						return;
+					}
+
+					setLiveProgress((prev) => {
+						const next = { ...prev };
+						for (const update of updates) {
+							if (
+								exist(update?.id) &&
+								Number.isFinite(update.progress)
+							) {
+								next[update.id] = update.progress;
+							}
+						}
+						return next;
+					});
+				}
+			);
+
+			// The MV3 service worker can be stopped at any moment, which
+			// disconnects the port: reconnect so the background keeps
+			// polling progress while this page stays open.
+			port.onDisconnect.addListener(() => {
+				port = null;
+				scheduleReconnect();
+			});
+		};
+
+		connect();
+
+		return () => {
+			disposed = true;
+			if (exist(reconnectTimeoutId)) {
+				clearTimeout(reconnectTimeoutId);
+			}
+
+			try {
+				port?.disconnect();
+			} catch {
+				// ignore
+			}
+		};
+	}, []);
+
 	const queuedCount = useMemo(() => {
 		return items.filter(
 			(x) =>
@@ -109,7 +286,8 @@ export const DownloadsApp = () => {
 					x.status !== DownloadStatus.Completed &&
 					x.status !== DownloadStatus.Failed) ||
 				(x.type === DownloadType.Multiple &&
-					x.status !== DownloadStatus.Completed)
+					x.status !== DownloadStatus.Completed &&
+					x.status !== DownloadStatus.Failed)
 		).length;
 	}, [items]);
 
@@ -173,6 +351,138 @@ export const DownloadsApp = () => {
 		(x) =>
 			x.type === DownloadType.Single && x.status === DownloadStatus.Paused
 	);
+
+	const hasUnverifiedFailure = items.some(
+		(x) =>
+			x.type === DownloadType.Pending &&
+			x.status === DownloadStatus.Failed &&
+			x.failReason === 'unverified'
+	);
+
+	const overall = useMemo(() => {
+		const singles = items.filter(
+			(x) => x.type === DownloadType.Single
+		) as Extract<BatchDownloadItemModel, { type: DownloadType.Single }>[];
+
+		const total = singles.length;
+		const completed = singles.filter(
+			(x) => x.status === DownloadStatus.Completed
+		).length;
+		const failed = singles.filter(
+			(x) => x.status === DownloadStatus.Failed
+		).length;
+
+		const progressOf = (
+			x: Extract<BatchDownloadItemModel, { type: DownloadType.Single }>
+		) => {
+			if (x.status === DownloadStatus.Completed) {
+				return 100;
+			}
+
+			const value = x.download.progress;
+			return Number.isFinite(value)
+				? Math.min(Math.max(value, 0), 100)
+				: 0;
+		};
+
+		const knownSizeMb = singles.reduce(
+			(sum, x) => sum + (x.download.sizeMb ?? 0),
+			0
+		);
+		const downloadedMb = singles.reduce(
+			(sum, x) => sum + (x.download.sizeMb ?? 0) * (progressOf(x) / 100),
+			0
+		);
+		const allSizesKnown =
+			total > 0 && singles.every((x) => exist(x.download.sizeMb));
+
+		// Weight by size when every size is known, otherwise plain average.
+		const donePct =
+			total === 0
+				? 0
+				: allSizesKnown && knownSizeMb > 0
+					? (downloadedMb / knownSizeMb) * 100
+					: singles.reduce((sum, x) => sum + progressOf(x), 0) /
+						total;
+		const failedPct = total === 0 ? 0 : (failed / total) * 100;
+
+		return {
+			total,
+			completed,
+			failed,
+			donePct,
+			failedPct,
+			knownSizeMb,
+			downloadedMb,
+			allSizesKnown,
+		};
+	}, [items]);
+
+	const [rate, setRate] = useState(
+		null as { speedMbPerSec: number; etaSec: number }
+	);
+	const rateSamplesRef = useRef([] as { t: number; mb: number }[]);
+	const overallRef = useRef(overall);
+	overallRef.current = overall;
+
+	useEffect(() => {
+		if (!hasDownloading) {
+			rateSamplesRef.current = [];
+			setRate(null);
+			return undefined;
+		}
+
+		const intervalId = setInterval(() => {
+			const now = Date.now();
+			const samples = rateSamplesRef.current;
+			samples.push({ t: now, mb: overallRef.current.downloadedMb });
+			while (
+				samples.length > 0 &&
+				now - samples[0].t > RATE_SAMPLE_WINDOW_MS
+			) {
+				samples.shift();
+			}
+
+			const windowMs = samples.length > 1 ? now - samples[0].t : 0;
+			if (windowMs < RATE_MIN_WINDOW_MS) {
+				setRate(null);
+				return;
+			}
+
+			const deltaMb = overallRef.current.downloadedMb - samples[0].mb;
+			const speedMbPerSec = deltaMb / (windowMs / 1000);
+			if (speedMbPerSec <= 0) {
+				setRate(null);
+				return;
+			}
+
+			const remainingMb = Math.max(
+				overallRef.current.knownSizeMb -
+					overallRef.current.downloadedMb,
+				0
+			);
+			setRate({ speedMbPerSec, etaSec: remainingMb / speedMbPerSec });
+		}, RATE_SAMPLE_INTERVAL_MS);
+
+		return () => clearInterval(intervalId);
+	}, [hasDownloading]);
+
+	useEffect(() => {
+		if (overall.total === 0 || queuedCount === 0) {
+			document.title = 'BandPlay Downloads';
+			return;
+		}
+
+		const pct = Math.round(overall.donePct);
+		const pausedSuffix = !hasDownloading && hasPaused ? ' paused' : '';
+		document.title = `BandPlay · ${pct}%${pausedSuffix}`;
+	}, [
+		overall.donePct,
+		overall.total,
+		queuedCount,
+		hasDownloading,
+		hasPaused,
+	]);
 	const hasDuplicate = items.some(
 		(x) =>
 			x.type === DownloadType.Single &&
@@ -318,6 +628,80 @@ export const DownloadsApp = () => {
 		return map;
 	}, [showTitleGroup, sortedItems]);
 
+	const tableWrapRef = useRef(null as HTMLDivElement);
+	const [rowWindow, setRowWindow] = useState({
+		start: 0,
+		end: WINDOWED_THRESHOLD,
+	});
+	const isWindowed = sortedItems.length > WINDOWED_THRESHOLD;
+
+	useEffect(() => {
+		if (!isWindowed) {
+			return undefined;
+		}
+
+		let rafId = 0;
+		const update = () => {
+			rafId = 0;
+			const wrap = tableWrapRef.current;
+			if (!wrap) {
+				return;
+			}
+
+			const top = wrap.getBoundingClientRect().top;
+			const start = Math.max(
+				Math.floor(-top / ROW_HEIGHT) - WINDOW_OVERSCAN,
+				0
+			);
+			const visibleCount =
+				Math.ceil(window.innerHeight / ROW_HEIGHT) +
+				WINDOW_OVERSCAN * 2;
+			setRowWindow((prev) => {
+				const end = Math.min(start + visibleCount, sortedItems.length);
+				if (prev.start === start && prev.end === end) {
+					return prev;
+				}
+
+				return { start, end };
+			});
+		};
+
+		const onScroll = () => {
+			if (!rafId) {
+				rafId = requestAnimationFrame(update);
+			}
+		};
+
+		update();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll);
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+			window.removeEventListener('resize', onScroll);
+			if (rafId) {
+				cancelAnimationFrame(rafId);
+			}
+		};
+	}, [isWindowed, sortedItems.length]);
+
+	const visibleItems = isWindowed
+		? sortedItems.slice(rowWindow.start, rowWindow.end)
+		: sortedItems;
+	const windowOffset = isWindowed ? rowWindow.start : 0;
+	const topSpacerHeight = windowOffset * ROW_HEIGHT;
+	const bottomSpacerHeight = isWindowed
+		? Math.max(sortedItems.length - rowWindow.end, 0) * ROW_HEIGHT
+		: 0;
+
+	const sendItemCommand = (code: MessageCode, itemId: string) => {
+		messageService
+			.sendToBackground<BatchDownloadItemIdMessage>({
+				code,
+				data: { id: itemId },
+			})
+			.catch(() => void 0);
+	};
+
 	if (notExist(config)) {
 		return (
 			<div className="flex h-screen items-center justify-center">...</div>
@@ -446,7 +830,58 @@ export const DownloadsApp = () => {
 				</div>
 			</div>
 
-			<div className="mt-4 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+			{hasUnverifiedFailure && (
+				<div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+					Bandcamp requires a verified email address before it allows
+					downloads. Check your inbox, verify your account, then use
+					&quot;Retry failed&quot;.
+				</div>
+			)}
+
+			{hasItems && (
+				<div className="mt-4">
+					<div className="flex items-center justify-between text-sm text-gray-600">
+						<span>
+							{`Downloaded ${overall.completed} of ${overall.total}`}
+							{overall.failed > 0 && (
+								<span className="text-red-500">{` · ${overall.failed} failed`}</span>
+							)}
+						</span>
+						<span className="tabular-nums">
+							{overall.knownSizeMb > 0 &&
+								`${overall.allSizesKnown ? '' : '~'}${formatSizeMb(overall.downloadedMb)} / ${formatSizeMb(overall.knownSizeMb)}`}
+							{rate &&
+								` · ${formatSpeed(rate.speedMbPerSec)} · ${formatEta(rate.etaSec)}`}
+						</span>
+					</div>
+					<div
+						className="mt-1 flex h-2 w-full overflow-hidden rounded-full bg-gray-100"
+						role="progressbar"
+						aria-valuenow={Math.round(overall.donePct)}
+						aria-valuemin={0}
+						aria-valuemax={100}
+					>
+						<div
+							className="h-2 bg-band-500"
+							style={{ width: `${overall.donePct}%` }}
+						/>
+						<div
+							className="h-2 bg-red-400"
+							style={{
+								width: `${Math.min(
+									overall.failedPct,
+									Math.max(100 - overall.donePct, 0)
+								)}%`,
+							}}
+						/>
+					</div>
+				</div>
+			)}
+
+			<div
+				ref={tableWrapRef}
+				className="mt-4 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm"
+			>
 				<table className="w-full table-fixed">
 					<thead className="border-b border-gray-200 bg-gray-50">
 						<tr>
@@ -487,7 +922,7 @@ export const DownloadsApp = () => {
 							<th className="w-40 p-2 text-left text-xs font-semibold text-gray-600">
 								Progress
 							</th>
-							<th className="w-44 p-2 text-left text-xs font-semibold text-gray-600">
+							<th className="w-56 p-2 text-left text-xs font-semibold text-gray-600">
 								Actions
 							</th>
 						</tr>
@@ -509,7 +944,14 @@ export const DownloadsApp = () => {
 							</tr>
 						)}
 
-						{sortedItems.map((item, idx) => (
+						{topSpacerHeight > 0 && (
+							<tr
+								aria-hidden="true"
+								style={{ height: topSpacerHeight }}
+							/>
+						)}
+
+						{visibleItems.map((item, idx) => (
 							<DownloadItemRow
 								key={item.id}
 								item={item}
@@ -525,7 +967,7 @@ export const DownloadsApp = () => {
 												item.id
 											) +
 											1
-										: idx + 1
+										: windowOffset + idx + 1
 								}
 								showTitleGroup={showTitleGroup}
 								titleGroupLetter={
@@ -533,37 +975,56 @@ export const DownloadsApp = () => {
 								}
 								showStatusIcon={showStatusIcon}
 								onRetry={(itemId) => {
-									messageService
-										.sendToBackground<BatchDownloadItemIdMessage>(
-											{
-												code: MessageCode.BatchDownloadRetryItem,
-												data: { id: itemId },
-											}
-										)
-										.catch(() => void 0);
+									sendItemCommand(
+										MessageCode.BatchDownloadRetryItem,
+										itemId
+									);
 								}}
 								onResume={(itemId) => {
-									messageService
-										.sendToBackground<BatchDownloadItemIdMessage>(
-											{
-												code: MessageCode.BatchDownloadResumeItem,
-												data: { id: itemId },
-											}
-										)
-										.catch(() => void 0);
+									sendItemCommand(
+										MessageCode.BatchDownloadResumeItem,
+										itemId
+									);
+								}}
+								onPause={(itemId) => {
+									sendItemCommand(
+										MessageCode.BatchDownloadPauseItem,
+										itemId
+									);
+								}}
+								onCancel={(itemId) => {
+									sendItemCommand(
+										MessageCode.BatchDownloadCancelItem,
+										itemId
+									);
+								}}
+								onDeleteFile={(itemId) => {
+									sendItemCommand(
+										MessageCode.BatchDownloadDeleteFile,
+										itemId
+									);
+								}}
+								onShowInFolder={(itemId) => {
+									sendItemCommand(
+										MessageCode.BatchDownloadShowInFolder,
+										itemId
+									);
 								}}
 								onRemove={(itemId) => {
-									messageService
-										.sendToBackground<BatchDownloadItemIdMessage>(
-											{
-												code: MessageCode.BatchDownloadRemoveItem,
-												data: { id: itemId },
-											}
-										)
-										.catch(() => void 0);
+									sendItemCommand(
+										MessageCode.BatchDownloadRemoveItem,
+										itemId
+									);
 								}}
 							/>
 						))}
+
+						{bottomSpacerHeight > 0 && (
+							<tr
+								aria-hidden="true"
+								style={{ height: bottomSpacerHeight }}
+							/>
+						)}
 					</tbody>
 				</table>
 			</div>

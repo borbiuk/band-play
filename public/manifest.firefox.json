@@ -15,7 +15,7 @@
 		}
 	},
 	"host_permissions": ["https://bandcamp.com/*", "https://*.bandcamp.com/*"],
-	"permissions": ["tabs", "storage", "downloads"],
+	"permissions": ["tabs", "storage", "downloads", "alarms"],
 	"background": {
 		"scripts": ["background.js"]
 	},
