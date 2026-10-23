@@ -2,6 +2,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Paths below (the git pathspec of the manifest) are relative to the repository root
+cd "${ROOT_DIR}"
 RELEASE_NOTES_PATH="${ROOT_DIR}/RELEASE_NOTES.md"
 MANIFEST_PATH="public/manifest.json"
 TAG_PREFIX="${TAG_PREFIX:-}"
@@ -18,6 +20,8 @@ get_version_from_manifest() {
     | awk -F'"' '/"version"[[:space:]]*:/ {print $4; exit}'
 }
 
+# The first commit of the current branch (oldest first) whose manifest has the version:
+# the commit that set it, that is the release commit. Stashes and other branches are not searched.
 find_commit_for_version() {
   local version="$1"
   while read -r commit; do
@@ -27,7 +31,7 @@ find_commit_for_version() {
       echo "${commit}"
       return 0
     fi
-  done < <(git rev-list --all -- "${MANIFEST_PATH}")
+  done < <(git rev-list --reverse HEAD -- "${MANIFEST_PATH}")
 
   return 1
 }
