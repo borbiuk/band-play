@@ -46,6 +46,7 @@ class ConfigService {
 			'shortcuts',
 			'batchDownloadFormat',
 			'batchDownloadConcurrency',
+			'batchDownloadFilenameTemplate',
 		]);
 
 		return this.getWithDefaults(config as unknown as ConfigModel);
@@ -94,6 +95,11 @@ class ConfigService {
 			batchDownloadConcurrency: exist(config.batchDownloadConcurrency)
 				? config.batchDownloadConcurrency
 				: 8,
+			batchDownloadFilenameTemplate: exist(
+				config.batchDownloadFilenameTemplate
+			)
+				? String(config.batchDownloadFilenameTemplate)
+				: '',
 		};
 
 		if (config.playbackStep < 1 || config.playbackStep > 60) {

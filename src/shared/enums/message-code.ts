@@ -12,8 +12,6 @@ export enum MessageCode {
 	UrlChanged = 'band-play-UrlChanged',
 	/** Batch download: content -> background (send selected items) */
 	BatchDownloadSendItemsToBackground = 'band-play-BatchDownloadSendItemsToBackground',
-	/** Batch download: downloads tab -> background (tab opened, request queued items) */
-	BatchDownloadTabOpened = 'band-play-BatchDownloadTabOpened',
 	/** Batch download: popup/downloads -> background (open or focus downloads tab) */
 	BatchDownloadOpenDownloadsTab = 'band-play-BatchDownloadOpenDownloadsTab',
 	/** Batch download: downloads -> background (retry single failed item) */
@@ -26,6 +24,12 @@ export enum MessageCode {
 	BatchDownloadResumeAll = 'band-play-BatchDownloadResumeAll',
 	/** Batch download: downloads -> background (resume single paused/duplicate item) */
 	BatchDownloadResumeItem = 'band-play-BatchDownloadResumeItem',
+	/** Batch download: downloads -> background (pause single downloading item) */
+	BatchDownloadPauseItem = 'band-play-BatchDownloadPauseItem',
+	/** Batch download: downloads -> background (cancel single active item, keep it in the list as failed) */
+	BatchDownloadCancelItem = 'band-play-BatchDownloadCancelItem',
+	/** Batch download: downloads -> background (delete a completed file from disk) */
+	BatchDownloadDeleteFile = 'band-play-BatchDownloadDeleteFile',
 	/** Batch download: downloads -> background (clear all completed items) */
 	BatchDownloadClearCompleted = 'band-play-BatchDownloadClearCompleted',
 	/** Batch download: downloads -> background (clear all items and cancel underlying chrome downloads if needed) */
@@ -34,4 +38,6 @@ export enum MessageCode {
 	BatchDownloadRemoveItem = 'band-play-BatchDownloadRemoveItem',
 	/** Batch download: downloads -> background (reveal downloaded file in system file manager) */
 	BatchDownloadShowInFolder = 'band-play-BatchDownloadShowInFolder',
+	/** Batch download: background -> downloads page (volatile per-item progress pushed over the UI port) */
+	BatchDownloadProgressUpdate = 'band-play-BatchDownloadProgressUpdate',
 }

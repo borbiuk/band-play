@@ -42,4 +42,10 @@ export interface ConfigModel {
 
 	/** Number of concurrent active downloads for batch downloads */
 	batchDownloadConcurrency: number;
+
+	/**
+	 * Filename template for batch downloads ({artist}, {title}, {format}
+	 * tokens; '/' creates folders). Empty string keeps server filenames.
+	 */
+	batchDownloadFilenameTemplate: string;
 }

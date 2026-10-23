@@ -40,6 +40,29 @@
 	}
 }
 
+// Releases already downloaded in the current format (history marks).
+.band-play-batch-checkbox-downloaded {
+	accent-color: #22c55e;
+	box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.6);
+	border-radius: 3px;
+
+	.collection-item-container & {
+		opacity: 0.6;
+		pointer-events: auto;
+		border-color: #22c55e;
+		box-shadow: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 18px 18px;
+	}
+
+	.collection-item-container &:checked {
+		opacity: 0.9;
+		border-color: #35a0c3;
+	}
+}
+
 #band-play-batch-overlay-root,
 #band-play-batch-overlay-root * {
 	box-sizing: border-box;
@@ -56,6 +79,16 @@
 #band-play-batch-overlay-root button:hover {
 	text-decoration: none !important;
 	background-color: #7ab6d0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.band-play-batch-checkbox {
+		transition: none;
+	}
+
+	#band-play-batch-overlay-root * {
+		transition: none !important;
+	}
 }
 
 #band-play-batch-overlay-root span {

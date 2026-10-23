@@ -68,7 +68,13 @@ class MessageService {
 				}
 
 				try {
-					func(message);
+					// Async handlers reject instead of throwing: route those
+					// rejections to the error handler as well.
+					Promise.resolve(func(message)).catch((error: Error) => {
+						if (exist(errorHandler)) {
+							errorHandler(error);
+						}
+					});
 				} catch (error) {
 					if (exist(errorHandler)) {
 						errorHandler(error);

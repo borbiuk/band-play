@@ -3,8 +3,15 @@ import { batchDownloadFormatLabel } from '@shared/enums/batch-download-format';
 import { ConfigModel } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { notExist } from '@shared/utils/guard.utils';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
+
+/** Autosave delay of the filename template field. */
+const TEMPLATE_SAVE_DELAY_MS = 300;
+
+/** Renaming needs downloads.onDeterminingFilename, which Firefox does not have. */
+const isFilenameTemplateSupported =
+	typeof chrome.downloads?.onDeterminingFilename !== 'undefined';
 
 /**
  * Batch download settings UI for integrating Batchcamp-like configuration
@@ -18,6 +25,10 @@ export const BatchDownloadControls = ({
 	controlsClassName,
 }: BatchDownloadControlsProps) => {
 	const [config, setConfig] = useState(null as ConfigModel);
+	const [templateDraft, setTemplateDraft] = useState(null as string);
+	// Text typed but not saved yet, and its save timer
+	const pendingTemplate = useRef<string | null>(null);
+	const templateSaveTimer = useRef<number | null>(null);
 
 	useEffect(() => {
 		configService.getAll().then((x) => {
@@ -32,6 +43,32 @@ export const BatchDownloadControls = ({
 	const updateStorage = async (key: keyof ConfigModel, value: unknown) => {
 		await configService.update(key, value);
 	};
+
+	const saveTemplateNow = useCallback((): void => {
+		if (templateSaveTimer.current !== null) {
+			window.clearTimeout(templateSaveTimer.current);
+			templateSaveTimer.current = null;
+		}
+
+		if (pendingTemplate.current === null) {
+			return;
+		}
+
+		const value = pendingTemplate.current.trim();
+		pendingTemplate.current = null;
+		configService
+			.update('batchDownloadFilenameTemplate', value)
+			.catch(() => void 0);
+	}, []);
+
+	// The popup closes when it loses focus: save the typed text right away
+	useEffect(() => {
+		window.addEventListener('pagehide', saveTemplateNow);
+		return () => {
+			window.removeEventListener('pagehide', saveTemplateNow);
+			saveTemplateNow();
+		};
+	}, [saveTemplateNow]);
 
 	if (notExist(config)) {
 		return <div>...</div>;
@@ -118,6 +155,64 @@ export const BatchDownloadControls = ({
 					</div>
 				</div>
 			</div>
+
+			{/* Filename template (Chrome only) */}
+			{isFilenameTemplateSupported && (
+				<div className="w-full">
+					<Tooltip
+						id="batchDownloadFilenameTemplate"
+						className="!z-[9999] max-w-52"
+						variant="light"
+						place="top"
+						opacity={1}
+						offset={1}
+						delayShow={200}
+					>
+						<span className="text-xs text-gray-900">
+							Filename template: {'{artist}'}, {'{title}'} and{' '}
+							{'{format}'} tokens; {'"/"'} creates folders (e.g.{' '}
+							{'{artist}/{artist} - {title}'}). Leave empty to
+							keep original filenames. The template must contain{' '}
+							{'{title}'}, otherwise it is not used.
+						</span>
+					</Tooltip>
+
+					<input
+						id="batchDownloadFilenameTemplate"
+						data-tooltip-id="batchDownloadFilenameTemplate"
+						type="text"
+						spellCheck={false}
+						placeholder="Filename template"
+						className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-left text-sm font-normal text-gray-900 outline-none placeholder:text-gray-400"
+						value={
+							templateDraft ??
+							config.batchDownloadFilenameTemplate ??
+							''
+						}
+						onChange={(e) => {
+							setTemplateDraft(e.target.value);
+							pendingTemplate.current = e.target.value;
+							if (templateSaveTimer.current !== null) {
+								window.clearTimeout(templateSaveTimer.current);
+							}
+
+							templateSaveTimer.current = window.setTimeout(
+								saveTemplateNow,
+								TEMPLATE_SAVE_DELAY_MS
+							);
+						}}
+						onBlur={() => {
+							saveTemplateNow();
+							setTemplateDraft(null);
+						}}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								e.currentTarget.blur();
+							}
+						}}
+					/>
+				</div>
+			)}
 		</div>
 	);
 };

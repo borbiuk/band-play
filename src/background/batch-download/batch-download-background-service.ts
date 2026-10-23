@@ -1,11 +1,15 @@
+import { BatchDownloadFormat } from '@shared/enums';
+
 import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
 
 import {
 	enqueuePendingItems,
-	hasActiveItems,
+	cancelBatchDownloadItem,
 	clearAllBatchDownloads,
 	clearCompletedBatchDownloads,
+	deleteBatchDownloadFile,
 	pauseAllBatchDownloads,
+	pauseBatchDownloadItem,
 	resumeAllBatchDownloads,
 	resumeBatchDownloadItem,
 	removeBatchDownloadItem,
@@ -14,38 +18,42 @@ import {
 	showBatchDownloadInFolder,
 } from './actions';
 import { openOrFocusDownloadsTab } from './downloads-tab';
+import { registerFilenameRouter } from './filename-router';
+import { registerDownloadsProgressHandling } from './progress-updates';
 import { BatchDownloadRunner } from './runner';
 import {
-	getQueuedBatchDownloadItems,
+	appendQueuedBatchDownloadItems,
 	setDownloadsShelfEnabledSafe,
-	setQueuedBatchDownloadItems,
 } from './state';
 import { registerBatchDownloadTabCleanup } from './tab-cleanup';
+import { registerDownloadsUiPresence } from './ui-presence';
 
 export class BatchDownloadBackgroundService {
 	private readonly runner = new BatchDownloadRunner();
 
 	public start(): void {
 		registerBatchDownloadTabCleanup();
+		registerDownloadsProgressHandling(this.runner);
+		registerFilenameRouter();
+		registerDownloadsUiPresence(() =>
+			this.runner.startDownloadsProgressPoller()
+		);
 
 		this.runner.start();
 	}
 
 	public async enqueuePendingItems(
-		items: BatchDownloadPendingItemModel[]
+		items: BatchDownloadPendingItemModel[],
+		format?: BatchDownloadFormat
 	): Promise<void> {
 		await enqueuePendingItems(
 			items,
+			format,
 			setDownloadsShelfEnabledSafe,
-			setQueuedBatchDownloadItems,
+			appendQueuedBatchDownloadItems,
 			openOrFocusDownloadsTab,
-			getQueuedBatchDownloadItems,
 			() => this.runner.scheduleBatchTick()
 		);
-	}
-
-	public scheduleTick(): void {
-		this.runner.scheduleBatchTick();
 	}
 
 	public async openDownloadsTab(): Promise<void> {
@@ -78,6 +86,22 @@ export class BatchDownloadBackgroundService {
 		);
 	}
 
+	public async pauseItem(id: string): Promise<void> {
+		await pauseBatchDownloadItem(String(id), () =>
+			this.runner.scheduleBatchTick()
+		);
+	}
+
+	public async cancelItem(id: string): Promise<void> {
+		await cancelBatchDownloadItem(String(id), () =>
+			this.runner.scheduleBatchTick()
+		);
+	}
+
+	public async deleteFile(id: string): Promise<void> {
+		await deleteBatchDownloadFile(String(id));
+	}
+
 	public async clearCompleted(): Promise<void> {
 		await clearCompletedBatchDownloads(() =>
 			this.runner.scheduleBatchTick()
@@ -96,12 +120,5 @@ export class BatchDownloadBackgroundService {
 
 	public async showInFolder(id: string): Promise<void> {
 		await showBatchDownloadInFolder(String(id));
-	}
-
-	public async ensureShelfResetIfIdle(): Promise<void> {
-		const hasActive = await hasActiveItems();
-		if (!hasActive) {
-			setDownloadsShelfEnabledSafe(true);
-		}
 	}
 }

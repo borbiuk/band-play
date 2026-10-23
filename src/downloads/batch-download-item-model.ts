@@ -18,7 +18,14 @@ export type BatchDownloadItemModel =
 					| DownloadStatus.Pending
 					| DownloadStatus.Queued
 					| DownloadStatus.Resolving
+					| DownloadStatus.RateLimited
 					| DownloadStatus.Failed;
+				/** Timestamp before which the item must not be resolved again */
+				nextRetryAt?: number;
+				/** Number of consecutive rate-limited resolve attempts */
+				rateLimitAttempt?: number;
+				/** Machine-readable failure reason (e.g. 'unverified') */
+				failReason?: string;
 			})
 	| (BatchDownloadItemMeta & {
 			id: string;
@@ -36,6 +43,14 @@ export type BatchDownloadItemModel =
 			parentId?: string;
 			/** Set when the user manually resumed a Duplicate item; disables duplicate auto-pause */
 			duplicateResumed?: boolean;
+			/** Bandcamp download page URL the file URL was resolved from */
+			pageUrl?: string;
+			/** Number of automatic retries performed after interruptions */
+			retryCount?: number;
+			/** Timestamp before which the download must not be started again */
+			nextRetryAt?: number;
+			/** Re-resolve the (possibly expired) file URL from pageUrl before the next start */
+			needsUrlRefresh?: boolean;
 	  })
 	| (BatchDownloadItemMeta & {
 			id: string;
@@ -48,4 +63,6 @@ export type BatchDownloadItemModel =
 				| DownloadStatus.Failed;
 			progress: number;
 			children: string[];
+			/** Bandcamp download page URL the children were resolved from */
+			pageUrl?: string;
 	  });

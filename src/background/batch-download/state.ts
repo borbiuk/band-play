@@ -9,6 +9,9 @@ export const BATCH_DOWNLOAD_TAB_ID_KEY = 'batchDownloadTabId';
 export const BATCH_DOWNLOAD_QUEUED_ITEMS_KEY = 'batchDownloadQueuedItems';
 export const BATCH_DOWNLOAD_ITEMS_KEY = 'batchDownloadItems';
 
+// setShelfEnabled is deprecated since Chrome 117 in favor of setUiOptions.
+const isDownloadsUiOptionsAvailable =
+	typeof chrome.downloads?.setUiOptions !== 'undefined';
 const isDownloadsShelfAvailable =
 	typeof chrome.downloads?.setShelfEnabled !== 'undefined';
 
@@ -60,7 +63,10 @@ export const isActiveBatchDownloadItem = (
 	}
 
 	// multiple
-	return x.status !== DownloadStatus.Completed;
+	return (
+		x.status !== DownloadStatus.Completed &&
+		x.status !== DownloadStatus.Failed
+	);
 };
 
 export const getBatchDownloadItems = async (): Promise<
@@ -74,10 +80,36 @@ export const getBatchDownloadItems = async (): Promise<
 	return raw as BatchDownloadItemModel[];
 };
 
-export const setBatchDownloadItems = async (
+const setBatchDownloadItems = async (
 	items: BatchDownloadItemModel[]
 ): Promise<void> => {
 	await chrome.storage.local.set({ [BATCH_DOWNLOAD_ITEMS_KEY]: items });
+};
+
+// Serializes every mutation of the batch-download storage keys: concurrent
+// read-modify-write cycles (runner tick, progress poller, user actions)
+// would otherwise overwrite each other's changes.
+let stateWriteChain: Promise<unknown> = Promise.resolve();
+
+const enqueueStateWrite = <T>(run: () => Promise<T>): Promise<T> => {
+	const result = stateWriteChain.then(run, run);
+	stateWriteChain = result.catch(() => void 0);
+	return result;
+};
+
+export const updateBatchDownloadItems = (
+	update: (
+		items: BatchDownloadItemModel[]
+	) => BatchDownloadItemModel[] | Promise<BatchDownloadItemModel[]>
+): Promise<BatchDownloadItemModel[]> => {
+	return enqueueStateWrite(async () => {
+		const current = await getBatchDownloadItems();
+		const next = await update(current);
+		if (next !== current) {
+			await setBatchDownloadItems(next);
+		}
+		return next;
+	});
 };
 
 export const getQueuedBatchDownloadItems = async (): Promise<QueuedItems> => {
@@ -93,11 +125,71 @@ export const getQueuedBatchDownloadItems = async (): Promise<QueuedItems> => {
 	return items;
 };
 
-export const setQueuedBatchDownloadItems = async (
+const setQueuedBatchDownloadItems = async (
 	items: QueuedItems
 ): Promise<void> => {
 	await chrome.storage.local.set({
 		[BATCH_DOWNLOAD_QUEUED_ITEMS_KEY]: items,
+	});
+};
+
+/**
+ * Appends new pending items to the queue, skipping releases that are already
+ * queued or still actively processed (dedup by sourceId). Completed and
+ * failed releases can be re-added deliberately.
+ */
+export const appendQueuedBatchDownloadItems = (
+	items: QueuedItems
+): Promise<void> => {
+	return enqueueStateWrite(async () => {
+		const existingQueued = await getQueuedBatchDownloadItems();
+		const existingItems = await getBatchDownloadItems();
+
+		const activeSourceIds = new Set<string>();
+		for (const queued of existingQueued) {
+			activeSourceIds.add(queued.sourceId ?? queued.id);
+		}
+		for (const item of existingItems) {
+			if (!isActiveBatchDownloadItem(item)) {
+				continue;
+			}
+
+			// Children carry digital-item ids; dedup only on top-level items.
+			if (item.type === DownloadType.Single && exist(item.parentId)) {
+				continue;
+			}
+
+			if (exist(item.sourceId)) {
+				activeSourceIds.add(item.sourceId);
+			}
+		}
+
+		const fresh = items.filter(
+			(x) => !activeSourceIds.has(x.sourceId ?? x.id)
+		);
+		if (fresh.length === 0) {
+			return;
+		}
+
+		await setQueuedBatchDownloadItems([...existingQueued, ...fresh]);
+	});
+};
+
+// Atomically merges queued items into the persisted items and clears the queue.
+export const drainQueuedBatchDownloadItems = (): Promise<
+	BatchDownloadItemModel[]
+> => {
+	return enqueueStateWrite(async () => {
+		const queued = await getQueuedBatchDownloadItems();
+		const current = await getBatchDownloadItems();
+		if (queued.length === 0) {
+			return current;
+		}
+
+		const merged = mergePendingIntoState(current, queued);
+		await setQueuedBatchDownloadItems([]);
+		await setBatchDownloadItems(merged);
+		return merged;
 	});
 };
 
@@ -140,11 +232,25 @@ export const updateParentsProgress = (
 				x.type === DownloadType.Single &&
 				x.status === DownloadStatus.Completed
 		).length;
+		const failed = children.filter(
+			(x) =>
+				x.type === DownloadType.Single &&
+				x.status === DownloadStatus.Failed
+		).length;
 		const progress = Math.max((completed / children.length) * 100, 0);
 		const allCompleted = completed === children.length;
-		const nextStatus = allCompleted
-			? DownloadStatus.Completed
-			: item.status;
+		const allTerminal = completed + failed === children.length;
+
+		let nextStatus = item.status;
+		if (allCompleted) {
+			nextStatus = DownloadStatus.Completed;
+		} else if (allTerminal) {
+			// Every child finished and at least one of them failed.
+			nextStatus = DownloadStatus.Failed;
+		} else if (item.status === DownloadStatus.Failed) {
+			// A failed child was re-queued (retry): the parent is active again.
+			nextStatus = DownloadStatus.Resolved;
+		}
 
 		if (item.progress !== progress || item.status !== nextStatus) {
 			map.set(item.id, { ...item, progress, status: nextStatus });
@@ -160,6 +266,19 @@ export const updateParentsProgress = (
 };
 
 export const setDownloadsShelfEnabledSafe = (enabled: boolean) => {
+	if (isDownloadsUiOptionsAvailable) {
+		try {
+			// Re-enabling fails via runtime.lastError when another extension
+			// keeps the download UI disabled; that is fine to ignore.
+			Promise.resolve(chrome.downloads.setUiOptions({ enabled })).catch(
+				() => void 0
+			);
+		} catch (_e) {
+			// ignore
+		}
+		return;
+	}
+
 	if (!isDownloadsShelfAvailable) {
 		return;
 	}
