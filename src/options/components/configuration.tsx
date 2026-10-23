@@ -53,13 +53,18 @@ export const Configuration = () => {
 	};
 
 	useEffect(() => {
-		loadTabId().then((tabId) => {
-			setTabId(tabId);
-		});
+		loadTabId()
+			.then((tabId) => {
+				setTabId(tabId);
+			})
+			.catch((e) => console.error(e));
 
-		configService.getAll().then((config) => {
-			setCurrentConfig(config);
-		});
+		configService
+			.getAll()
+			.then((config) => {
+				setCurrentConfig(config);
+			})
+			.catch((e) => console.error(e));
 	}, []);
 
 	// Render loading indicator if tabId or currentConfig is not available.

@@ -463,9 +463,11 @@ export class BatchDownloadRunner {
 
 		this.isWatchdogAlarmEnsured = true;
 		try {
-			chrome.alarms.create(WATCHDOG_ALARM_NAME, {
-				periodInMinutes: WATCHDOG_ALARM_PERIOD_MINUTES,
-			});
+			chrome.alarms
+				.create(WATCHDOG_ALARM_NAME, {
+					periodInMinutes: WATCHDOG_ALARM_PERIOD_MINUTES,
+				})
+				.catch(() => void 0);
 		} catch (_e) {
 			// ignore
 		}
@@ -496,9 +498,11 @@ export class BatchDownloadRunner {
 		}
 
 		try {
-			chrome.alarms.create(RETRY_ALARM_NAME, {
-				when: Date.now() + delayMs,
-			});
+			chrome.alarms
+				.create(RETRY_ALARM_NAME, {
+					when: Date.now() + delayMs,
+				})
+				.catch(() => void 0);
 		} catch (_e) {
 			// ignore
 		}

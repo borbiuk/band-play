@@ -1,4 +1,5 @@
 import { ExternalLinksPopup } from '@shared/components/external-links';
+import { renderErrorOptions } from '@shared/utils/render-error.utils';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -64,7 +65,8 @@ const Options = () => {
 };
 
 /** Root element for React rendering */
-const root = createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container, renderErrorOptions(container, 'settings'));
 
 /** Render the Options component in React StrictMode */
 root.render(

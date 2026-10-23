@@ -11,6 +11,16 @@ import { BatchDownloadBackgroundService } from '../batch-download/batch-download
 
 import { IBackgroundService } from './base/i-background-service';
 
+/** True for an absolute http(s) URL. */
+const isWebUrl = (url: unknown): boolean => {
+	try {
+		const { protocol } = new URL(String(url));
+		return protocol === 'https:' || protocol === 'http:';
+	} catch {
+		return false;
+	}
+};
+
 /**
  * Handles inter-component communication.
  * Processes messages from content scripts and UI pages.
@@ -26,6 +36,11 @@ export class MessagesBackgroundService implements IBackgroundService {
 				// Open a new tab
 				case MessageCode.CreateNewTab: {
 					const { url, active } = message.data as NewTabMessage;
+					// The URL comes from the page: only web pages are opened
+					if (!isWebUrl(url)) {
+						break;
+					}
+
 					chrome.tabs
 						.create({ url: String(url), active })
 						.catch((e) => console.error(e));

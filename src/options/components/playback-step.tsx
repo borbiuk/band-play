@@ -28,9 +28,12 @@ export const PlaybackStep = () => {
 	};
 
 	useEffect(() => {
-		configService.getAll().then((config) => {
-			setCurrentConfig(config);
-		});
+		configService
+			.getAll()
+			.then((config) => {
+				setCurrentConfig(config);
+			})
+			.catch((e) => console.error(e));
 	}, []);
 
 	// Render loading indicator if currentConfig is not available.

@@ -31,9 +31,12 @@ export const BatchDownloadControls = ({
 	const templateSaveTimer = useRef<number | null>(null);
 
 	useEffect(() => {
-		configService.getAll().then((x) => {
-			setConfig(x);
-		});
+		configService
+			.getAll()
+			.then((x) => {
+				setConfig(x);
+			})
+			.catch((e) => console.error(e));
 
 		configService.addListener((x) => {
 			setConfig(x);
