@@ -379,4 +379,78 @@ test.describe('parseBandcampDownloads', () => {
 			await parseBandcampDownloads(PAGE_URL, BatchDownloadFormat.Flac)
 		).toEqual([]);
 	});
+
+	test('should read Retry-After seconds from an HTTP 429', async () => {
+		globalThis.fetch = async (): Promise<Response> =>
+			new Response('Too many requests', {
+				status: 429,
+				headers: { 'Retry-After': '120' },
+			});
+
+		const error = await parseBandcampDownloads(
+			PAGE_URL,
+			BatchDownloadFormat.Flac
+		).catch((e: unknown) => e);
+
+		expect(error).toBeInstanceOf(BandcampRateLimitError);
+		expect((error as BandcampRateLimitError).retryAfterMs).toBe(120000);
+	});
+
+	test('should not fetch a URL outside Bandcamp', async () => {
+		const calls = respond('<html></html>');
+
+		await expect(
+			parseBandcampDownloads(
+				'https://bandcamp.com.evil.com/download',
+				BatchDownloadFormat.Flac
+			)
+		).rejects.toThrow('Not a Bandcamp download page URL');
+		expect(calls).toHaveLength(0);
+	});
+
+	test('should skip a file URL outside Bandcamp', async () => {
+		respond(
+			downloadPage({
+				digital_items: [
+					{
+						item_id: 1,
+						title: 'Bad',
+						downloads: { flac: { url: 'http://evil.example/f' } },
+					},
+					{
+						item_id: 2,
+						title: 'Good',
+						downloads: { flac: { url: 'https://p4.bcbits.com/f' } },
+					},
+				],
+			})
+		);
+
+		const result = await parseBandcampDownloads(
+			PAGE_URL,
+			BatchDownloadFormat.Flac
+		);
+
+		expect(result.map((x) => x.id)).toEqual(['2']);
+	});
+
+	test('should abort when the body stalls after the headers', async () => {
+		globalThis.fetch = async (
+			_input: string | URL | Request,
+			init?: RequestInit
+		): Promise<Response> => {
+			const body = new ReadableStream({
+				start(controller) {
+					init?.signal?.addEventListener('abort', () => {
+						controller.error(new Error('aborted'));
+					});
+				},
+			});
+			return new Response(body, { status: 200 });
+		};
+
+		await expect(
+			parseBandcampDownloads(PAGE_URL, BatchDownloadFormat.Flac)
+		).rejects.toThrow();
+	});
 });

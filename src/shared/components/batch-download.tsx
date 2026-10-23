@@ -38,7 +38,7 @@ export const BatchDownloadControls = ({
 			})
 			.catch((e) => console.error(e));
 
-		configService.addListener((x) => {
+		return configService.addListener((x) => {
 			setConfig(x);
 		});
 	}, []);
@@ -96,10 +96,13 @@ export const BatchDownloadControls = ({
 						</span>
 					</Tooltip>
 
+					<label htmlFor="batchDownloadFormat" className="sr-only">
+						Download format
+					</label>
 					<select
 						id="batchDownloadFormat"
 						data-tooltip-id="batchDownloadFormat"
-						className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none"
+						className="block h-6 w-full cursor-pointer truncate rounded-md border border-band-200 bg-band-100 pl-2 text-left text-sm font-normal tabular-nums text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-band-700"
 						value={config.batchDownloadFormat}
 						onChange={(e) =>
 							updateStorage(
@@ -137,6 +140,12 @@ export const BatchDownloadControls = ({
 					</Tooltip>
 
 					<div className="flex items-center">
+						<label
+							htmlFor="batchDownloadConcurrency"
+							className="sr-only"
+						>
+							Parallel downloads (1-15)
+						</label>
 						<input
 							id="batchDownloadConcurrency"
 							data-tooltip-id="batchDownloadConcurrency"
@@ -144,7 +153,7 @@ export const BatchDownloadControls = ({
 							min={1}
 							max={15}
 							value={config.batchDownloadConcurrency}
-							className="h-6 w-full cursor-pointer accent-band-500"
+							className="h-6 w-full cursor-pointer accent-band-500 outline-none focus-visible:ring-2 focus-visible:ring-band-700"
 							onChange={(e) =>
 								updateStorage(
 									'batchDownloadConcurrency',
@@ -180,13 +189,19 @@ export const BatchDownloadControls = ({
 						</span>
 					</Tooltip>
 
+					<label
+						htmlFor="batchDownloadFilenameTemplate"
+						className="sr-only"
+					>
+						Filename template
+					</label>
 					<input
 						id="batchDownloadFilenameTemplate"
 						data-tooltip-id="batchDownloadFilenameTemplate"
 						type="text"
 						spellCheck={false}
 						placeholder="Filename template"
-						className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-left text-sm font-normal text-gray-900 outline-none placeholder:text-gray-400"
+						className="block h-6 w-full rounded-md border border-band-200 bg-band-100 px-2 text-left text-sm font-normal text-gray-900 outline-none placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-band-700"
 						value={
 							templateDraft ??
 							config.batchDownloadFilenameTemplate ??

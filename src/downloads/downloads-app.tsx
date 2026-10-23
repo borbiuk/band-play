@@ -159,7 +159,7 @@ export const DownloadsApp = () => {
 			})
 			.catch((e) => console.error(e));
 
-		configService.addListener((x) => {
+		return configService.addListener((x) => {
 			setConfig(x);
 		});
 	}, []);
@@ -834,7 +834,10 @@ export const DownloadsApp = () => {
 			</div>
 
 			{hasUnverifiedFailure && (
-				<div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+				<div
+					role="alert"
+					className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900"
+				>
 					Bandcamp requires a verified email address before it allows
 					downloads. Check your inbox, verify your account, then use
 					&quot;Retry failed&quot;.
@@ -844,7 +847,7 @@ export const DownloadsApp = () => {
 			{hasItems && (
 				<div className="mt-4">
 					<div className="flex items-center justify-between text-sm text-gray-600">
-						<span>
+						<span role="status">
 							{`Downloaded ${overall.completed} of ${overall.total}`}
 							{overall.failed > 0 && (
 								<span className="text-red-500">{` · ${overall.failed} failed`}</span>
@@ -860,6 +863,7 @@ export const DownloadsApp = () => {
 					<div
 						className="mt-1 flex h-2 w-full overflow-hidden rounded-full bg-gray-100"
 						role="progressbar"
+						aria-label="Overall download progress"
 						aria-valuenow={Math.round(overall.donePct)}
 						aria-valuemin={0}
 						aria-valuemax={100}

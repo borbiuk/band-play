@@ -91,13 +91,16 @@
 	}
 }
 
-/* required to avoid overwriting bandcamp styles */
-*,
-::before,
-::after {
-	box-sizing: unset;
-}
+/* required to avoid overwriting bandcamp styles; scoped to the player, so the
+   Bandcamp page keeps its own styles (:where keeps the specificity at zero) */
+:where(#band-play_player-container) {
+	*,
+	::before,
+	::after {
+		box-sizing: unset;
+	}
 
-div {
-	display: block;
+	div {
+		display: block;
+	}
 }

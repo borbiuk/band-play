@@ -246,7 +246,18 @@ export const DownloadItemRow = ({
 				/>
 			</td>
 			<td className="p-2">
-				<div className="h-2 w-full rounded-full bg-gray-100">
+				<div
+					className="h-2 w-full rounded-full bg-gray-100"
+					role="progressbar"
+					aria-label={`${displayTitle || item.title} progress`}
+					aria-valuemin={0}
+					aria-valuemax={100}
+					aria-valuenow={
+						Number.isNaN(progress)
+							? undefined
+							: Math.round(Math.min(Math.max(progress, 0), 100))
+					}
+				>
 					<div
 						className={`h-2 rounded-full bg-band-500 ${
 							isPaused ? 'band-play-progress-paused' : ''

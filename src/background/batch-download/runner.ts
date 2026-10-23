@@ -363,7 +363,12 @@ export class BatchDownloadRunner {
 						return {
 							...x,
 							retryCount: attempt,
-							nextRetryAt: Date.now() + rateLimitDelayMs(attempt),
+							nextRetryAt:
+								Date.now() +
+								Math.max(
+									rateLimitDelayMs(attempt),
+									e.retryAfterMs ?? 0
+								),
 						};
 					}
 
@@ -795,16 +800,41 @@ export class BatchDownloadRunner {
 					}
 
 					if (e instanceof BandcampRateLimitError) {
-						items = await this.updateItems((current) =>
-							current.map((x): BatchDownloadItemModel => {
-								if (
-									x.id !== pending.id ||
-									x.type !== DownloadType.Pending
-								) {
+						// One shared pause: the other pending items wait too
+						// (without using their own attempts), so Bandcamp is not
+						// asked again while it throttles
+						const retryAfterMs = e.retryAfterMs ?? 0;
+						items = await this.updateItems((current) => {
+							const failing = current.find(
+								(x) =>
+									x.id === pending.id &&
+									x.type === DownloadType.Pending
+							);
+							const attempt =
+								((failing as { rateLimitAttempt?: number })
+									?.rateLimitAttempt ?? 0) + 1;
+							const pauseUntil =
+								Date.now() +
+								Math.max(
+									rateLimitDelayMs(attempt),
+									retryAfterMs
+								);
+
+							return current.map((x): BatchDownloadItemModel => {
+								if (x.type !== DownloadType.Pending) {
 									return x;
 								}
 
-								const attempt = (x.rateLimitAttempt ?? 0) + 1;
+								if (x.id !== pending.id) {
+									return x.status === DownloadStatus.Pending
+										? {
+												...x,
+												status: DownloadStatus.RateLimited,
+												nextRetryAt: pauseUntil,
+											}
+										: x;
+								}
+
 								if (attempt > MAX_RATE_LIMIT_ATTEMPTS) {
 									return {
 										...x,
@@ -816,12 +846,11 @@ export class BatchDownloadRunner {
 									...x,
 									status: DownloadStatus.RateLimited,
 									rateLimitAttempt: attempt,
-									nextRetryAt:
-										Date.now() + rateLimitDelayMs(attempt),
+									nextRetryAt: pauseUntil,
 								};
-							})
-						);
-						continue;
+							});
+						});
+						break;
 					}
 
 					items = await this.updateItems((current) =>
@@ -873,6 +902,17 @@ export class BatchDownloadRunner {
 				}
 
 				items = await this.updateItems((current) => {
+					// Remove or Clear all during the page fetch wins
+					const stillResolving = current.some(
+						(x) =>
+							x.id === pending.id &&
+							x.type === DownloadType.Pending &&
+							x.status === DownloadStatus.Resolving
+					);
+					if (!stillResolving) {
+						return current;
+					}
+
 					const withoutParent = current.filter(
 						(x) => x.id !== pending.id
 					);
@@ -1261,6 +1301,17 @@ export class BatchDownloadRunner {
 				try {
 					await chrome.downloads.pause(downloadId);
 					didPauseDuplicate = true;
+				} catch (_e) {
+					// ignore
+				}
+			}
+
+			// An HTML error stub that the browser saved as "complete" is
+			// removed, so the retry does not get a uniquified name and pause
+			// as a duplicate of the stub
+			if (rawCompleted && !isPlausiblyComplete && d.exists !== false) {
+				try {
+					await chrome.downloads.removeFile(downloadId);
 				} catch (_e) {
 					// ignore
 				}

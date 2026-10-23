@@ -21,7 +21,7 @@ paths:
 ## Saving
 
 - **Every control saves on change** with `configService.update(key, value)` (`chrome.storage.local`); there is no Save button except in the shortcut recorder.
-- **No writes on open**: `Checkbox` and `PlaybackStepInput` skip their first effect run (`isFirstRender` ref), so opening the popup writes nothing. `tests/e2e/popup-settings.spec.ts` checks that only the changed key is stored. Keep this when you add a control: never write a default back.
+- **No writes on open**: `Checkbox` and `PlaybackStepInput` save from their change handlers (not from an effect), so opening the popup writes nothing, also in a StrictMode development build. `tests/e2e/popup-settings.spec.ts` checks that only the changed key is stored. Keep this when you add a control: never write a default back.
 - The filename template autosaves 300 ms after the last key press (`TEMPLATE_SAVE_DELAY_MS`), and at once on blur, Enter, `pagehide` and unmount; the value is trimmed. The popup closes when it loses focus, so pending text must be flushed.
 - `ShortcutInput` and `BatchDownloadControls` follow `configService.addListener`; `Configuration` and `PlaybackStep` read the config once when the popup opens.
 

@@ -1,16 +1,46 @@
 import { BatchDownloadFormat } from '@shared/enums';
+import { isBandcampFileUrl, isBandcampUrl } from '@shared/utils';
 
 import { BatchDownloadFileModel } from '../batch-download-file-model';
 
 const FETCH_TIMEOUT_MS = 15000;
 
+/** The longest `Retry-After` delay that is respected. */
+const MAX_RETRY_AFTER_MS = 10 * 60 * 1000;
+
 /** Thrown when Bandcamp responds with HTTP 429 (too many requests). */
 export class BandcampRateLimitError extends Error {
-	constructor() {
+	/** Delay from the `Retry-After` header in milliseconds, when Bandcamp sent one. */
+	public readonly retryAfterMs?: number;
+
+	constructor(retryAfterMs?: number) {
 		super('Bandcamp rate limit (HTTP 429)');
 		this.name = 'BandcampRateLimitError';
+		this.retryAfterMs = retryAfterMs;
 	}
 }
+
+/** Reads `Retry-After` (delta seconds or an HTTP date) as a capped delay in milliseconds. */
+const parseRetryAfterMs = (header: string | null): number | undefined => {
+	if (!header) {
+		return undefined;
+	}
+
+	const value = header.trim();
+	let delayMs: number;
+	if (/^\d+$/.test(value)) {
+		delayMs = Number.parseInt(value, 10) * 1000;
+	} else {
+		const date = Date.parse(value);
+		if (Number.isNaN(date)) {
+			return undefined;
+		}
+
+		delayMs = date - Date.now();
+	}
+
+	return Math.min(Math.max(delayMs, 0), MAX_RETRY_AFTER_MS);
+};
 
 /** Thrown when Bandcamp refuses downloads because the account email is unverified. */
 export class BandcampUnverifiedError extends Error {
@@ -79,24 +109,39 @@ export const parseBandcampDownloads = async (
 	pageUrl: string,
 	format: BatchDownloadFormat
 ): Promise<BatchDownloadFileModel[]> => {
+	// The URL comes from the page: only Bandcamp pages are fetched
+	if (!isBandcampUrl(pageUrl)) {
+		throw new Error('Not a Bandcamp download page URL');
+	}
+
+	// The timeout covers the headers and the body
 	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-	let response: Response;
+	let html: string;
 	try {
-		response = await fetch(pageUrl, { signal: controller.signal });
+		const response = await fetch(pageUrl, { signal: controller.signal });
+
+		if (response.status === 429) {
+			throw new BandcampRateLimitError(
+				parseRetryAfterMs(response.headers.get('Retry-After'))
+			);
+		}
+
+		if (!response.ok) {
+			throw new Error(
+				`Bandcamp page fetch failed (HTTP ${response.status})`
+			);
+		}
+
+		// A redirect must stay on Bandcamp
+		if (response.url && !isBandcampUrl(response.url)) {
+			throw new Error('Bandcamp page redirected to another site');
+		}
+
+		html = await response.text();
 	} finally {
 		clearTimeout(timeoutId);
 	}
-
-	if (response.status === 429) {
-		throw new BandcampRateLimitError();
-	}
-
-	if (!response.ok) {
-		throw new Error(`Bandcamp page fetch failed (HTTP ${response.status})`);
-	}
-
-	const html = await response.text();
 
 	const blob = getDataBlob(html);
 	if (!blob) {
@@ -129,7 +174,7 @@ export const parseBandcampDownloads = async (
 		}
 
 		const url = itemDownloads?.[format]?.url;
-		if (!url) {
+		if (!url || !isBandcampFileUrl(url)) {
 			continue;
 		}
 

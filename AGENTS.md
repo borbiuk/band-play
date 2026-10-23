@@ -27,7 +27,7 @@ Details: [extension-architecture.md](.claude/rules/extension-architecture.md) (e
 
 - **No hashed bundle filenames** — manifests and HTML pages reference fixed names; webpack uses **`[name].js`** and each entry (`options`, `background`, `content`, `downloads`) is a single self-contained file (`splitChunks: false`, `runtimeChunk: false`). Do not introduce content hashes or chunks.
 - **Two manifests, kept in sync** — they differ only by `background` (`service_worker` in Chrome, `scripts` in Firefox), `browser_specific_settings` (Firefox only: Gecko ID `borbiuk.n@gmail.com`, `strict_min_version` 128.0, `data_collection_permissions`) and the Chrome-only permissions `power`, `downloads.shelf` and `downloads.ui`. The version is set in `public/manifest.json`; the pre-commit hook (`.husky/set-version.sh`) copies it to `package.json` and `manifest.firefox.json`.
-- **Permissions** — `tabs`, `storage`, `downloads`, `alarms` (both) plus `power`, `downloads.shelf`, `downloads.ui` (Chrome); `host_permissions` and content script `matches` are `https://bandcamp.com/*` and `https://*.bandcamp.com/*`.
+- **Permissions** — `storage`, `downloads`, `alarms` (both) plus `power`, `downloads.shelf`, `downloads.ui` (Chrome); `host_permissions` and content script `matches` are `https://bandcamp.com/*` and `https://*.bandcamp.com/*`.
 - **`chrome.*` namespace only** — Firefox MV3 supports it; do not add a `browser.*` polyfill. Chrome-only APIs are feature-detected (`typeof chrome.power`, `chrome.downloads?.onDeterminingFilename`).
 - Cross-import shared code via **`@shared/...`** (see `webpack/webpack.common.js` and `tsconfig.json`).
 - Styles are SCSS through `sass-loader` → `postcss-loader` (Tailwind 3, autoprefixer, postcss-preset-env) → `css-loader` → `style-loader`.

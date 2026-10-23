@@ -17,7 +17,7 @@ paths:
 
 - Describe the code as it is: read `package.json`, `public/manifest*.json`, `src/**` and `webpack/**` before writing about them. Every command, script name, path, shortcut, setting and manifest value must match the code.
 - `README.md`: features, keyboard shortcuts with their defaults (`configService.defaultShortcuts()`), supported pages, development setup (Chrome Load unpacked `dist/`, Firefox `about:debugging` with `dist-firefox/manifest.json`), npm scripts, tests, file structure.
-- `LISTING.md`: store text. Privacy: no analytics and no data collection; settings, visited history and download state stay in the browser (`chrome.storage.local`); the only requests go to Bandcamp (download pages and files for batch download). Explain every permission (`tabs`, `storage`, `downloads`, `alarms`, the Chrome-only `power`, `downloads.shelf`, `downloads.ui`, and the Bandcamp host access).
+- `LISTING.md`: store text. Privacy: no analytics and no data collection; settings, visited history and download state stay in the browser (`chrome.storage.local`); the only requests go to Bandcamp (download pages and files for batch download). Explain every permission (`storage`, `downloads`, `alarms`, the Chrome-only `power`, `downloads.shelf`, `downloads.ui`, and the Bandcamp host access).
 - A user-visible change (shortcut, setting, page, permission) goes into `README.md`, `LISTING.md` and `RELEASE_NOTES.md` together.
 - `RELEASE_NOTES.md`: one `## x.y.z` heading per release, newest first. `scripts/tag-releases.sh` reads that heading pattern, so do not use it for anything else.
 

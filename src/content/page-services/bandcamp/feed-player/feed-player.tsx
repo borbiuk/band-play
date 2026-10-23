@@ -71,7 +71,16 @@ export const FeedPlayer = ({
 	const hasTrackRef = useRef(false);
 
 	useEffect(() => {
-		configService.addListener((newConfig) => {
+		// The player can render before the page service has loaded the config
+		configService
+			.getAll()
+			.then((config) => {
+				showSettingRef.current = config.showFeedPlayer;
+				setShow(showSettingRef.current && hasTrackRef.current);
+			})
+			.catch((e) => console.error(e));
+
+		return configService.addListener((newConfig) => {
 			showSettingRef.current = newConfig.showFeedPlayer;
 			setShow(showSettingRef.current && hasTrackRef.current);
 		});
@@ -197,6 +206,18 @@ export const FeedPlayer = ({
 		[feedPageService]
 	);
 
+	// Space and the arrow keys are the extension's shortcuts: only Enter is handled here
+	const onEnter =
+		(action: () => void) =>
+		(e: React.KeyboardEvent): void => {
+			if (e.key !== 'Enter') {
+				return;
+			}
+
+			e.preventDefault();
+			action();
+		};
+
 	return (
 		show &&
 		exist(trackTitle) && (
@@ -205,12 +226,18 @@ export const FeedPlayer = ({
 				<div
 					className={`story flex items-center justify-center ${isPlaying ? 'playing' : 'paused'}`}
 				>
-					<div className="group relative ml-2 flex h-[60px] w-[60px] cursor-pointer items-center justify-center">
+					<div
+						className="group relative ml-2 flex h-[60px] w-[60px] cursor-pointer items-center justify-center"
+						role="button"
+						tabIndex={0}
+						aria-label={isPlaying ? 'Pause' : 'Play'}
+						onKeyDown={onEnter(() => feedPageService.playPause())}
+					>
 						{coverArtUrl ? (
 							<>
 								<img
 									src={coverArtUrl}
-									alt="Track cover art"
+									alt=""
 									className="h-full w-full object-cover"
 									onClick={() => feedPageService.playPause()}
 								/>
@@ -255,6 +282,13 @@ export const FeedPlayer = ({
 							{/* Playback */}
 							<div
 								className="progress-bar relative"
+								role="slider"
+								tabIndex={0}
+								aria-label="Seek"
+								aria-valuemin={0}
+								aria-valuemax={Math.round(duration || 0)}
+								aria-valuenow={Math.round(currentTime || 0)}
+								aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
 								onClick={handleSeek}
 								onMouseDown={() => setSeeking(true)}
 								onMouseUp={() => setSeeking(false)}
@@ -278,7 +312,17 @@ export const FeedPlayer = ({
 							<div className="transport mt-0.5 flex flex-row gap-x-[8px]">
 								<img
 									src={prevNextImageUrl}
-									alt="Play previous track"
+									alt="Previous track"
+									role="button"
+									tabIndex={isPreviousTrackAvailable ? 0 : -1}
+									aria-disabled={!isPreviousTrackAvailable}
+									onKeyDown={onEnter(() => {
+										if (isPreviousTrackAvailable) {
+											feedPageService.playNextTrack(
+												false
+											);
+										}
+									})}
 									className={`-mr-[20px] h-[12px] w-[40px] ${isPreviousTrackAvailable ? 'hover:cursor-pointer' : ''}`}
 									style={{
 										clipPath: 'inset(0 50% 0 0)',
@@ -299,7 +343,12 @@ export const FeedPlayer = ({
 								></img>
 								<img
 									src={prevNextImageUrl}
-									alt="Play next track"
+									alt="Next track"
+									role="button"
+									tabIndex={0}
+									onKeyDown={onEnter(() =>
+										feedPageService.playNextTrack(true)
+									)}
 									className="-ml-[20px] h-[12px] w-[40px] hover:cursor-pointer"
 									style={{
 										clipPath: 'inset(0 0 0 50%)',
