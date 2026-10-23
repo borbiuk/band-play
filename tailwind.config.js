@@ -27,11 +27,11 @@ module.exports = {
 				115: '1.15',
 			},
 			margin: {
-				7.5: '30px'
+				7.5: '30px',
 			},
 			spacing: {
 				46: '11.5rem',
-			}
+			},
 		},
 	},
 	plugins: [],

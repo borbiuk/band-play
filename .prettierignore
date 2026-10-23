@@ -1,2 +1,9 @@
 node_modules
 dist
+dist-firefox
+package-lock.json
+*.zip
+band-play-build*
+
+# Copied documentation, kept as published
+.claude/skills/chrome-extension-docs
