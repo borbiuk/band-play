@@ -1,21 +1,23 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+dist-firefox/
+tmp/
+*.zip
+band-play-build*
 
 # JetBrains IDE
 .idea
 *.DotSettings.user
-*.DS_Store
 
-# builds
-*.zip
-dist/
-dist-firefox/
-tmp/
-band-play-build*
+# macOS
+.DS_Store
 
 # logs
 npm-debug.log
 
-# dependencies
-node_modules/
-
 # local agent settings
 .claude/settings.local.json
+CLAUDE.local.md
