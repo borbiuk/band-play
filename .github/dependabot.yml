@@ -1,0 +1,27 @@
+# Weekly update pull requests for npm packages and GitHub Actions.
+# Versions stay exact (package.json) and actions stay pinned to a commit SHA; Dependabot keeps both styles.
+version: 2
+updates:
+    - package-ecosystem: npm
+      directory: /
+      schedule:
+          interval: weekly
+      # Wait a week after a release, so broken or malicious releases are usually pulled first
+      cooldown:
+          default-days: 7
+      ignore:
+          # `typescript` 6 is used by ts-loader and typescript-eslint; the type check uses `typescript7`
+          - dependency-name: typescript
+            update-types: ['version-update:semver-major']
+      groups:
+          dev-tooling:
+              dependency-type: development
+          runtime:
+              dependency-type: production
+
+    - package-ecosystem: github-actions
+      directory: /
+      schedule:
+          interval: weekly
+      cooldown:
+          default-days: 7

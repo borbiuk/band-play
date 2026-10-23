@@ -6,21 +6,70 @@ on:
     pull_request:
         branches: [master]
 
+permissions:
+    contents: read
+
+# A newer push to the same branch or pull request cancels the older run
+concurrency:
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     build:
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         strategy:
             matrix:
-                node-version: [22.x, 24.x]
+                node-version: [22.x, 24.x, 26.x]
 
         steps:
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  # These jobs never push, so the token is not kept in the git config
+                  persist-credentials: false
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: npm
             - run: npm ci
+            - name: Check the registry signatures of the installed packages
+              run: npm audit signatures
+            - run: npm run check:versions
+            - run: npm run format:check
             - run: npm run build
+            - run: npm run build:firefox
             - run: npm run lint
+            - run: npm run lint:firefox
+            - run: npm run test:unit
+
+    # The extension in Playwright's bundled Chromium against Bandcamp page snapshots (no network)
+    e2e:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  # These jobs never push, so the token is not kept in the git config
+                  persist-credentials: false
+            - name: Use Node.js 24.x
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24.x
+                  cache: npm
+            - run: npm ci
+            - name: Install Playwright Chromium
+              run: npx --no playwright install --with-deps chromium
+            - name: Run e2e tests (the dist project builds the extension first)
+              run: npm run test:e2e
+            - name: Upload the Playwright report
+              if: failure()
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: playwright-report-e2e
+                  path: |
+                      playwright-report/
+                      test-results/
+                  retention-days: 14
