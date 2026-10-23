@@ -92,7 +92,7 @@ export class UserInputService {
 	 *
 	 * @param serviceWorker - The page service worker to integrate with
 	 */
-	public start(serviceWorker: PageServiceWorker): void {
+	public start(serviceWorker: PageServiceWorker): Promise<void> {
 		this.listenHotkeys(serviceWorker);
 		this.listenNavigator(serviceWorker);
 
@@ -100,13 +100,13 @@ export class UserInputService {
 			this.updateShortcutHandlers(x);
 		};
 
-		configService
-			.get<ShortcutConfig>('shortcuts')
-			.then(updateShortcutHandlers)
-			.catch((e) => console.error(e));
 		configService.addListener(({ shortcuts }: ConfigModel) =>
 			updateShortcutHandlers(shortcuts)
 		);
+		return configService
+			.get<ShortcutConfig>('shortcuts')
+			.then(updateShortcutHandlers)
+			.catch((e) => console.error(e));
 	}
 
 	private updateShortcutHandlers(shortcuts: ShortcutConfig) {

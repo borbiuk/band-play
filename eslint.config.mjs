@@ -1,10 +1,19 @@
 import js from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import-x';
+import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+
+// One project service for every type-aware block (typescript-eslint keeps a single instance)
+const typedParserOptions = {
+	projectService: {
+		allowDefaultProject: ['playwright.config.ts'],
+	},
+	tsconfigRootDir: import.meta.dirname,
+};
 
 export default [
 	{
@@ -12,6 +21,10 @@ export default [
 			'**/node_modules/**',
 			'**/dist/**',
 			'**/dist-firefox/**',
+			'**/test-results/**',
+			'**/playwright-report/**',
+			'**/test-results-live/**',
+			'**/playwright-report-live/**',
 			// Temporary folders zip.sh leaves behind when it stops on an error
 			'**/band-play-build*/**',
 		],
@@ -88,10 +101,7 @@ export default [
 	{
 		files: ['src/**/*.{ts,tsx}'],
 		languageOptions: {
-			parserOptions: {
-				projectService: true,
-				tsconfigRootDir: import.meta.dirname,
-			},
+			parserOptions: typedParserOptions,
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
@@ -100,6 +110,54 @@ export default [
 				'error',
 				{ checksVoidReturn: { attributes: false } },
 			],
+		},
+	},
+	// Tests: Node globals, type-aware check for missing awaits, Playwright rules
+	{
+		files: ['tests/**/*.ts', 'playwright.config.ts'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+			parserOptions: typedParserOptions,
+		},
+		rules: {
+			'@typescript-eslint/no-floating-promises': 'error',
+			// Playwright fixtures call `use()`, which is not the React hook
+			'react-hooks/rules-of-hooks': 'off',
+		},
+	},
+	{
+		files: ['tests/**/*.ts'],
+		...playwright.configs['flat/recommended'],
+		rules: {
+			...playwright.configs['flat/recommended'].rules,
+			'playwright/no-wait-for-timeout': 'error',
+			'playwright/no-page-pause': 'error',
+			'playwright/no-focused-test': 'error',
+			'playwright/no-conditional-expect': 'error',
+			'playwright/no-conditional-in-test': 'error',
+			'playwright/no-element-handle': 'error',
+			'playwright/no-eval': 'error',
+			'playwright/no-force-option': 'error',
+			'playwright/no-wait-for-selector': 'error',
+			'playwright/no-wait-for-navigation': 'error',
+			'playwright/no-networkidle': 'error',
+			'playwright/no-skipped-test': ['error', { allowConditional: true }],
+			'playwright/no-nth-methods': 'warn',
+			'playwright/require-to-pass-timeout': 'warn',
+			'playwright/no-commented-out-tests': 'warn',
+			'playwright/prefer-to-have-count': 'error',
+			'playwright/prefer-web-first-assertions': 'error',
+		},
+	},
+	// Node scripts of the tests (snapshot capture)
+	{
+		files: ['tests/**/*.mjs'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
 		},
 	},
 	// Build config (CommonJS) and repository scripts run in Node

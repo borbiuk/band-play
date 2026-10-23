@@ -7,3 +7,10 @@ band-play-build*
 
 # Copied documentation, kept as published
 .claude/skills/chrome-extension-docs
+
+# Page snapshots are saved as captured
+tests/e2e/fixtures/pages
+test-results
+playwright-report
+test-results-live
+playwright-report-live
