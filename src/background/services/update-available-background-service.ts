@@ -15,7 +15,8 @@ export class UpdateAvailableBackgroundService implements IBackgroundService {
 						code: MessageCode.NewUpdateAvailable,
 						data: details,
 					})
-					.catch((e) => console.error(e));
+					// No content script handles this message yet, and other tabs have none
+					.catch(() => void 0);
 			});
 		});
 	}
@@ -25,7 +26,9 @@ export class UpdateAvailableBackgroundService implements IBackgroundService {
 	): void {
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 			if (tabs.length > 0) {
-				tabCallback(tabs[0].id);
+				Promise.resolve(tabCallback(tabs[0].id)).catch((e) =>
+					console.error(e)
+				);
 			}
 		});
 	}

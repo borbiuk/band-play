@@ -23,9 +23,11 @@ export class UrlChangeBackgroundService implements IBackgroundService {
 				.sendToContent(tabId, { code: MessageCode.UrlChanged })
 				.catch((e) => {
 					// skip error
+					// No content script in the tab (it is still loading or was never injected)
 					if (
-						e.message ===
-						'Could not establish connection. Receiving end does not exist.'
+						String(e?.message).includes(
+							'Receiving end does not exist'
+						)
 					) {
 						return;
 					}

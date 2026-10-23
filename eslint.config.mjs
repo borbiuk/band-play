@@ -94,11 +94,10 @@ export default [
 			},
 		},
 		rules: {
-			// Warnings until the existing code is fixed; then they become errors
-			'@typescript-eslint/no-floating-promises': 'warn',
+			'@typescript-eslint/no-floating-promises': 'error',
 			// React event props may return a promise; the handlers catch their own errors
 			'@typescript-eslint/no-misused-promises': [
-				'warn',
+				'error',
 				{ checksVoidReturn: { attributes: false } },
 			],
 		},
