@@ -14,7 +14,8 @@ module.exports = merge(common, {
 				parallel: true,
 				terserOptions: {
 					compress: {
-						drop_console: true,
+						// Errors and warnings stay visible in release builds
+						drop_console: ['log', 'info', 'debug'],
 						drop_debugger: true,
 						pure_funcs: [
 							'console.log',
