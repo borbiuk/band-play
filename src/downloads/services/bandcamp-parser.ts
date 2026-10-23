@@ -49,14 +49,17 @@ const parseSizeMb = (raw: unknown): number | undefined => {
 };
 
 const decodeHtmlAttribute = (value: string): string => {
-	return value
-		.replaceAll('&quot;', '"')
-		.replaceAll('&#34;', '"')
-		.replaceAll('&#39;', "'")
-		.replaceAll('&apos;', "'")
-		.replaceAll('&amp;', '&')
-		.replaceAll('&lt;', '<')
-		.replaceAll('&gt;', '>');
+	return (
+		value
+			.replaceAll('&quot;', '"')
+			.replaceAll('&#34;', '"')
+			.replaceAll('&#39;', "'")
+			.replaceAll('&apos;', "'")
+			.replaceAll('&lt;', '<')
+			.replaceAll('&gt;', '>')
+			// Last, so an escaped entity such as "&amp;lt;" is decoded only once
+			.replaceAll('&amp;', '&')
+	);
 };
 
 const getDataBlob = (html: string): string | null => {
