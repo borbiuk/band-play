@@ -32,8 +32,9 @@ jobs:
             - run: npm ci
             - name: Check the registry signatures of the installed packages
               run: npm audit signatures
-            - name: Lint, type check and unit tests
+            - name: Versions, lint, type check and unit tests
               run: |
+                  npm run check:versions
                   npm run lint
                   npm run test:unit
             - name: Check that Chrome and Firefox manifest versions match
@@ -62,3 +63,5 @@ jobs:
                   CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
                   CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
                   REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+                  # Chrome Web Store API v2 (v1.1 stopped on 15 October 2026) needs the publisher ID
+                  PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}

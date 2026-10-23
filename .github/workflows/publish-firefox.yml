@@ -32,8 +32,9 @@ jobs:
             - run: npm ci
             - name: Check the registry signatures of the installed packages
               run: npm audit signatures
-            - name: Lint, type check and unit tests
+            - name: Versions, lint, type check and unit tests
               run: |
+                  npm run check:versions
                   npm run lint
                   npm run test:unit
             - name: Check that Chrome and Firefox manifest versions match
@@ -48,6 +49,8 @@ jobs:
             # zip.sh packages both browsers; only the Firefox package is used here
             - name: Build and package (zip.sh)
               run: npm run zip
+            - name: Lint the Firefox build (web-ext)
+              run: npm run lint:firefox
             - name: Rename the package and archive sources for AMO review
               run: |
                   mv band-play-build-firefox_*.zip firefox.zip

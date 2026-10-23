@@ -382,7 +382,7 @@ EXT-1 and EXT-2 (clipboard payload and clipboard reads) are not used in this pro
 **EXT-4 — Locators follow the product's selector rules.** · Major (hashed class, position path, XPath) / Minor (a weaker but stable choice)
 
 - Extension DOM: role and accessible name in the popup (`getByRole('textbox', { name: 'Key combination' })`), and the `data-band-play*` markers on Bandcamp pages for structure and counts. The `ready` marker proves readiness, not behaviour.
-- Bandcamp DOM: the stable hooks the page services use (`.playbutton`, `.nextbutton`, `.prevbutton`, `.track_info .title`, `.play-col`), as listed in [bandcamp-dom.md](../../../rules/bandcamp-dom.md). Never `nth-child` paths or layout classes the extension does not use.
+- Bandcamp DOM: the stable hooks the page services use (`.playbutton`, `.nextbutton`, `.prevbutton`, `.play-col`), as listed in [bandcamp-dom.md](../../../rules/bandcamp-dom.md). Never `nth-child` paths or layout classes the extension does not use.
 
 **EXT-5 — "Does nothing" is proven after a positive control in the same page state.** · **Critical** (AST-7 shape)
 

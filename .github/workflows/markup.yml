@@ -30,6 +30,8 @@ jobs:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   ref: master
+                  # Only the commit step gets the token (below); install scripts and tests never see it
+                  persist-credentials: false
             - name: Use Node.js 24.x
               uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
               with:
@@ -46,6 +48,7 @@ jobs:
               env:
                   # The Husky pre-commit hook (format, build, zip) is for local commits
                   HUSKY: '0'
+                  GH_TOKEN: ${{ github.token }}
               run: |
                   if git diff --quiet -- tests/e2e/fixtures/pages; then
                       echo "The snapshots did not change."
@@ -55,8 +58,9 @@ jobs:
                   git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
                   git add tests/e2e/fixtures/pages
                   git commit -m "Refresh Bandcamp page snapshots"
-                  git pull --rebase origin master
-                  git push origin HEAD:master
+                  remote="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}"
+                  git pull --rebase "$remote" master
+                  git push "$remote" HEAD:master
 
             - name: Run e2e tests on the fresh snapshots
               id: e2e

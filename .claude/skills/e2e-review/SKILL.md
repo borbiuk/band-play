@@ -2,7 +2,7 @@
 name: e2e-review
 description: Reviews Playwright test changes of Band Play (unit tests of src/, e2e tests with the built extension in Chromium on Bandcamp snapshots, the live smoke suite, playwright.config.ts, test fixtures, page snapshots and the capture script, test steps in CI) against the project test standard in references/rules.md, and reports verified Critical, Major and Minor findings with concrete fixes in chat. Use when the user asks to review or re-review the tests or e2e specs ("review the tests", "review e2e", "перевір тести", "переглянь e2e"), or shares a GitHub pull request link or number that touches tests/. Read-only; it never edits files, commits or comments on GitHub.
 argument-hint: '[base-ref | PR number]'
-allowed-tools: Bash(git status --short) Bash(git diff *) Bash(git log *) Bash(git show *) Bash(git rev-parse *) Bash(npm run lint) Bash(npm run typecheck) Bash(npm run build)
+allowed-tools: Bash(git status --short) Bash(git diff *) Bash(git log *) Bash(git show *) Bash(git rev-parse *) Bash(npm run lint) Bash(npm run typecheck) Bash(npm run build) Bash(npx --no playwright test *)
 ---
 
 # Test review (Band Play)
