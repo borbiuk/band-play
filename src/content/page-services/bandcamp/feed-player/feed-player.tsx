@@ -64,16 +64,23 @@ export const FeedPlayer = ({
 	const [coverArtUrl, setCoverArtUrl] = useState<string>('');
 	const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
+	// The player shows only when the setting is on and a track was loaded
+	const showSettingRef = useRef(
+		feedPageService.config?.showFeedPlayer !== false
+	);
+	const hasTrackRef = useRef(false);
+
 	useEffect(() => {
-		setShow(feedPageService.config?.showFeedPlayer);
 		configService.addListener((newConfig) => {
-			setShow(newConfig.showFeedPlayer);
+			showSettingRef.current = newConfig.showFeedPlayer;
+			setShow(showSettingRef.current && hasTrackRef.current);
 		});
 	}, []);
 
 	useEffect(() => {
 		const onAudio = (audio: HTMLAudioElement) => {
 			if (notExist(audio)) {
+				hasTrackRef.current = false;
 				setShow(false);
 				return;
 			}
@@ -87,9 +94,10 @@ export const FeedPlayer = ({
 				}
 			});
 
-			audio.addEventListener('loadedmetadata', (e) => {
+			audio.addEventListener('loadedmetadata', () => {
 				setDuration(audio.duration);
-				setShow(true);
+				hasTrackRef.current = true;
+				setShow(showSettingRef.current);
 			});
 
 			audio.addEventListener('play', () => {
