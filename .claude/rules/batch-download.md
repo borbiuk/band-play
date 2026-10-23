@@ -17,9 +17,9 @@ paths:
 3. **Runner** (`runner.ts`, `BatchDownloadRunner.runBatchTick`), one tick at a time:
     1. drain the queue into `batchDownloadItems` (`drainQueuedBatchDownloadItems`);
     2. recover states left by a stopped worker (`Resolving` → `Pending`; `Queued` → adopt the matching browser download started after `createdAt`, else `Resolved`);
-    3. while work is active: disable the download UI and keep the watchdog alarm;
+    3. while work is running (`isRunningBatchDownloadItem`: active items except `Paused` and `Duplicate`, which wait for the user): disable the download UI and keep the watchdog alarm;
     4. resolve up to `MAX_PENDING_RESOLVE_PER_TICK` (3) pending items with `parseBandcampDownloads(url, format)` (`src/downloads/services/bandcamp-parser.ts`): one file → a `Single` item, several → a `Multiple` parent with `Single` children (`<parentId>:<fileId>`), none → `Failed`;
-    5. start `Resolved` singles up to `batchDownloadConcurrency` (`Downloading` and `Paused` items take a slot) with `chrome.downloads.download({ url, conflictAction: 'uniquify' })`;
+    5. start `Resolved` singles up to `batchDownloadConcurrency` (`Downloading` items take a slot, and `Paused` items only when their browser download exists; an item is queued only while it is still `Resolved`, so a pause or cancel made during the tick wins) with `chrome.downloads.download({ url, conflictAction: 'uniquify', saveAs: false })`;
     6. update parent progress (`updateParentsProgress`); when nothing is active, enable the download UI again, stop the poller and clear the alarms;
     7. schedule the next tick at once (work and free slots left) or at the earliest retry time.
 4. **Progress**: `chrome.downloads.onChanged` (`progress-updates.ts`, top-level, so it wakes the worker) and, only while the downloads page is connected, a 250 ms poller (`pollActiveDownloadsProgress`, one `downloads.search` per tick, at most 10 items). State changes are written to storage; progress-only changes are pushed over the port and not written.
@@ -37,12 +37,12 @@ paths:
 
 ## Alarms, retries and backoff
 
-- **Watchdog**: alarm `band-play-batch-download-watchdog`, every 0.5 minutes while work is active; it reconciles tracked downloads with their real browser state, restarts the poller and schedules a tick. `chrome.alarms` is feature-detected.
+- **Watchdog**: alarm `band-play-batch-download-watchdog`, every 0.5 minutes while work is running; it reconciles tracked downloads with their real browser state, restarts the poller and schedules a tick. `chrome.alarms` is feature-detected.
 - **Retry alarm**: one-shot `band-play-batch-download-retry` for a retry delay of 25 s or more (`setTimeout` does not survive a stopped worker).
 - **Automatic retries** of an interrupted or failed download: `MAX_AUTO_RETRIES` 3, delays 5 s, 10 s, 20 s; the last attempt re-resolves the signed file URL from `pageUrl` first (`needsUrlRefresh`). An interrupted download with `canResume` is resumed in place (counts as one attempt). `USER_CANCELED` is never retried; `USER_SHUTDOWN` is.
 - **HTTP 429** from Bandcamp (`BandcampRateLimitError`): backoff 10 s, 15 s, 30 s, 60 s (then 60 s) with ±30 % jitter, at most `MAX_RATE_LIMIT_ATTEMPTS` 8, then `failed`.
 - A "complete" download smaller than 16 KB, with a `text/html` MIME type or with a missing file counts as failed (an HTML error page).
-- **Duplicates**: when the browser uniquified the name (`x (1).zip`) because the file exists, the download is paused and marked `duplicate`; Resume continues it and sets `duplicateResumed`. On Chrome the name is compared with the name recorded in `onDeterminingFilename`; on Firefox a `(n)` suffix is the hint.
+- **Duplicates**: when the browser uniquified the name (`x (1).zip`) because the file exists, the download is paused and marked `duplicate`; Resume continues it and sets `duplicateResumed`. On Chrome the name is compared with the name recorded in `onDeterminingFilename`; without a recorded name (Firefox, or after a browser restart) the download is a duplicate only when the browser already has the file without the ` (n)` suffix (`downloads.search({ filename })`), so a title such as `Album (2)` is not paused.
 - Manual actions (`actions.ts`): retry (a failed parent retries its failed children; the URL is refreshed), retry all failed, pause / resume (item or all), cancel (stays as `failed`), remove (cancels the browser download), delete file (`downloads.removeFile`, completed items only), show in folder (`downloads.show`), clear completed, clear all.
 
 ## Filename templates (Chrome only)

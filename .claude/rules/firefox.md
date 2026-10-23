@@ -23,7 +23,7 @@ paths:
 
 - **`chrome.*` namespace works.** Firefox MV3 supports `chrome.*` with promises. Do not add a `browser.*` polyfill or `webextension-polyfill`.
 - **Keep Awake is hidden**: no `chrome.power`; the popup does not render the checkbox and `KeepAwakeBackgroundService` does nothing.
-- **Filename template is hidden**: no `chrome.downloads.onDeterminingFilename`; the router is inactive, the popup hides the field and the server file names are kept. Duplicate detection falls back to the `(n)` suffix of the file name.
+- **Filename template is hidden**: no `chrome.downloads.onDeterminingFilename`; the router is inactive, the popup hides the field and the server file names are kept. Duplicate detection looks for the file without the ` (n)` suffix in the browser downloads (`downloads.search({ filename })`).
 - **Download UI**: no `downloads.setUiOptions` / `setShelfEnabled`; `setDownloadsShelfEnabledSafe` does nothing.
 - **Event page**: like the Chrome service worker, it can be unloaded when idle. The batch download state is in storage and the alarms wake the background, so the same recovery code runs ([batch-download.md](batch-download.md)).
 - **Temporary install**: `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → pick `dist-firefox/manifest.json`. The add-on is removed when Firefox restarts.
