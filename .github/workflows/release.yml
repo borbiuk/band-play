@@ -1,11 +1,13 @@
 name: release
 
 # Builds the Chrome and Firefox packages of a version and creates its GitHub Release.
-# Start it by hand, on the version tag: `gh workflow run release.yml --ref <x.y.z>`.
-# The tag must exist already (scripts/tag-releases.sh or a manual tag). The workflow is
-# not started by a tag push, so the release process stays a manual decision.
-# With dry_run (the default) it only builds and checks the packages and uploads them as an artifact.
+# It runs when the maintainer pushes the tag x.y.z (see .claude/skills/release/SKILL.md).
+# The zips of the Release are the files built here, and the store upload uses these same files.
+# Run it by hand ("Run workflow", dry run on by default) to check the guards and the build
+# without creating a Release: `gh workflow run release.yml --ref <x.y.z>`.
 on:
+    push:
+        tags: ['[0-9]+.[0-9]+.[0-9]+']
     workflow_dispatch:
         inputs:
             dry_run:
@@ -25,6 +27,10 @@ jobs:
     release:
         runs-on: ubuntu-latest
         timeout-minutes: 30
+
+        # A run from a tag publishes; a manual run is a dry run unless dry_run is off
+        env:
+            DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
 
         permissions:
             # Create the GitHub Release and its assets
@@ -129,14 +135,14 @@ jobs:
                   if-no-files-found: error
             # Attests that the packages were built by this workflow from this commit
             - name: Attest the build provenance
-              if: ${{ !inputs.dry_run }}
+              if: ${{ env.DRY_RUN == 'false' }}
               uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
               with:
                   subject-path: |
                       ${{ steps.packages.outputs.chrome_zip }}
                       ${{ steps.packages.outputs.firefox_zip }}
             - name: Create the GitHub Release
-              if: ${{ !inputs.dry_run }}
+              if: ${{ env.DRY_RUN == 'false' }}
               env:
                   GH_TOKEN: ${{ github.token }}
                   VERSION: ${{ steps.guards.outputs.version }}

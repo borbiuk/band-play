@@ -60,7 +60,7 @@ The Husky pre-commit hook (`.husky/pre-commit`, `set -e`) runs on **every commit
 ## CI
 
 - `.github/workflows/build.yml` (push and pull request to `master`): job `build` (Node 24, 26: versions, format check, both builds, lint, `web-ext lint`, unit tests), job `checks` (Node 24: `lint:docs`, `lint:unused`) and job `e2e` (Node 24, Playwright Chromium, `npm run test:e2e`).
-- `.github/workflows/codeql.yml`, `scorecard.yml`, `dependency-review.yml` and `pr-title.yml`: security scans and the pull request title check. `release.yml`: started by hand on a version tag; it builds the packages and creates the GitHub Release (`dry_run` on by default).
+- `.github/workflows/codeql.yml`, `scorecard.yml`, `dependency-review.yml` and `pr-title.yml`: security scans and the pull request title check. `release.yml`: runs when the maintainer pushes a version tag `x.y.z`; it builds the packages and creates the GitHub Release. A manual run is a dry run by default.
 - `.github/workflows/markup.yml` (daily): refreshes the Bandcamp snapshots, runs e2e and live tests, opens a `markup-drift` issue on failure and closes it after a passing run.
 - `.github/workflows/publish-chrome.yml` and `publish-firefox.yml`: manual store publishing from `master`. Details: [docs-and-ci.md](.claude/rules/docs-and-ci.md).
 
