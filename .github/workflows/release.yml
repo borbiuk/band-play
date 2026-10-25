@@ -3,8 +3,8 @@ name: release
 # Builds the Chrome and Firefox packages of a version and creates its GitHub Release.
 # It runs when the maintainer pushes the tag x.y.z (see .claude/skills/release/SKILL.md).
 # The zips of the Release are the files built here, and the store upload uses these same files.
-# Run it by hand ("Run workflow", dry run on by default) to check the guards and the build
-# without creating a Release: `gh workflow run release.yml --ref <x.y.z>`.
+# Run it by hand ("Run workflow", dry run on by default) to check the build and the notes
+# without creating a Release: `gh workflow run release.yml --ref master`.
 on:
     push:
         tags: ['[0-9]+.[0-9]+.[0-9]+']
@@ -78,25 +78,28 @@ jobs:
                       echo "The version '$version' is not x.y.z"
                       exit 1
                   fi
-                  if [ "$REF_TYPE" != "tag" ] || [ "$REF_NAME" != "$version" ]; then
-                      echo "Run this workflow on the tag $version (got $REF_TYPE '$REF_NAME')."
-                      exit 1
-                  fi
-                  if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
-                      echo "The tagged commit is not on master."
-                      exit 1
-                  fi
-                  build_result=$(gh run list --workflow build.yml --commit "$GITHUB_SHA" --json conclusion --jq '.[0].conclusion')
-                  if [ "$build_result" != "success" ]; then
-                      echo "The build workflow of this commit did not succeed (result: '${build_result:-none}')."
-                      exit 1
+                  # A dry run may start from any branch; only a real release needs the tag guards
+                  if [ "$DRY_RUN" != "true" ]; then
+                      if [ "$REF_TYPE" != "tag" ] || [ "$REF_NAME" != "$version" ]; then
+                          echo "Run a release on the tag $version (got $REF_TYPE '$REF_NAME')."
+                          exit 1
+                      fi
+                      if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+                          echo "The tagged commit is not on master."
+                          exit 1
+                      fi
+                      build_result=$(gh run list --workflow build.yml --commit "$GITHUB_SHA" --json conclusion --jq '.[0].conclusion')
+                      if [ "$build_result" != "success" ]; then
+                          echo "The build workflow of this commit did not succeed (result: '${build_result:-none}')."
+                          exit 1
+                      fi
+                      if gh release view "$version" > /dev/null 2>&1; then
+                          echo "The GitHub Release $version already exists."
+                          exit 1
+                      fi
                   fi
                   if [ "$(grep -m1 '^## ' RELEASE_NOTES.md)" != "## $version" ]; then
                       echo "RELEASE_NOTES.md has no first section for $version."
-                      exit 1
-                  fi
-                  if gh release view "$version" > /dev/null 2>&1; then
-                      echo "The GitHub Release $version already exists."
                       exit 1
                   fi
                   echo "version=$version" >> "$GITHUB_OUTPUT"
