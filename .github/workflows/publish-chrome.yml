@@ -68,7 +68,8 @@ jobs:
                   path: chrome.zip
                   if-no-files-found: error
             - name: Upload and publish to Chrome Web Store
-              run: npx --no chrome-webstore-upload --source chrome.zip --extension-id "$EXTENSION_ID"
+              # Call the binary directly: npx would read --source and --extension-id as its own options
+              run: ./node_modules/.bin/chrome-webstore-upload --source chrome.zip --extension-id "$EXTENSION_ID"
               env:
                   EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
                   CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
