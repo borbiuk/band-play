@@ -4,7 +4,7 @@ Thank you for helping. Read this page before you open a pull request.
 
 ## Set up
 
-- Node.js 24 or newer, `jq` and `zip` (the pre-commit hook packages the extension).
+- Node.js 24.22.1 or newer, `jq` and `zip` (the pre-commit hook packages the extension).
 - Run `npm install`. For the end-to-end tests, run `npx playwright install chromium` once.
 - The details are in [docs/development.md](../docs/development.md).
 

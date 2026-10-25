@@ -10,7 +10,7 @@
 		"url": "https://github.com/borbiuk/band-play"
 	},
 	"engines": {
-		"node": ">=24.0.0"
+		"node": ">=24.22.1"
 	},
 	"scripts": {
 		"watch": "webpack --config webpack/webpack.dev.js --watch",
@@ -87,5 +87,10 @@
 			"eslint": "$eslint"
 		},
 		"postcss-selector-parser": "7.1.7"
+	},
+	"allowScripts": {
+		"@parcel/watcher@2.6.0": true,
+		"fsevents@2.3.3": true,
+		"unrs-resolver@1.12.2": true
 	}
 }

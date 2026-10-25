@@ -21,7 +21,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [24.x, 26.x]
+                node-version: [24.22.1, 26.x]
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -53,10 +53,10 @@ jobs:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   persist-credentials: false
-            - name: Use Node.js 24.x
+            - name: Use Node.js 24.22.1
               uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
               with:
-                  node-version: 24.x
+                  node-version: 24.22.1
                   cache: npm
             - run: npm ci
             - name: Check the registry signatures of the installed packages
@@ -74,10 +74,10 @@ jobs:
               with:
                   # These jobs never push, so the token is not kept in the git config
                   persist-credentials: false
-            - name: Use Node.js 24.x
+            - name: Use Node.js 24.22.1
               uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
               with:
-                  node-version: 24.x
+                  node-version: 24.22.1
                   cache: npm
             - run: npm ci
             - name: Install Playwright Chromium

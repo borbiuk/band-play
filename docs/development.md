@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node.js 24 or newer (enforced by `engines` and `engine-strict` in `.npmrc`).
+- Node.js 24.22.1 or newer (enforced by `engines` and `engine-strict` in `.npmrc`).
 - `jq` and `zip` for `zip.sh` (packaging) and the pre-commit hook.
 
 ## Setup
