@@ -47,7 +47,7 @@ paths:
 2. Add it to `CONFIG_KEY_SET` in `src/shared/services/config-service.ts` (the type check fails until you do), and give it a default and a validation in `getWithDefaults`. Export, import and reset use `CONFIG_KEYS`, so they follow on their own.
 3. Add a control to a popup tab (`update('key', value)` from a change handler; never write a default back, see [popup.md](popup.md)) and use the value where it matters.
 4. Update `DEFAULTS` in `tests/unit/config-service.spec.ts`, and add a case for a bad stored value to the `getAll` validation tests.
-5. Update the docs: the settings list in `AGENTS.md`, this section of "Storage", `popup.md`, `README.md`, `LISTING.md` and `RELEASE_NOTES.md`.
+5. Update the docs: the settings list in `AGENTS.md`, this section of "Storage", `popup.md`, `docs/usage.md`, `LISTING.md` and `RELEASE_NOTES.md`.
 
 ## Keyboard shortcuts
 
@@ -65,7 +65,7 @@ paths:
 3. Add a `new ShortcutHandler(ShortcutType.X, (service, combination) => ...)` to `shortcutHandlers` in `src/content/services/user-input-service.ts`. A new page action needs a method in `PageService`, a no-op in `BasePageService` and an implementation in each page service that supports it.
 4. The popup needs no change: the list is `Object.values(ShortcutType)`.
 5. Update the literal `DEFAULT_SHORTCUTS` in `tests/unit/config-service.spec.ts` (a `Record<ShortcutType, string>`, so the type check fails until it is updated) and add an e2e test when the page has a snapshot.
-6. Update the docs: `README.md` (shortcut table), `LISTING.md`, `RELEASE_NOTES.md`, and this rule.
+6. Update the docs: `docs/usage.md` (shortcut table), `LISTING.md`, `RELEASE_NOTES.md`, and this rule.
 
 ## Manifests
 

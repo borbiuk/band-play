@@ -36,7 +36,7 @@ Where things live: `playwright.config.ts`, `tests/unit/**`, `tests/helpers/**`, 
 - **`live`**: real bandcamp.com, anonymous, on demand (`npm run test:live`, which sets `BAND_PLAY_LIVE`; the project does not exist without it); also run daily by `markup.yml` after the snapshot refresh (05:17 UTC, plus manual dispatch). Never part of push or pull request CI.
 - **Firefox is not covered**: Playwright cannot load extensions into Firefox. Firefox stays `npm run lint:firefox` plus manual checks (EXT-8).
 - **Pages that need a signed-in fan account** (feed, collection, wishlist, purchases, batch download) are covered only by the hand-written pages in `tests/e2e/fixtures/synthetic/` (no personal data, only the markup the extension reads); the real pages and the downloads page with real downloads stay manual checks (DATA-6, PR-7).
-- **The oracle** (what correct behaviour is): the feature list and the shortcut table in `README.md`, [bandcamp-dom.md](../../../rules/bandcamp-dom.md) (page services and selectors), [messaging.md](../../../rules/messaging.md), [popup.md](../../../rules/popup.md), [batch-download.md](../../../rules/batch-download.md), and the code of the page services in `src/content/page-services/`.
+- **The oracle** (what correct behaviour is): the feature list and the shortcut table in `docs/usage.md`, [bandcamp-dom.md](../../../rules/bandcamp-dom.md) (page services and selectors), [messaging.md](../../../rules/messaging.md), [popup.md](../../../rules/popup.md), [batch-download.md](../../../rules/batch-download.md), and the code of the page services in `src/content/page-services/`.
 
 ---
 
@@ -360,7 +360,7 @@ There is no backend. "Data" is the extension's settings (and history) in `chrome
 
 **PR-6 — Docs follow the change.** · Minor
 
-- Moving test paths, renaming npm scripts or changing a convention updates `README.md`, `AGENTS.md`, [testing.md](../../../rules/testing.md), the [playwright skill](../../playwright/SKILL.md), the [verify skill](../../verify/SKILL.md) and this standard in the same PR.
+- Moving test paths, renaming npm scripts or changing a convention updates `docs/usage.md`, `AGENTS.md`, [testing.md](../../../rules/testing.md), the [playwright skill](../../playwright/SKILL.md), the [verify skill](../../verify/SKILL.md) and this standard in the same PR.
 
 **PR-7 — Nothing secret or personal is committed, in any commit of the PR.** · **Critical**
 

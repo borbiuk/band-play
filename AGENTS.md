@@ -43,8 +43,8 @@ Details: [extension-architecture.md](.claude/rules/extension-architecture.md) (e
 
 - `npm run build` / `npm run build:firefox` — production bundles for Chrome (`dist/`) / Firefox (`dist-firefox/`).
 - `npm run watch` — development build for Chrome (`dist/`) in watch mode. `npm run analyze` — Chrome production build with the bundle analyzer. `npm run clean` — removes `dist` and `dist-firefox`.
-- `npm run zip` — `zip.sh`: rebuilds both browsers and creates `band-play-build-{chrome,firefox}_<date>_<version>.zip` (needs `jq` and `zip`).
-- `npm run lint` — ESLint on the whole repository (`eslint .`; type-aware promise rules on `src/` and `tests/`) + `npm run typecheck` (TypeScript 7 on `src/` and `tests/`); `npm run lint:fix` — ESLint with `--fix`; `npm run lint:firefox` — `web-ext lint` on `dist-firefox/`.
+- `npm run zip` — `zip.sh`: rebuilds both browsers and creates `artifacts/band-play-build-{chrome,firefox}_<date>_<version>.zip` (`artifacts/` is gitignored; needs `jq` and `zip`).
+- `npm run lint` — ESLint on the whole repository (`eslint .`; type-aware promise rules on `src/` and `tests/`) + `npm run typecheck` (TypeScript 7 on `src/` and `tests/`); `npm run lint:fix` — ESLint with `--fix`; `npm run lint:firefox` — `web-ext lint` on `dist-firefox/`; `npm run lint:docs` — markdownlint and `scripts/check-docs.mjs` (relative links, release headings); `npm run lint:unused` — knip (`knip.jsonc`).
 - `npm run format` / `npm run format:check` — Prettier on `ts, tsx, js, mjs, json, md, yml, scss, css, html`. `npm run check:versions`, `npm run check:outdated` — dependency checks.
 - `npm test` — Playwright `unit` + `e2e`; `npm run test:unit` (no browser), `npm run test:e2e` (Playwright's bundled Chromium, Bandcamp snapshots, no network), `npm run test:live` (real bandcamp.com, on demand; sets `BAND_PLAY_LIVE`), `npm run test:snapshots` (refresh the page snapshots, needs network). A `dist` setup project builds `dist/` before `e2e` and `live`. First time: `npx playwright install chromium`. Chromium only. Details: [testing.md](.claude/rules/testing.md).
 
@@ -55,18 +55,20 @@ The Husky pre-commit hook (`.husky/pre-commit`, `set -e`) runs on **every commit
 1. Copies the version from `public/manifest.json` to `package.json` and `public/manifest.firefox.json` (`.husky/set-version.sh`; stops when the version is not `x.y.z`).
 2. Runs `npm run format`.
 3. Runs `git add -u`, which **stages all modified tracked files** (formatting and version changes). **Partial commits (staging only some files or hunks) are therefore not supported**: everything modified is committed. New files must be staged on purpose.
-4. Runs `./zip.sh`, which rebuilds **both browsers** and creates the `.zip` packages. A commit needs `jq`, `zip` and a working build.
+4. Runs `./zip.sh`, which rebuilds **both browsers** and creates the `.zip` packages in `artifacts/`. A commit needs `jq`, `zip` and a working build.
 
 ## CI
 
-- `.github/workflows/build.yml` (push and pull request to `master`): job `build` (Node 24, 26: versions, format check, both builds, lint, `web-ext lint`, unit tests) and job `e2e` (Node 24, Playwright Chromium, `npm run test:e2e`).
-- `.github/workflows/markup.yml` (daily): refreshes the Bandcamp snapshots, runs e2e and live tests, opens a `markup-drift` issue on failure.
+- `.github/workflows/build.yml` (push and pull request to `master`): job `build` (Node 24, 26: versions, format check, both builds, lint, `web-ext lint`, unit tests), job `checks` (Node 24: `lint:docs`, `lint:unused`) and job `e2e` (Node 24, Playwright Chromium, `npm run test:e2e`).
+- `.github/workflows/codeql.yml`, `scorecard.yml`, `dependency-review.yml` and `pr-title.yml`: security scans and the pull request title check. `release.yml`: started by hand on a version tag; it builds the packages and creates the GitHub Release (`dry_run` on by default).
+- `.github/workflows/markup.yml` (daily): refreshes the Bandcamp snapshots, runs e2e and live tests, opens a `markup-drift` issue on failure and closes it after a passing run.
 - `.github/workflows/publish-chrome.yml` and `publish-firefox.yml`: manual store publishing from `master`. Details: [docs-and-ci.md](.claude/rules/docs-and-ci.md).
 
 ## Documentation
 
 - Chrome APIs: cite **`developer.chrome.com`**. Firefox differences: [firefox.md](.claude/rules/firefox.md) and MDN.
-- Release history: [RELEASE_NOTES.md](RELEASE_NOTES.md) (`## x.y.z` headings are read by `scripts/tag-releases.sh`). Store text: [LISTING.md](LISTING.md).
+- Release history: [RELEASE_NOTES.md](RELEASE_NOTES.md) (`## x.y.z` headings are read by `scripts/tag-releases.sh` and `scripts/check-docs.mjs`). Store text: [LISTING.md](LISTING.md). Privacy policy: [PRIVACY.md](PRIVACY.md).
+- The README is a short front page. The reference is in [docs/usage.md](docs/usage.md) (features, shortcuts, supported pages, popup) and [docs/development.md](docs/development.md) (setup, scripts, tests, CI, releases). Decisions are in [docs/adr/](docs/adr/README.md). Contributor rules: [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 - Claude Code tooling (skills, subagents, MCP servers, permissions) is listed in [CLAUDE.md](CLAUDE.md); how to maintain it: [maintaining-agent-context.md](.claude/rules/maintaining-agent-context.md).
 
 ## Rules of engagement

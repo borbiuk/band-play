@@ -15,7 +15,7 @@
 ## Agent context
 
 - Rules (`.claude/rules/`) load automatically when matching files are touched: architecture, messaging (messages and ports), Bandcamp DOM selectors and page services, batch download, popup, Firefox, npm versions, docs and CI, testing, agent context.
-- Skill `/verify` (`.claude/skills/verify/`): exact versions, format, both builds, ESLint with the type check, `web-ext lint`, unit and e2e tests.
+- Skill `/verify` (`.claude/skills/verify/`): exact versions, format, both builds, ESLint with the type check, `web-ext lint`, unit and e2e tests, the docs check and the unused code check.
 - Skill `/release` (`.claude/skills/release/`, invoked by the user only): version bump, release notes, release commit and zips, then after confirmation push, CI, tag, GitHub Release and the store publish workflows.
 - Skills for tests: `/playwright` (`.claude/skills/playwright/`: writing, running and debugging the Playwright suite, Chrome extension specifics) and `/e2e-review` (`.claude/skills/e2e-review/`: the test standard and the review workflow). Tests follow [testing.md](.claude/rules/testing.md).
 - Subagents (`.claude/agents/`): `code-reviewer` (read-only review), `qa-engineer` (read-only verification), `e2e-reviewer` (read-only review of tests with `/e2e-review`), plus the generated Playwright agents `playwright-test-planner`, `-generator` and `-healer` (regenerate with `npx playwright init-agents --loop=claude --project=e2e` after a Playwright update; their output must pass `/e2e-review`).

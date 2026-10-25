@@ -1,7 +1,7 @@
 ---
 name: verify
 description: Runs the full Band Play check suite (exact versions, Prettier check, Chrome and Firefox builds, ESLint with the TypeScript 7 type check, web-ext lint, Playwright unit and e2e tests) and reports failures grouped by file. Use after code, manifest or dependency changes, or when the user asks to build, lint or check the project.
-allowed-tools: Bash(npm run check:versions) Bash(npm run format:check) Bash(npm run build) Bash(npm run build:firefox) Bash(npm run lint) Bash(npm run lint:firefox) Bash(npm run test:unit) Bash(npm run test:e2e)
+allowed-tools: Bash(npm run check:versions) Bash(npm run format:check) Bash(npm run build) Bash(npm run build:firefox) Bash(npm run lint) Bash(npm run lint:firefox) Bash(npm run lint:docs) Bash(npm run lint:unused) Bash(npm run test:unit) Bash(npm run test:e2e)
 ---
 
 Run in order and stop at the first failing step:
@@ -14,12 +14,14 @@ Run in order and stop at the first failing step:
 6. `npm run lint:firefox` (`web-ext lint` on `dist-firefox/`; see the expected warnings below)
 7. `npm run test:unit` (Playwright `unit` project: pure logic from `src/`, no browser)
 8. `npm run test:e2e` (Playwright `e2e` project: the `dist` setup project rebuilds `dist/` first, then the extension runs in Playwright's bundled Chromium against Bandcamp snapshots, no network)
+9. `npm run lint:docs` (markdownlint with the Prettier style, then `scripts/check-docs.mjs`: relative links and the release headings)
+10. `npm run lint:unused` (knip with `knip.jsonc`: unused files, exports and dependencies)
 
-This is the order of the `build` job in [build.yml](../../../.github/workflows/build.yml); CI runs `test:e2e` in its own `e2e` job.
+Steps 1 to 7 are the order of the `build` job in [build.yml](../../../.github/workflows/build.yml), and step 8 is its `e2e` job. Steps 9 and 10 are its `checks` job.
 
 ## Expected `web-ext lint` warnings
 
-`web-ext lint` exits 0 with **0 errors, 0 notices and 16 warnings** (measured on version 10.3.0). All 16 are expected:
+`web-ext lint` exits 0 with **0 errors, 0 notices and 16 warnings** (measured on version 11.0.0). All 16 are expected:
 
 | Count | Code                                             | File                                                | Why it is expected                                                                                                                                                                                                             |
 | ----- | ------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
