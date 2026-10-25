@@ -1,0 +1,14 @@
+# CodeQL settings for the advanced setup in .github/workflows/codeql.yml
+name: band-play CodeQL config
+
+# Captured Bandcamp pages, the design prototypes and the build output are not code of the extension
+paths-ignore:
+    - tests/e2e/fixtures/pages
+    - design
+    - dist
+    - dist-firefox
+    - specs
+    - playwright-report
+    - playwright-report-live
+    - test-results
+    - test-results-live

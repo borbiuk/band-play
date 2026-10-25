@@ -1,0 +1,27 @@
+name: pr-title
+
+# Checks the title of a pull request. Pushed commits are not checked: a bad title on master
+# cannot be fixed without rewriting history.
+on:
+    pull_request:
+        types: [opened, edited, synchronize, reopened]
+
+permissions:
+    contents: read
+
+jobs:
+    title:
+        # Dependabot titles are generated, so they are not checked
+        if: github.actor != 'dependabot[bot]'
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - name: Check the pull request title
+              env:
+                  # The title goes through an environment variable, never into the script text
+                  PR_TITLE: ${{ github.event.pull_request.title }}
+              run: node scripts/check-pr-title.mjs

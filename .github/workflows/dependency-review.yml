@@ -1,0 +1,33 @@
+name: dependency-review
+
+# Checks the dependencies that a pull request adds or changes (also the Dependabot updates)
+on:
+    pull_request:
+        branches: [master]
+
+permissions:
+    contents: read
+
+# A newer push to the same pull request cancels the older run
+concurrency:
+    group: dependency-review-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    dependency-review:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+              with:
+                  # Fail on a high or critical vulnerability, in runtime and development dependencies
+                  fail-on-severity: high
+                  fail-on-scopes: runtime, development
+                  # Licenses of the packages in package-lock.json
+                  allow-licenses: MIT, MIT-0, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, BlueOak-1.0.0, MPL-2.0, CC0-1.0, CC-BY-4.0, Python-2.0, PSF-2.0, 0BSD, Zlib
+                  # winreg 0.0.12 uses the license string "BSD" (not an SPDX identifier)
+                  allow-dependencies-licenses: pkg:npm/winreg

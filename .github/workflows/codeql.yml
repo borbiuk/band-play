@@ -1,0 +1,52 @@
+name: codeql
+
+# Static security analysis of the JavaScript, TypeScript and workflow code
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+    schedule:
+        # Not at minute 0, the busiest time of the GitHub scheduler
+        - cron: '31 4 * * 1'
+
+permissions:
+    contents: read
+
+# A newer push to the same branch or pull request cancels the older run
+concurrency:
+    group: codeql-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    analyze:
+        name: Analyze (${{ matrix.language }})
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        permissions:
+            # Upload the results to the code scanning tab
+            security-events: write
+            contents: read
+            # Read the workflow runs, which the `actions` language analyzes
+            actions: read
+
+        strategy:
+            fail-fast: false
+            matrix:
+                language: [javascript-typescript, actions]
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            # `init` and `analyze` must use the same CodeQL version
+            - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+              with:
+                  languages: ${{ matrix.language }}
+                  # No build step: the code is analyzed as source
+                  build-mode: none
+                  config-file: ./.github/codeql/codeql-config.yml
+            - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+              with:
+                  category: /language:${{ matrix.language }}
