@@ -1,0 +1,29 @@
+{
+	// Files that start the code. Each webpack entry is listed, and the setup project of Playwright
+	// (its testMatch is custom, so the plugin does not find it)
+	"entry": [
+		"webpack/*.js",
+		"scripts/*.mjs",
+		"tests/setup/dist.setup.ts",
+		// Loaded by `@config` in feed-player.scss, which knip does not read
+		"src/content/page-services/bandcamp/feed-player/tailwind.config.js",
+	],
+	"project": [
+		"src/**/*.{ts,tsx,js,scss,sass,css}",
+		"tests/**/*.{ts,tsx,mjs}",
+		"scripts/**/*.mjs",
+		"webpack/**/*.js",
+		"*.{js,mjs,ts}",
+	],
+	"webpack": {
+		// The loaders (ts-loader, css-loader, ...) are named as strings in these files
+		"config": ["webpack/webpack.*.js"],
+	},
+	// Exports that another code path in the same file uses do not need an export
+	"ignoreExportsUsedInFile": true,
+	"ignoreIssues": {
+		// The message types are the public contract of the messages between the entrypoints;
+		// some of them are not imported yet, so they stay exported
+		"src/shared/models/messages/index.ts": ["types"],
+	},
+}

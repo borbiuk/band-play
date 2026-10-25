@@ -44,6 +44,26 @@ jobs:
             - run: npm run lint:firefox
             - run: npm run test:unit
 
+    # Docs and unused code checks: run once, on one Node version, with a stable name for branch protection
+    checks:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - name: Use Node.js 24.x
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24.x
+                  cache: npm
+            - run: npm ci
+            - name: Check the registry signatures of the installed packages
+              run: npm audit signatures
+            - run: npm run lint:docs
+            - run: npm run lint:unused
+
     # The extension in Playwright's bundled Chromium against Bandcamp page snapshots (no network)
     e2e:
         runs-on: ubuntu-latest

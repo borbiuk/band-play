@@ -1,0 +1,33 @@
+{
+	// Prettier-compatible style, so the rules do not fight `npm run format`
+	"extends": "markdownlint/style/prettier",
+	"config": {
+		// Prettier does not wrap prose, so long lines are normal
+		"MD013": false,
+		// Prettier indents nested lists by 4 spaces (tabWidth 4), not 2
+		"MD007": { "indent": 4 },
+		// The README uses inline HTML for the centered logo and banner
+		"MD033": false,
+		// The file title may not be the first line (the store text starts with an emoji)
+		"MD041": false,
+		// Code spans with intentional spaces are used in the keyboard shortcut table
+		"MD038": false,
+		// Release notes repeat sub-headings (Added, Changed, ...) under each version
+		"MD024": { "siblings_only": true },
+	},
+	"globs": [
+		"*.md",
+		".github/**/*.md",
+		".claude/**/*.md",
+		"docs/**/*.md",
+		"specs/**/*.md",
+	],
+	"ignores": [
+		"node_modules/**",
+		"dist/**",
+		"dist-firefox/**",
+		"CODE_OF_CONDUCT.md",
+		// Plain store text, read as it will be pasted into the store form
+		"LISTING.md",
+	],
+}

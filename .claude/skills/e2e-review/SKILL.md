@@ -30,7 +30,7 @@ Reviews one change to the Playwright test suite against the standard in [referen
 
 Copy this checklist into the response and check it off:
 
-```
+```text
 Review progress:
 - [ ] 1. Resolve the change
 - [ ] 2. Scope gate
@@ -68,14 +68,14 @@ Core rules are SCN, AST, DATA, SYNC, MIG, STY and PR. No file in scope → stop 
 - Read every changed test file **in full**: title/assertion mismatches, vacuous assertions and missing controls are invisible in hunks. Read the fixtures each changed spec imports.
 - **Snapshots** (`fixtures/pages/*.html`): do not read them whole. `Grep` for what the spec relies on (`playbutton`, `nextbutton`, `prevbutton`, `play-col`, `track_info`, track titles) and for personal data (PR-7: `fan_id`, `collectors-data`, `collected-by`, emails, a country code in `ip_location_country_code`, signed-in markers).
 - **Feature under test**: build a short fact sheet, only for what the change touches:
-    - Keyboard shortcuts: `src/content/services/user-input-service.ts` (capture-phase `keydown`, typing detection, full-match `preventDefault`, repeat), `src/content/shortcut/*`, `src/shared/utils/shortcut.utils.ts`, the shortcut table in `README.md`.
+    - Keyboard shortcuts: `src/content/services/user-input-service.ts` (capture-phase `keydown`, typing detection, full-match `preventDefault`, repeat), `src/content/shortcut/*`, `src/shared/utils/shortcut.utils.ts`, the shortcut table in `docs/usage.md`.
     - Page services and playback: `src/content/services/page-service-worker.ts`, `src/content/page-services/bandcamp/*` (album and track share `album-page-service.ts`), [bandcamp-dom.md](../../rules/bandcamp-dom.md).
     - Readiness marker: `src/content/content.ts`.
     - Settings and storage: `src/shared/services/config-service.ts`, `src/shared/models/config-model.ts`.
     - Popup: [popup.md](../../rules/popup.md); `src/options/components/*`, `src/shared/components/batch-download.tsx`.
     - Batch download, downloads page: [batch-download.md](../../rules/batch-download.md); `src/background/batch-download/*`, `src/downloads/*`, the messaging rule [messaging.md](../../rules/messaging.md).
     - Unit tests: the module under test.
-- **Test basis:** the rule docs above, the feature list and shortcut table in `README.md`, and what the PR description claims. A behaviour the change claims to cover but does not is a finding under the rule the gap breaks; an uncovered behaviour that is not claimed is FYI.
+- **Test basis:** the rule docs above, the feature list and shortcut table in `docs/usage.md`, and what the PR description claims. A behaviour the change claims to cover but does not is a finding under the rule the gap breaks; an uncovered behaviour that is not claimed is FYI.
 - **Intermediate commits** (when the commits are local): `git log --no-merges --diff-filter=AD --name-status <base>..HEAD` and `git log --no-merges --format='%h %s' --name-only -G'([Tt]oken|[Ss]ecret|[Pp]assw|[Cc]ookie|storageState|fan_id|@[A-Za-z0-9-]+\.[a-z]{2,})' <base>..HEAD`. Inspect hits with `git show <commit> -- <path>` for PR-7 and DATA-6; report the commit and path only, never the value.
 
 ### 4. Static checks
