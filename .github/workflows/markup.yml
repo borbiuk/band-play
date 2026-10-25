@@ -5,16 +5,16 @@ name: bandcamp-markup
 # 2. commit them to master when they changed,
 # 3. run the e2e tests on them and the live smoke tests on bandcamp.com.
 # When any step fails, one open issue labelled `markup-drift` tracks it: it is created once and
-# later failures add a comment to it. Close the issue after fixing the selectors.
+# later failures add a comment to it. A passing run closes the open issues.
 on:
     schedule:
         # Not at minute 0, the busiest time of the GitHub scheduler (runs there are delayed or dropped more often)
         - cron: '17 5 * * *'
     workflow_dispatch:
 
+# Read-only by default; the markup job adds the two scopes it needs
 permissions:
-    contents: write
-    issues: write
+    contents: read
 
 concurrency:
     group: bandcamp-markup
@@ -25,6 +25,12 @@ jobs:
         runs-on: ubuntu-latest
         # Two Playwright runs of up to 10 minutes each (globalTimeout in playwright.config.ts) plus setup and capture
         timeout-minutes: 40
+
+        permissions:
+            # Push the refreshed snapshots to master
+            contents: write
+            # Open or update the markup-drift issue and close it after a passing run
+            issues: write
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -103,4 +109,17 @@ jobs:
                       --title "Tests fail on the current Bandcamp markup" \
                       --body "The daily markup check failed: $RUN_URL
 
-                  Bandcamp probably changed the markup of a page the extension or its tests depend on. Open the run, download the \`playwright-report-markup\` artifact (\`npx playwright show-report\`), update the selectors in \`src/content\` and the tests, then close this issue. Later failures are added here as comments until it is closed."
+                  Bandcamp probably changed the markup of a page the extension or its tests depend on. Open the run, download the \`playwright-report-markup\` artifact (\`npx playwright show-report\`) and update the selectors in \`src/content\` and the tests. The next passing run closes this issue. Later failures are added here as comments until then."
+            - name: Close the markup-drift issues after a passing run
+              if: success()
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              run: |
+                  # Read the list first, so a failed `gh` call fails the step (no pipe hides its exit code)
+                  numbers=$(gh issue list --label markup-drift --state open --json number --jq '.[].number')
+                  while read -r number; do
+                      [ -n "$number" ] || continue
+                      gh issue close "$number" --reason completed \
+                          --comment "The daily markup check passed, so this issue is closed: $RUN_URL"
+                  done <<< "$numbers"
