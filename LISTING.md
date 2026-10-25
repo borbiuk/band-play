@@ -30,7 +30,7 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - P — Pitch preservation on or off; Shift + P — Turn it off
 - O — Open the current item in a new tab; Shift + O — Open it and switch to the tab
 - L — Add to or remove from the wishlist
-- 🔗 Full list: https://github.com/borbiuk/band-play#keyboard-shortcuts
+- 🔗 Full list: https://github.com/borbiuk/band-play/blob/master/docs/usage.md#keyboard-shortcuts
 
 🔒 Privacy
 
@@ -38,6 +38,7 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - The only network traffic it causes is for batch download: it loads the Bandcamp download pages of the items you selected and downloads the files from Bandcamp's own download links.
 - Your settings, the visited history and the download history are stored locally in the browser (extension local storage) and never leave your computer.
 - Open source: https://github.com/borbiuk/band-play
+- Full privacy policy: https://github.com/borbiuk/band-play/blob/master/PRIVACY.md
 
 🧾 Permissions (what and why)
 

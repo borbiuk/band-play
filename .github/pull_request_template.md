@@ -1,6 +1,6 @@
 ## Description
 
-Briefly describe the changes introduced by this pull request.
+Briefly describe the changes introduced by this pull request. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the checks.
 
 ## Related Issue
 
@@ -18,6 +18,6 @@ Fixes #
 
 ## Checklist
 
-- [ ] The code builds successfully
-- [ ] Changes were tested
-- [ ] Documentation updated (if needed)
+- [ ] Tests are added or updated, or no test is needed (say why in the description)
+- [ ] Documentation, `LISTING.md` and `RELEASE_NOTES.md` are updated, if the change is visible to users
+- [ ] A new permission or dependency is explained in the description
