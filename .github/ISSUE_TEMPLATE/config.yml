@@ -1,0 +1,9 @@
+# Blank issues stay enabled; set this to false to force the templates
+blank_issues_enabled: true
+contact_links:
+    - name: Report a security vulnerability
+      url: https://github.com/borbiuk/band-play/security/advisories/new
+      about: Report it privately. Do not open a public issue for a vulnerability.
+    - name: Contributing guide
+      url: https://github.com/borbiuk/band-play/blob/master/.github/CONTRIBUTING.md
+      about: Read how to set up the project and which checks to run before you open a pull request.
