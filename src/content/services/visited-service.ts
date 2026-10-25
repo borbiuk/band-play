@@ -220,7 +220,7 @@ class VisitedService {
 			anchor.addEventListener(
 				'auxclick',
 				(e: MouseEvent) => {
-					if ((e as any).button === 1) {
+					if (e.button === 1) {
 						handler(anchor.href);
 					}
 				},

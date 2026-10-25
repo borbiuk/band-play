@@ -2,6 +2,22 @@ import { BatchDownloadFormat } from '@shared/enums';
 import { BatchDownloadFileModel } from '@shared/models/batch-download/batch-download-file-model';
 import { isBandcampFileUrl, isBandcampUrl } from '@shared/utils';
 
+/** The part of one item of the `data-blob` of a download page that is read here. */
+interface DownloadBlobItem {
+	killed?: number;
+	item_id?: number | string;
+	sale_id?: number | string;
+	artist?: string;
+	title?: string;
+	downloads?: Record<string, { url?: string; size_mb?: unknown } | undefined>;
+}
+
+/** The part of the `data-blob` of a download page that is read here. */
+interface DownloadBlob {
+	digital_items?: unknown;
+	identities?: { fan?: { verified?: boolean } };
+}
+
 const FETCH_TIMEOUT_MS = 15000;
 
 /** The longest `Retry-After` delay that is respected. */
@@ -147,14 +163,18 @@ export const parseBandcampDownloads = async (
 		return [];
 	}
 
-	let json: any;
+	let json: DownloadBlob;
 	try {
 		json = JSON.parse(blob);
 	} catch (_e) {
 		return [];
 	}
 
-	const items = Array.isArray(json?.digital_items) ? json.digital_items : [];
+	const items: (DownloadBlobItem | null)[] = Array.isArray(
+		json?.digital_items
+	)
+		? json.digital_items
+		: [];
 
 	const downloads: BatchDownloadFileModel[] = [];
 

@@ -127,7 +127,7 @@ export const FeedPlayer = ({
 		};
 		feedPageService.audioEventEmitter.on(onAudio);
 		return () => feedPageService.audioEventEmitter.off(onAudio);
-	}, []);
+	}, [feedPageService]);
 
 	useEffect(() => {
 		const listener = ({

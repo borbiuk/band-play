@@ -22,7 +22,7 @@ export abstract class BasePageService<TTrackModel> implements PageService {
 
 	protected constructor() {}
 
-	isServiceUrl(url: string): boolean {
+	isServiceUrl(_url: string): boolean {
 		return false;
 	}
 
@@ -32,23 +32,23 @@ export abstract class BasePageService<TTrackModel> implements PageService {
 
 	tryAutoplay(): void {}
 
-	playNextTrack(next: boolean): void {}
+	playNextTrack(_next: boolean): void {}
 
-	playTrackByIndex(index: number): void {}
+	playTrackByIndex(_index: number): void {}
 
 	playPause(): void {}
 
-	open(active: boolean): void {}
+	open(_active: boolean): void {}
 
 	addToWishlist(): void {}
 
-	seekToPercentage(percentage: number): void {}
+	seekToPercentage(_percentage: number): void {}
 
-	seekForward(forward: boolean): void {}
+	seekForward(_forward: boolean): void {}
 
-	speedPlayback(code: PlaybackSpeedAction): void {}
+	speedPlayback(_code: PlaybackSpeedAction): void {}
 
-	switchPreservesPitch(code: PlaybackPitchAction): void {}
+	switchPreservesPitch(_code: PlaybackPitchAction): void {}
 
 	/**
 	 * Protected helper method to create a new browser tab.

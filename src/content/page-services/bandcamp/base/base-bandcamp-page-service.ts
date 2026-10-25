@@ -137,7 +137,9 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 		return operator(audio);
 	}
 
-	private findAudioElement(root: any = document) {
+	private findAudioElement(
+		root: Document | ShadowRoot = document
+	): HTMLAudioElement | null {
 		let audio = root.querySelector('audio');
 		if (exist(audio)) {
 			return audio;
