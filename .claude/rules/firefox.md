@@ -17,7 +17,7 @@ paths:
     - `permissions`: `["storage", "downloads", "alarms"]`, without the Chrome-only `power`, `downloads.shelf` and `downloads.ui`.
 - There is no `gecko_android` entry.
 - **Why 128**: the album page uses the CSS `:has()` selector (`td.play-col > a:not(:has(...))`, Firefox 121+), and Firefox grants MV3 `host_permissions` at install only from version 127. Raise the minimum when a feature needs a newer Firefox, and write the reason here.
-- The version is synced from `public/manifest.json` by `.husky/set-version.sh`; `publish-firefox.yml` fails when the two versions differ.
+- The version is synced from `public/manifest.json` by `.husky/set-version.sh`; the release workflow fails when the two versions differ.
 
 ## What is different at runtime
 
@@ -39,7 +39,7 @@ paths:
 
 ## Store
 
-- `publish-firefox.yml` builds with `npm run zip`, unpacks the Firefox zip and submits it with `web-ext sign --channel listed --approval-timeout 0` and uploads a `git archive` of `HEAD` as the source code (AMO needs it because the code is bundled). The zip has the files at the archive root, as AMO requires.
+- The Firefox zip comes from `npm run zip` (in `release.yml`); the zip has the files at the archive root, as AMO requires. The AMO upload is manual: it needs the source code of the same commit, because the code is bundled.
 
 ## Checklist before shipping a Firefox change
 

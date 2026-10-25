@@ -1,12 +1,12 @@
 ---
 name: release
-description: Prepares and publishes a Band Play release (version bump, release notes, checks, release commit and zips, then push, CI, tag, GitHub Release with the Chrome and Firefox zips, and on request the Chrome Web Store and Firefox Add-ons publish workflows). Use when the user asks to release, bump the version, tag a version or publish a GitHub Release.
+description: Prepares and publishes a Band Play release (version bump, release notes, checks, release commit and zips, then push, CI, tag, GitHub Release with the Chrome and Firefox zips). The store upload is manual. Use when the user asks to release, bump the version, tag a version or publish a GitHub Release.
 argument-hint: '[x.y.z | patch | minor | major]'
 disable-model-invocation: true
 allowed-tools: Bash(npm run check:versions) Bash(npm run format:check) Bash(npm run build) Bash(npm run build:firefox) Bash(npm run lint) Bash(npm run lint:firefox) Bash(npm run test:unit) Bash(npm run test:e2e) Bash(npm run test:live) Bash(git status *) Bash(git log *) Bash(git diff *) Bash(git fetch *) Bash(git cat-file *) Bash(unzip -l *) Bash(unzip -p *)
 ---
 
-Release `$ARGUMENTS` in two phases and track their steps as a checklist. **Phase 2 changes GitHub and starts only after the user confirms in chat**; a confirmation for one release never covers the next one, and the store publish at the end of phase 2 needs its own confirmation.
+Release `$ARGUMENTS` in two phases and track their steps as a checklist. **Phase 2 changes GitHub and starts only after the user confirms in chat**; a confirmation for one release never covers the next one, and the store upload is done by the maintainer by hand.
 
 ## Accounts
 
@@ -38,8 +38,4 @@ Release `$ARGUMENTS` in two phases and track their steps as a checklist. **Phase
 4. **Release workflow**: find the run (`GH_TOKEN=$(gh auth token --user borbiuk) gh run list -R borbiuk/band-play --workflow release.yml --limit 1`) and wait for it with `GH_TOKEN=$(gh auth token --user borbiuk) gh run watch <id> -R borbiuk/band-play --exit-status`. It checks that the tag equals the manifest version, that the commit is on `master` and its build passed, and that no release exists yet. Then it builds both browsers, names the zips `band-play-chrome-x.y.z.zip` and `band-play-firefox-x.y.z.zip`, checks their versions, attests their build provenance and creates the GitHub Release with the notes from `scripts/release-notes.sh` (the `## x.y.z` section, an install block and the changelog link). Do not create the Release by hand. On failure stop and report the failing step.
 5. **Verify**: `GH_TOKEN=$(gh auth token --user borbiuk) gh release view x.y.z -R borbiuk/band-play` lists both assets, and `GH_TOKEN=$(gh auth token --user borbiuk) gh api repos/borbiuk/band-play/releases/latest -q .tag_name` returns `x.y.z`. Download the assets to a scratch directory (`GH_TOKEN=$(gh auth token --user borbiuk) gh release download x.y.z -R borbiuk/band-play -D <scratch dir>`), check `"version"` inside each with `unzip -p <zip> manifest.json`, and run `GH_TOKEN=$(gh auth token --user borbiuk) gh attestation verify <zip> -R borbiuk/band-play`.
 6. **Report**: the commit, the CI run URL, the tag, the release workflow run URL and the release URL. The zips of phase 1 are for local testing only: the Release files are the ones built in CI.
-7. **Offer the store publish**: ask whether to start the store workflows. They are manual (`workflow_dispatch`), run only on `master`, and take the zip of the GitHub Release of the version: they download it, check its `"version"` and its build attestation, then upload it. The files are the same ones as the Release, so nothing is built again. The store environment may have required reviewers; the run then waits for the maintainer to approve it on GitHub. **Only after the user confirms**, start each workflow the user chose:
-    - `GH_TOKEN=$(gh auth token --user borbiuk) gh workflow run publish-chrome.yml -R borbiuk/band-play --ref master -f version=x.y.z`
-    - `GH_TOKEN=$(gh auth token --user borbiuk) gh workflow run publish-firefox.yml -R borbiuk/band-play --ref master -f version=x.y.z`
-
-    The Chrome job needs the `CHROME_PUBLISHER_ID` secret (Chrome Web Store API v2) besides the OAuth secrets. Give the run URLs (`GH_TOKEN=$(gh auth token --user borbiuk) gh run list -R borbiuk/band-play --workflow publish-chrome.yml --limit 1`), and watch them with `GH_TOKEN=$(gh auth token --user borbiuk) gh run watch <id> -R borbiuk/band-play --exit-status` when the user wants. Report the result of each run; a store rejection is handled by the maintainer.
+7. **Store upload (manual)**: the repository has no store workflow. The maintainer uploads the zips of the GitHub Release (the same files as the Release, not the local ones) to the Chrome Web Store and to Firefox Add-ons by hand. Give the user the downloaded zip paths and the store images that changed. The upload is never started from this skill.
