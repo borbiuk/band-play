@@ -1,9 +1,16 @@
 name: publish-chrome
 
-# Manually triggered publishing to the Chrome Web Store.
-# Run it from the Actions tab: select the branch and press "Run workflow".
+# Manually triggered upload of a release to the Chrome Web Store.
+# The zip is the file of the GitHub Release that the release workflow built and attested, so the
+# store gets the same bytes. Run it from the Actions tab (select master and enter the version) or with
+# `gh workflow run publish-chrome.yml --ref master -f version=x.y.z`.
 on:
     workflow_dispatch:
+        inputs:
+            version:
+                description: 'Version of the GitHub Release to publish, x.y.z'
+                required: true
+                type: string
 
 permissions:
     contents: read
@@ -21,7 +28,17 @@ jobs:
         timeout-minutes: 20
         # Configure required reviewers for this environment in the repository settings
         environment: store
+        env:
+            GH_TOKEN: ${{ github.token }}
+            # The version reaches the scripts through the environment, never through the script text
+            VERSION: ${{ inputs.version }}
         steps:
+            - name: Check the version input
+              run: |
+                  if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+                    echo "The version '$VERSION' is not x.y.z"
+                    exit 1
+                  fi
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   persist-credentials: false
@@ -29,28 +46,22 @@ jobs:
               with:
                   node-version: 24.x
                   cache: npm
+            # chrome-webstore-upload is a development dependency of the repository
             - run: npm ci
             - name: Check the registry signatures of the installed packages
               run: npm audit signatures
-            - name: Versions, lint, type check and unit tests
+            - name: Download the Chrome zip of the release
+              run: gh release download "$VERSION" --pattern "band-play-chrome-${VERSION}.zip" --output chrome.zip
+            - name: Check the version inside the zip
               run: |
-                  npm run check:versions
-                  npm run lint
-                  npm run test:unit
-            - name: Check that Chrome and Firefox manifest versions match
-              run: |
-                  chrome_version=$(jq -r '.version' public/manifest.json)
-                  firefox_version=$(jq -r '.version' public/manifest.firefox.json)
-                  if [ "$chrome_version" != "$firefox_version" ]; then
-                    echo "Manifest versions do not match: chrome=$chrome_version, firefox=$firefox_version"
+                  zip_version=$(unzip -p chrome.zip manifest.json | jq -r '.version')
+                  if [ "$zip_version" != "$VERSION" ]; then
+                    echo "The zip has the version $zip_version, expected $VERSION"
                     exit 1
                   fi
-                  echo "Publishing version **$chrome_version** to the Chrome Web Store" >> "$GITHUB_STEP_SUMMARY"
-            # zip.sh packages both browsers; only the Chrome package is used here
-            - name: Build and package (zip.sh)
-              run: npm run zip
-            - name: Rename the package
-              run: mv artifacts/band-play-build-chrome_*.zip chrome.zip
+                  echo "Publishing version **$VERSION** to the Chrome Web Store" >> "$GITHUB_STEP_SUMMARY"
+            - name: Verify the build provenance of the zip
+              run: gh attestation verify chrome.zip -R "$GITHUB_REPOSITORY"
             - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               with:
                   name: chrome-package
