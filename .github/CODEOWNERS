@@ -1,0 +1,15 @@
+# Owners of the changes. The owner is the only maintainer, so this documents ownership;
+# it asks for a review only when "Require review from Code Owners" is on in the repository rules.
+*                           @borbiuk
+
+# Automation, the release and the store publishing
+/.github/                   @borbiuk
+/.husky/                    @borbiuk
+/scripts/                   @borbiuk
+/zip.sh                     @borbiuk
+
+# Extension manifests and the permissions they request
+/public/manifest*.json      @borbiuk
+
+# Agent settings (permissions for the tools)
+/.claude/settings.json      @borbiuk

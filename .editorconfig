@@ -1,0 +1,25 @@
+# Editor settings that match .prettierrc.json. Prettier (npm run format) stays the authority.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+# Prettier uses tabs with a width of 4
+indent_style = tab
+indent_size = 4
+
+# YAML and Markdown are indented with spaces (Prettier output of the workflows and the docs)
+[*.{yml,yaml,md}]
+indent_style = space
+indent_size = 4
+
+# Markdown uses two trailing spaces for a line break
+[*.md]
+trim_trailing_whitespace = false
+
+# The shell scripts mix tabs and spaces, so the editor keeps their existing indentation
+[*.sh]
+indent_style = unset
+indent_size = unset
