@@ -1,0 +1,149 @@
+name: release
+
+# Builds the Chrome and Firefox packages of a version and creates its GitHub Release.
+# Start it by hand, on the version tag: `gh workflow run release.yml --ref <x.y.z>`.
+# The tag must exist already (scripts/tag-releases.sh or a manual tag). The workflow is
+# not started by a tag push, so the release process stays a manual decision.
+# With dry_run (the default) it only builds and checks the packages and uploads them as an artifact.
+on:
+    workflow_dispatch:
+        inputs:
+            dry_run:
+                description: 'Build and check only: create no GitHub Release'
+                type: boolean
+                default: true
+
+permissions:
+    contents: read
+
+# One release at a time
+concurrency:
+    group: release
+    cancel-in-progress: false
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        permissions:
+            # Create the GitHub Release and its assets
+            contents: write
+            # Read the build workflow runs of the release commit
+            actions: read
+            # Sign the build provenance of the packages
+            id-token: write
+            attestations: write
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  # The guards compare the tag with origin/master, so all history and tags are needed
+                  fetch-depth: 0
+                  persist-credentials: false
+            - name: Use Node.js 24.x
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24.x
+                  cache: npm
+            - name: Install dependencies
+              # The Husky hooks are for local commits only
+              env:
+                  HUSKY: '0'
+              run: npm ci
+            - name: Check the registry signatures of the installed packages
+              run: npm audit signatures
+            - name: Check the release guards
+              id: guards
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  # The tag name and the ref type reach the script only through the environment
+                  REF_NAME: ${{ github.ref_name }}
+                  REF_TYPE: ${{ github.ref_type }}
+              run: |
+                  version=$(jq -r '.version' public/manifest.json)
+                  firefox_version=$(jq -r '.version' public/manifest.firefox.json)
+                  package_version=$(jq -r '.version' package.json)
+                  if [ "$version" != "$firefox_version" ] || [ "$version" != "$package_version" ]; then
+                      echo "The versions differ: manifest=$version, firefox=$firefox_version, package=$package_version"
+                      exit 1
+                  fi
+                  if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+                      echo "The version '$version' is not x.y.z"
+                      exit 1
+                  fi
+                  if [ "$REF_TYPE" != "tag" ] || [ "$REF_NAME" != "$version" ]; then
+                      echo "Run this workflow on the tag $version (got $REF_TYPE '$REF_NAME')."
+                      exit 1
+                  fi
+                  if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+                      echo "The tagged commit is not on master."
+                      exit 1
+                  fi
+                  build_result=$(gh run list --workflow build.yml --commit "$GITHUB_SHA" --json conclusion --jq '.[0].conclusion')
+                  if [ "$build_result" != "success" ]; then
+                      echo "The build workflow of this commit did not succeed (result: '${build_result:-none}')."
+                      exit 1
+                  fi
+                  if [ "$(grep -m1 '^## ' RELEASE_NOTES.md)" != "## $version" ]; then
+                      echo "RELEASE_NOTES.md has no first section for $version."
+                      exit 1
+                  fi
+                  if gh release view "$version" > /dev/null 2>&1; then
+                      echo "The GitHub Release $version already exists."
+                      exit 1
+                  fi
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+            - name: Build and package (zip.sh)
+              run: npm run zip
+            - name: Name the packages and check their versions
+              id: packages
+              env:
+                  VERSION: ${{ steps.guards.outputs.version }}
+              run: |
+                  chrome_zip="band-play-chrome-${VERSION}.zip"
+                  firefox_zip="band-play-firefox-${VERSION}.zip"
+                  mv artifacts/band-play-build-chrome_*.zip "$chrome_zip"
+                  mv artifacts/band-play-build-firefox_*.zip "$firefox_zip"
+                  for zip in "$chrome_zip" "$firefox_zip"; do
+                      zip_version=$(unzip -p "$zip" manifest.json | jq -r '.version')
+                      if [ "$zip_version" != "$VERSION" ]; then
+                          echo "$zip has the version $zip_version, expected $VERSION"
+                          exit 1
+                      fi
+                  done
+                  echo "chrome_zip=$chrome_zip" >> "$GITHUB_OUTPUT"
+                  echo "firefox_zip=$firefox_zip" >> "$GITHUB_OUTPUT"
+            - name: Write the release notes
+              env:
+                  VERSION: ${{ steps.guards.outputs.version }}
+              run: |
+                  scripts/release-notes.sh "$VERSION" "$GITHUB_SHA" > "$RUNNER_TEMP/release-notes.md"
+                  scripts/release-notes.sh --title "$VERSION" > "$RUNNER_TEMP/release-title.txt"
+            - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: release-packages
+                  path: |
+                      ${{ steps.packages.outputs.chrome_zip }}
+                      ${{ steps.packages.outputs.firefox_zip }}
+                  if-no-files-found: error
+            # Attests that the packages were built by this workflow from this commit
+            - name: Attest the build provenance
+              if: ${{ !inputs.dry_run }}
+              uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+              with:
+                  subject-path: |
+                      ${{ steps.packages.outputs.chrome_zip }}
+                      ${{ steps.packages.outputs.firefox_zip }}
+            - name: Create the GitHub Release
+              if: ${{ !inputs.dry_run }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  VERSION: ${{ steps.guards.outputs.version }}
+                  CHROME_ZIP: ${{ steps.packages.outputs.chrome_zip }}
+                  FIREFOX_ZIP: ${{ steps.packages.outputs.firefox_zip }}
+              run: |
+                  gh release create "$VERSION" --verify-tag --latest \
+                      --title "$(cat "$RUNNER_TEMP/release-title.txt")" \
+                      --notes-file "$RUNNER_TEMP/release-notes.md" \
+                      "$CHROME_ZIP" "$FIREFOX_ZIP"
