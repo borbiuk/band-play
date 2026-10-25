@@ -30,7 +30,7 @@ The full list, the keyboard shortcuts and the supported pages are in [docs/usage
 ## Install
 
 - **Chrome**: from the [Chrome Web Store](https://chromewebstore.google.com/detail/nooegmjcddclidfdlibmgcpaahkikmlh).
-- **Firefox**: build the extension from this repository, see [Installation](docs/development.md#installation).
+- **Firefox**: from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/bandcamp-play/), or build the extension from this repository, see [Installation](docs/development.md#installation).
 
 ## Privacy
 

@@ -9,7 +9,7 @@
 
 - The latest released version (see the supported versions table in [SECURITY.md](../SECURITY.md)).
 - Chrome, from the Chrome Web Store.
-- Firefox 128 or newer, from a build of the release package or from source. Keep Awake is Chrome only.
+- Firefox 128 or newer, from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/bandcamp-play/), or from a build of this repository. Keep Awake is Chrome only.
 
 ## When Bandcamp changes its pages
 

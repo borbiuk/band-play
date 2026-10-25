@@ -9,7 +9,7 @@ Only the latest released version of this extension is supported with security up
 | Latest         | :white_check_mark: |
 | Older versions | :x:                |
 
-Always use the most recent released version. Chrome updates the extension from the Chrome Web Store automatically.
+Always use the most recent released version. Chrome and Firefox users get updates from their stores automatically.
 
 ## Reporting a Vulnerability
 
