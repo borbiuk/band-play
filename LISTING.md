@@ -42,7 +42,6 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 
 🧾 Permissions (what and why)
 
-- 🗂️ Tabs — Opens the current item in a new tab, opens the downloads page, and tells the page when you move to another Bandcamp page.
 - 💾 Storage — Saves your settings, shortcuts, the visited history and the download queue and history locally.
 - ⬇️ Downloads — Saves the files of a batch download and shows, pauses, resumes, cancels or deletes them from the downloads page.
 - ⏰ Alarms — Keeps a long batch download going and retries it later when Bandcamp asks to slow down.
