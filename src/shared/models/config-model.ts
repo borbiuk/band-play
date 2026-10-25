@@ -37,15 +37,24 @@ export interface ConfigModel {
 	/** Keyboard shortcuts configuration */
 	shortcuts: ShortcutConfig;
 
+	/** Shortcuts switched off by the user; a disabled shortcut does nothing and its key stays free for the page */
+	disabledShortcuts: ShortcutType[];
+
+	/** Use the keyboard media keys (play, pause, next, previous, seek) on Bandcamp pages */
+	mediaKeys: boolean;
+
 	/** Preferred download format for batch downloads on Bandcamp */
 	batchDownloadFormat: BatchDownloadFormat;
 
 	/** Number of concurrent active downloads for batch downloads */
 	batchDownloadConcurrency: number;
 
-	/**
-	 * Filename template for batch downloads ({artist}, {title}, {format}
-	 * tokens; '/' creates folders). Empty string keeps server filenames.
-	 */
-	batchDownloadFilenameTemplate: string;
+	/** Show a notification when a batch finishes (needs the optional `notifications` permission) */
+	batchDownloadNotify: boolean;
+
+	/** Open or focus the downloads page when a batch starts */
+	batchDownloadOpenPage: boolean;
+
+	/** Leave out releases already downloaded in the same format when a batch starts */
+	batchDownloadSkipDownloaded: boolean;
 }

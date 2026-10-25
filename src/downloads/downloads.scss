@@ -1,50 +1,28 @@
 @tailwind base;
 @tailwind utilities;
 
-/* Minimal page styling for the downloads tab */
+html,
 body {
 	margin: 0;
-	background: #ebf3f4;
-	font-family:
-		system-ui,
-		-apple-system,
-		Segoe UI,
-		Roboto,
-		Helvetica,
-		Arial,
-		sans-serif;
+	padding: 0;
 }
 
-@keyframes bandPlayIndeterminate {
-	0% {
-		opacity: 0.35;
-	}
-	50% {
-		opacity: 0.75;
-	}
-	100% {
-		opacity: 0.35;
-	}
-}
-
-/* Indeterminate progress bar (used when totalBytes is unknown) */
-.band-play-progress-indeterminate {
-	position: relative;
-	overflow: hidden;
-	background: #e5e7eb;
-}
-
-.band-play-progress-indeterminate::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 100%;
-	width: 100%;
-	background: #9ca3af;
-	animation: bandPlayIndeterminate 1s ease-in-out infinite;
-}
-
-.band-play-progress-paused {
-	background: #9ca3af;
+/* Soft aqua glow behind the page and the glass header, so the blur is visible */
+body {
+	min-height: 100vh;
+	background:
+		radial-gradient(
+			520px 380px at 92% -4%,
+			rgba(29, 160, 195, 0.26),
+			transparent 70%
+		),
+		radial-gradient(
+			480px 420px at -4% 70%,
+			rgba(82, 186, 214, 0.2),
+			transparent 70%
+		),
+		linear-gradient(180deg, #f1fafc, #fff 60%);
+	background-attachment: fixed;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
 }

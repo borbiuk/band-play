@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
 	isBandcampFileUrl,
 	isBandcampUrl,
+	isWishlistUrl,
 } from '../../src/shared/utils/url.utils';
 
 test.describe('isBandcampUrl', () => {
@@ -41,6 +42,24 @@ test.describe('isBandcampFileUrl', () => {
 	for (const { url, expected } of CASES) {
 		test(`should return ${expected} for ${String(url)}`, () => {
 			expect(isBandcampFileUrl(url)).toBe(expected);
+		});
+	}
+});
+
+test.describe('isWishlistUrl', () => {
+	const CASES: { url: string; expected: boolean }[] = [
+		{ url: 'https://bandcamp.com/fan/wishlist', expected: true },
+		{ url: 'https://bandcamp.com/fan/wishlist/', expected: true },
+		{ url: 'https://bandcamp.com/fan/wishlist?sort=a', expected: true },
+		{ url: 'https://bandcamp.com/fan', expected: false },
+		{ url: 'https://bandcamp.com/wishlist-fan', expected: false },
+		{ url: 'https://bandcamp.com/fan?next=/wishlist', expected: false },
+		{ url: 'not a url', expected: false },
+	];
+
+	for (const { url, expected } of CASES) {
+		test(`should return ${expected} for ${url}`, () => {
+			expect(isWishlistUrl(url)).toBe(expected);
 		});
 	}
 });

@@ -25,7 +25,7 @@ Format: **ID — rule** · default severity, then what to look for and the fix.
 
 ## Test environment (facts the rules rely on)
 
-Where things live: `playwright.config.ts`, `tests/unit/**`, `tests/setup/dist.setup.ts`, `tests/e2e/fixtures/{extension.ts,bandcamp.ts,capture-pages.mjs}`, `tests/e2e/fixtures/pages/*.html` with `index.json`, `tests/e2e/*.spec.ts` (`seed.spec.ts` is the seed of the Playwright test agents), `tests/live/**`, `tests/tsconfig.json`. CI: `npm run test:unit` in job `build` and job `e2e` (Node 24) in `build.yml`, and `markup.yml` (daily and manual: refreshes the snapshots, runs e2e and live).
+Where things live: `playwright.config.ts`, `tests/unit/**`, `tests/helpers/**`, `tests/setup/dist.setup.ts`, `tests/e2e/fixtures/{extension.ts,bandcamp.ts,capture-pages.mjs}`, `tests/e2e/fixtures/pages/*.html` with `index.json`, `tests/e2e/*.spec.ts` (`seed.spec.ts` is the seed of the Playwright test agents), `tests/live/**`, `tests/tsconfig.json`. CI: `npm run test:unit` in job `build` and job `e2e` (Node 24) in `build.yml`, and `markup.yml` (daily and manual: refreshes the snapshots, runs e2e and live).
 
 - **`unit`**: Node, no browser. Pure logic from `src/` (`@shared/*`, or a relative import for content, background and downloads modules); there is no `chrome` global, so a test that needs `chrome.storage.local` builds a per-test fake.
 - **`e2e`**: the built extension from `dist/` in Playwright's bundled Chromium (`channel: 'chromium'`, headless unless `--headed`) via `launchPersistentContext` with `--disable-extensions-except`, `--load-extension` and `--autoplay-policy=no-user-gesture-required`. The `dist` setup project runs `npm run build` before it.
@@ -35,7 +35,7 @@ Where things live: `playwright.config.ts`, `tests/unit/**`, `tests/setup/dist.se
     - Settings are written with `storage.set` to `chrome.storage.local` from an extension page. The popup is tested as `chrome-extension://<id>/options.html`.
 - **`live`**: real bandcamp.com, anonymous, on demand (`npm run test:live`, which sets `BAND_PLAY_LIVE`; the project does not exist without it); also run daily by `markup.yml` after the snapshot refresh (05:17 UTC, plus manual dispatch). Never part of push or pull request CI.
 - **Firefox is not covered**: Playwright cannot load extensions into Firefox. Firefox stays `npm run lint:firefox` plus manual checks (EXT-8).
-- **Pages that need a signed-in fan account** (feed, collection, wishlist, purchases, batch download) and the downloads page with real downloads are not covered by e2e today: they stay manual checks unless a test builds a safe snapshot for them (DATA-6, PR-7).
+- **Pages that need a signed-in fan account** (feed, collection, wishlist, purchases, batch download) are covered only by the hand-written pages in `tests/e2e/fixtures/synthetic/` (no personal data, only the markup the extension reads); the real pages and the downloads page with real downloads stay manual checks (DATA-6, PR-7).
 - **The oracle** (what correct behaviour is): the feature list and the shortcut table in `README.md`, [bandcamp-dom.md](../../../rules/bandcamp-dom.md) (page services and selectors), [messaging.md](../../../rules/messaging.md), [popup.md](../../../rules/popup.md), [batch-download.md](../../../rules/batch-download.md), and the code of the page services in `src/content/page-services/`.
 
 ---
@@ -110,7 +110,7 @@ Where things live: `playwright.config.ts`, `tests/unit/**`, `tests/setup/dist.se
 **AST-5 — UI state is behaviour.** · Major
 
 - Popup: checkbox state, the field value of the shortcut recorder, the status text ("… saved.", "… reset to the default."), the alert text, hidden controls where a feature is not available.
-- Page: the feed player, the batch download overlay and the visited marks are behaviour too when the change touches them.
+- Page: the feed player, the batch download bar and the visited marks are behaviour too when the change touches them.
 
 **AST-6 — Downloads are verified as files or as stored state.** · Major
 
@@ -184,7 +184,7 @@ There is no backend. "Data" is the extension's settings (and history) in `chrome
 
 **DATA-6 — No signed-in Bandcamp session.** · **Critical**
 
-- Snapshots are captured signed out; no cookies, `storageState`, identity tokens or credentials in tests, fixtures or workflows; `live` runs anonymous. Pages that need a fan account (feed, collection, wishlist, purchases) stay manual checks.
+- Snapshots are captured signed out; no cookies, `storageState`, identity tokens or credentials in tests, fixtures or workflows; `live` runs anonymous. Pages that need a fan account (feed, collection, wishlist, purchases) have only the hand-written pages in `fixtures/synthetic/`; the real ones stay manual checks.
 
 **DATA-7 — Parallel-safe resources.** · Major
 

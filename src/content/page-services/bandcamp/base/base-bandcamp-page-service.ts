@@ -1,9 +1,10 @@
-import { PlaybackPitchAction, PlaybackSpeedAction } from '@shared/enums';
-import { BandcampTrackModel } from '@shared/models';
-import EventEmitter from '@shared/services/event-emitter';
-import visitedService from '@shared/services/visited-service';
 import { exist, notExist } from '@shared/utils';
 
+import { PlaybackPitchAction } from '../../../enums/playback-pitch-action';
+import { PlaybackSpeedAction } from '../../../enums/playback-speed-action';
+import { BandcampTrackModel } from '../../../models/bandcamp-track-model';
+import EventEmitter from '../../../services/event-emitter';
+import visitedService from '../../../services/visited-service';
 import { BasePageService } from '../../base/base-page-service';
 
 /**
@@ -153,6 +154,67 @@ export class BaseBandcampPageService extends BasePageService<BandcampTrackModel>
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Progress of the playing track in percent. A service whose page does not expose a usable
+	 * audio element overrides it.
+	 */
+	protected getPlaybackProgress(): number {
+		return this.audioOperator<number>(
+			(audio: HTMLAudioElement) =>
+				(audio.currentTime / audio.duration) * 100
+		);
+	}
+
+	/** Once the track is over: repeats it when loop is on, else plays the next one. */
+	tryAutoplay(): void {
+		if (!this.autoplayNeeded(this.getPlaybackProgress())) {
+			return;
+		}
+
+		if (this.config.loopTrack) {
+			this.seekToPercentage(0);
+			return;
+		}
+
+		this.playNextTrack(true);
+	}
+
+	/**
+	 * Clicks a play control and, when autoscroll is on, scrolls to it (or to another element).
+	 *
+	 * @param clickable - The control to click.
+	 * @param revealTarget - The element to scroll to; the control itself by default.
+	 */
+	protected clickAndReveal(
+		clickable: HTMLElement | null | undefined,
+		revealTarget: Element | null | undefined = clickable
+	): void {
+		clickable?.click();
+		if (this.config.autoscroll) {
+			revealTarget?.scrollIntoView({
+				block: 'center',
+				behavior: 'smooth',
+			});
+		}
+	}
+
+	/**
+	 * Adds an item to the wishlist or removes it, with the item's own Bandcamp buttons.
+	 *
+	 * @param buttonContainer - The `#collect-item_<id>` element of the item.
+	 */
+	protected toggleWishlist(buttonContainer: HTMLElement): void {
+		const isWishlisted =
+			buttonContainer.parentElement.parentElement.classList.contains(
+				'wishlisted'
+			);
+		buttonContainer
+			.querySelector<HTMLElement>(
+				isWishlisted ? '.wishlisted-msg' : '.wishlist-msg'
+			)
+			?.click();
 	}
 
 	protected autoplayNeeded(progress: number): boolean {

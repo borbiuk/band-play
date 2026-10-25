@@ -3,111 +3,21 @@ import { BatchDownloadFormat, ShortcutType } from '@shared/enums';
 import { ConfigModel } from '@shared/models';
 import configService from '@shared/services/config-service';
 
+import { FakeLocalStorage, installChrome } from '../helpers/fake-chrome';
+
 // configService keeps no module state: it reads the `chrome` global on every call, so the
 // per-test fake below is all a test needs.
 
-/** Listener of chrome.storage.local.onChanged */
-type ChangeListener = (
-	changes: Record<string, chrome.storage.StorageChange>
-) => void;
-
-/**
- * In-memory stand-in for `chrome.storage.local` and its `onChanged` event: promise API,
- * values cloned on write and read, change events with `oldValue` / `newValue`.
- */
-class FakeLocalStorage {
-	private readonly items = new Map<string, unknown>();
-	private readonly listeners = new Set<ChangeListener>();
-
-	/** Stores a value without a change event, as data written earlier */
-	seed(values: Record<string, unknown>): void {
-		for (const [key, value] of Object.entries(values)) {
-			this.items.set(key, structuredClone(value));
-		}
-	}
-
-	/** Copy of everything stored */
-	dump(): Record<string, unknown> {
-		return structuredClone(Object.fromEntries(this.items));
-	}
-
-	/** Fires a change event as if another context had changed storage */
-	emit(changes: Record<string, chrome.storage.StorageChange>): void {
-		for (const listener of this.listeners) {
-			listener(structuredClone(changes));
-		}
-	}
-
-	/** The fake `chrome` global */
-	toChrome(): typeof chrome {
-		const local = {
-			get: async (
-				keys?: string | string[] | null
-			): Promise<Record<string, unknown>> => {
-				await Promise.resolve();
-				const names =
-					keys === null || keys === undefined
-						? [...this.items.keys()]
-						: [keys].flat();
-				const result: Record<string, unknown> = {};
-				for (const name of names) {
-					if (this.items.has(name)) {
-						result[name] = structuredClone(this.items.get(name));
-					}
-				}
-				return result;
-			},
-			set: async (values: Record<string, unknown>): Promise<void> => {
-				await Promise.resolve();
-				const changes: Record<string, chrome.storage.StorageChange> =
-					{};
-				for (const [name, value] of Object.entries(values)) {
-					const change: chrome.storage.StorageChange = {
-						newValue: structuredClone(value),
-					};
-					if (this.items.has(name)) {
-						change.oldValue = structuredClone(this.items.get(name));
-					}
-
-					this.items.set(name, structuredClone(value));
-					changes[name] = change;
-				}
-
-				this.emit(changes);
-			},
-			onChanged: {
-				addListener: (listener: ChangeListener): void => {
-					this.listeners.add(listener);
-				},
-				removeListener: (listener: ChangeListener): void => {
-					this.listeners.delete(listener);
-				},
-			},
-		};
-
-		return { storage: { local } } as unknown as typeof chrome;
-	}
-}
-
 let storage: FakeLocalStorage;
-let originalChrome: PropertyDescriptor | undefined;
+let restoreChrome: () => void;
 
 test.beforeEach(() => {
-	originalChrome = Object.getOwnPropertyDescriptor(globalThis, 'chrome');
 	storage = new FakeLocalStorage();
-	Object.defineProperty(globalThis, 'chrome', {
-		configurable: true,
-		writable: true,
-		value: storage.toChrome(),
-	});
+	restoreChrome = installChrome(storage.toChrome());
 });
 
 test.afterEach(() => {
-	if (originalChrome) {
-		Object.defineProperty(globalThis, 'chrome', originalChrome);
-	} else {
-		Reflect.deleteProperty(globalThis, 'chrome');
-	}
+	restoreChrome();
 });
 
 /** The default key combinations, written out as the oracle */
@@ -140,9 +50,13 @@ const DEFAULTS: ConfigModel = {
 	loopTrack: false,
 	showFeedPlayer: true,
 	shortcuts: DEFAULT_SHORTCUTS,
+	disabledShortcuts: [],
+	mediaKeys: true,
 	batchDownloadFormat: BatchDownloadFormat.Wav,
 	batchDownloadConcurrency: 8,
-	batchDownloadFilenameTemplate: '',
+	batchDownloadNotify: false,
+	batchDownloadOpenPage: true,
+	batchDownloadSkipDownloaded: false,
 };
 
 test.describe('getAll', () => {
@@ -159,9 +73,13 @@ test.describe('getAll', () => {
 			playbackStep: 30,
 			loopTrack: true,
 			showFeedPlayer: false,
+			disabledShortcuts: [ShortcutType.PlayPause],
+			mediaKeys: false,
 			batchDownloadFormat: 'flac',
 			batchDownloadConcurrency: 3,
-			batchDownloadFilenameTemplate: '{artist}/{title}',
+			batchDownloadNotify: true,
+			batchDownloadOpenPage: false,
+			batchDownloadSkipDownloaded: true,
 		});
 
 		expect(await configService.getAll()).toEqual({
@@ -173,9 +91,13 @@ test.describe('getAll', () => {
 			loopTrack: true,
 			showFeedPlayer: false,
 			shortcuts: DEFAULT_SHORTCUTS,
+			disabledShortcuts: [ShortcutType.PlayPause],
+			mediaKeys: false,
 			batchDownloadFormat: BatchDownloadFormat.Flac,
 			batchDownloadConcurrency: 3,
-			batchDownloadFilenameTemplate: '{artist}/{title}',
+			batchDownloadNotify: true,
+			batchDownloadOpenPage: false,
+			batchDownloadSkipDownloaded: true,
 		});
 	});
 
@@ -266,16 +188,6 @@ test.describe('getAll validation', () => {
 			expected: { batchDownloadFormat: BatchDownloadFormat.Mp3320 },
 		},
 		{
-			title: 'should convert a numeric batchDownloadFilenameTemplate 42 to "42"',
-			stored: { batchDownloadFilenameTemplate: 42 },
-			expected: { batchDownloadFilenameTemplate: '42' },
-		},
-		{
-			title: 'should use an empty batchDownloadFilenameTemplate for null',
-			stored: { batchDownloadFilenameTemplate: null },
-			expected: { batchDownloadFilenameTemplate: '' },
-		},
-		{
 			title: 'should convert autoplay 0 to false',
 			stored: { autoplay: 0 },
 			expected: { autoplay: false },
@@ -284,6 +196,39 @@ test.describe('getAll validation', () => {
 			title: 'should convert keepAwake "yes" to true',
 			stored: { keepAwake: 'yes' },
 			expected: { keepAwake: true },
+		},
+		{
+			title: 'should convert mediaKeys 0 to false',
+			stored: { mediaKeys: 0 },
+			expected: { mediaKeys: false },
+		},
+		{
+			title: 'should convert batchDownloadOpenPage 0 to false',
+			stored: { batchDownloadOpenPage: 0 },
+			expected: { batchDownloadOpenPage: false },
+		},
+		{
+			title: 'should keep only known shortcut types in disabledShortcuts, once each',
+			stored: {
+				disabledShortcuts: [
+					ShortcutType.LoopTrack,
+					'Unknown shortcut',
+					ShortcutType.LoopTrack,
+					42,
+					ShortcutType.NextTrack,
+				],
+			},
+			expected: {
+				disabledShortcuts: [
+					ShortcutType.LoopTrack,
+					ShortcutType.NextTrack,
+				],
+			},
+		},
+		{
+			title: 'should use no disabled shortcuts when disabledShortcuts is not an array',
+			stored: { disabledShortcuts: 'Loop track' },
+			expected: { disabledShortcuts: [] },
 		},
 		{
 			title: 'should use the default autoplay true for an empty string',
@@ -365,7 +310,7 @@ test.describe('get', () => {
 	test('should return one validated value', async () => {
 		storage.seed({ playbackStep: 45 });
 
-		expect(await configService.get<number>('playbackStep')).toBe(45);
+		expect(await configService.get('playbackStep')).toBe(45);
 	});
 });
 
@@ -374,6 +319,24 @@ test.describe('update', () => {
 		await configService.update('loopTrack', true);
 
 		expect(storage.dump()).toEqual({ loopTrack: true });
+	});
+});
+
+test.describe('resetShortcuts', () => {
+	test('should reset shortcuts and enable all of them in one write', async () => {
+		storage.seed({
+			shortcuts: { [ShortcutType.PlayPause]: '["KeyK"]' },
+			disabledShortcuts: [ShortcutType.PlayPause],
+			playbackStep: 45,
+		});
+
+		await configService.resetShortcuts();
+
+		expect(storage.dump()).toEqual({
+			shortcuts: {},
+			disabledShortcuts: [],
+			playbackStep: 45,
+		});
 	});
 });
 
@@ -437,4 +400,158 @@ test.describe('addListener', () => {
 			expect(calls).toEqual([DEFAULTS]);
 		});
 	}
+});
+
+test.describe('watch', () => {
+	test('should call back with the current config at once, then after each change', async () => {
+		storage.seed({ playbackStep: 20 });
+		const calls: ConfigModel[] = [];
+
+		configService.watch((config) => calls.push(config));
+		await expect
+			.poll(() => calls)
+			.toEqual([{ ...DEFAULTS, playbackStep: 20 }]);
+
+		storage.emit({ playbackStep: { newValue: 20 } });
+		await expect.poll(() => calls.length).toBe(2);
+	});
+
+	test('should stop calling back after the returned function runs', async () => {
+		const calls: ConfigModel[] = [];
+
+		const stop = configService.watch((config) => calls.push(config));
+		await expect.poll(() => calls.length).toBe(1);
+		stop();
+		storage.emit({ loopTrack: { newValue: true } });
+		await flushPromises();
+
+		expect(calls).toHaveLength(1);
+	});
+});
+
+test.describe('exportSettings', () => {
+	test('should export every setting with its default or stored value', async () => {
+		storage.seed({ playbackStep: 30, mediaKeys: false });
+
+		expect(await configService.exportSettings()).toEqual({
+			format: 'band-play-settings',
+			version: 1,
+			settings: { ...DEFAULTS, playbackStep: 30, mediaKeys: false },
+		});
+	});
+
+	test('should not export the visited history or the downloads', async () => {
+		storage.seed({
+			bp_visited_v1: ['abc'],
+			batchDownloadItems: [{ id: '1' }],
+		});
+
+		const { settings } = await configService.exportSettings();
+
+		expect(Object.keys(settings).sort()).toEqual(
+			Object.keys(DEFAULTS).sort()
+		);
+	});
+});
+
+test.describe('importSettings', () => {
+	const file = (settings: unknown, version = 1) => ({
+		format: 'band-play-settings',
+		version,
+		settings,
+	});
+
+	test('should store the settings of a file and keep other storage keys', async () => {
+		storage.seed({ bp_visited_v1: ['abc'] });
+
+		await configService.importSettings(
+			file({ ...DEFAULTS, playbackStep: 45, loopTrack: true })
+		);
+
+		expect(await configService.getAll()).toEqual({
+			...DEFAULTS,
+			playbackStep: 45,
+			loopTrack: true,
+		});
+		expect(storage.dump().bp_visited_v1).toEqual(['abc']);
+	});
+
+	test('should check every value like a stored one', async () => {
+		await configService.importSettings(
+			file({
+				playbackStep: 500,
+				batchDownloadFormat: 'ogg',
+				disabledShortcuts: ['Nope', ShortcutType.PlayPause],
+				unknownKey: 1,
+			})
+		);
+
+		expect(await configService.getAll()).toEqual({
+			...DEFAULTS,
+			disabledShortcuts: [ShortcutType.PlayPause],
+		});
+		expect(storage.dump()).not.toHaveProperty('unknownKey');
+	});
+
+	const REJECTED: { title: string; content: unknown; message: string }[] = [
+		{
+			title: 'should reject a value that is not an object',
+			content: 'text',
+			message: 'This is not a Band Play settings file.',
+		},
+		{
+			title: 'should reject null',
+			content: null,
+			message: 'This is not a Band Play settings file.',
+		},
+		{
+			title: 'should reject another format',
+			content: { format: 'other', version: 1, settings: {} },
+			message: 'This is not a Band Play settings file.',
+		},
+		{
+			title: 'should reject an unsupported version',
+			content: file({}, 2),
+			message: 'This settings file has an unsupported version.',
+		},
+		{
+			title: 'should reject a file without settings',
+			content: file(undefined),
+			message: 'The settings file has no settings.',
+		},
+		{
+			title: 'should reject settings that are an array',
+			content: file([]),
+			message: 'The settings file has no settings.',
+		},
+	];
+
+	for (const c of REJECTED) {
+		test(c.title, async () => {
+			storage.seed({ playbackStep: 20 });
+
+			await expect(
+				configService.importSettings(c.content)
+			).rejects.toThrow(c.message);
+
+			// A rejected file changes nothing
+			expect(storage.dump()).toEqual({ playbackStep: 20 });
+		});
+	}
+});
+
+test.describe('resetSettings', () => {
+	test('should return every setting to its default and keep other storage keys', async () => {
+		storage.seed({
+			playbackStep: 45,
+			mediaKeys: false,
+			disabledShortcuts: [ShortcutType.PlayPause],
+			bp_visited_v1: ['abc'],
+		});
+
+		await configService.resetSettings();
+
+		expect(await configService.getAll()).toEqual(DEFAULTS);
+		expect(storage.dump()).toEqual({ bp_visited_v1: ['abc'] });
+	});
 });

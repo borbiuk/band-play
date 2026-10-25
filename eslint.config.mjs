@@ -27,6 +27,8 @@ export default [
 			'**/playwright-report-live/**',
 			// Temporary folders zip.sh leaves behind when it stops on an error
 			'**/band-play-build*/**',
+			// Design prototypes and the style guide (plain browser pages, not extension code)
+			'design/**',
 		],
 	},
 	// A stale `eslint-disable` comment fails the run
@@ -112,6 +114,33 @@ export default [
 			],
 		},
 	},
+	// Layers: an entrypoint folder imports only shared/ (never another entrypoint), and shared/ imports none of them
+	...['shared', 'content', 'background', 'options', 'downloads'].map(
+		(area) => ({
+			files: [`src/${area}/**/*.{ts,tsx}`],
+			rules: {
+				'no-restricted-imports': [
+					'error',
+					{
+						patterns: [
+							{
+								group: [
+									'content',
+									'background',
+									'options',
+									'downloads',
+								]
+									.filter((other) => other !== area)
+									.map((other) => `**/${other}/**`),
+								message:
+									'Entrypoint folders do not import each other, and shared/ imports none of them: move the code to src/shared/.',
+							},
+						],
+					},
+				],
+			},
+		})
+	),
 	// Tests: Node globals, type-aware check for missing awaits, Playwright rules
 	{
 		files: ['tests/**/*.ts', 'playwright.config.ts'],
@@ -162,7 +191,12 @@ export default [
 	},
 	// Build config (CommonJS) and repository scripts run in Node
 	{
-		files: ['webpack/**/*.js', 'postcss.config.js', 'tailwind.config.js'],
+		files: [
+			'webpack/**/*.js',
+			'postcss.config.js',
+			'tailwind.config.js',
+			'src/**/tailwind.config.js',
+		],
 		languageOptions: {
 			globals: {
 				...globals.node,

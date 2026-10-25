@@ -8,7 +8,7 @@ paths:
 > Which Bandcamp markup the content script depends on, and how to check it after Bandcamp changes its pages.
 
 - Bandcamp has no public API for the player: the extension reads and clicks the page's own elements and the `<audio>` element. Any selector below can break when Bandcamp changes its markup.
-- **The selectors are spread over the files** (not centralized in one module yet). When you change one, search for the same selector in the other files (`visited-service.ts` and `batch-download-service.ts` repeat some of them).
+- **The selectors of the page services are spread over their files.** The batch download ones are in one module, `src/content/utils/batch-download-dom.ts`, which `batch-download-service.ts` and the checkboxes layer share. When you change a selector, search for it in the other files (`visited-service.ts` repeats some of them).
 
 ## Page detection
 
@@ -16,10 +16,10 @@ paths:
     1. `AlbumPageService`: the URL contains `/album/` or `/track/`.
     2. `DiscoverPageService`: the URL contains `/discover`.
     3. `FeedPageService`: the URL ends with `/feed` or contains `/feed?`. Its `isServiceUrl` also calls `renderPlayer(this)`, so it has a side effect: it mounts the feed player.
-    4. `CollectionPageService`: the URL without the query matches `^https://bandcamp.com/[a-zA-Z0-9-_]+(?:/wishlist)?$`; `isWishlist` is set from `/wishlist`.
+    4. `CollectionPageService`: the URL without the query matches `^https://bandcamp.com/[a-zA-Z0-9-_]+(?:/wishlist)?$`; `isWishlist` is set by `isWishlistUrl` (the path ends with `/wishlist`).
 - No match (an artist home page such as `https://<artist>.bandcamp.com/`, the purchases page, search): `pageService` is `null`, shortcuts and media keys do nothing and the page keeps its keys.
 - When the tab URL changes, also without a page reload, the background sends `UrlChanged` (from `tabs.onUpdated`) and the service is picked again; `BatchDownloadService` cleans up and sets itself up again.
-- `BatchDownloadService` detects its pages by elements, not by URL: `#oh-container` (purchases), else `#collection-grid` or `#wishlist-grid` (collection, wishlist).
+- `BatchDownloadService` detects its pages by elements: `#oh-container` (purchases), else `#collection-grid` or `#wishlist-grid`, but it adds nothing when the path ends with `/wishlist` (the wishlist has no download links).
 - `tests/unit/page-service-urls.spec.ts` covers the URL rules of the album, discover and collection services (not the feed service, whose `isServiceUrl` renders React).
 
 ## Selectors per file
@@ -50,13 +50,14 @@ All paths are under `src/content/` unless noted.
     - open: `.item-link`; wishlist: `#collect-item_<id>`, the class `wishlisted` two parents up, `.wishlisted-msg` / `.wishlist-msg`;
     - clicks every `.show-more` once (marks it with the attribute `band-play-clicked`) to load all items;
     - adds two tabs to `#grid-tabs`: `li#band-play-tab-donate` and `li#band-play-tab-rate` (class `band-play-external-tab`), opened through `CreateNewTab`.
-- **Visited history** (`src/shared/services/visited-service.ts`, `styles/visited.scss`): ids from `[data-tralbumid]` and `div[data-collect-item]`, the path from `link[rel="canonical"]` or `location.href`; item links `a.item-link`, `a.buy-button`, `a[href*="/album/"]`, `a[href*="/track/"]`. The class `band-play-visited` colors text inside `.tralbum-details`, `.collection-title-details` and the other containers in `visited.scss`.
-- **Batch download** (`services/batch-download-service.ts`, `components/batch-download-checkboxes-layer.tsx`):
+- **Visited history** (`services/visited-service.ts`, `styles/visited.scss`): ids from `[data-tralbumid]` and `div[data-collect-item]`, the path from `link[rel="canonical"]` or `location.href`; item links `a.item-link`, `a.buy-button`, `a[href*="/album/"]`, `a[href*="/track/"]`. The class `band-play-visited` colors text inside `.tralbum-details`, `.collection-title-details` and the other containers in `visited.scss`.
+- **Batch download** (`services/batch-download-service.ts`, `components/batch-download-checkboxes-layer.tsx`; shared selectors in `utils/batch-download-dom.ts`):
     - collection items: `[id*="collection-item-container"], .collection-item-container` with `data-tralbumid` and a `.redownload-item a` link (the download page URL); title `.collection-item-title` (first line), artist `.collection-item-artist` (without "by "), cover `img.collection-item-art`; also observed: `#collection-search-grid`;
     - purchases items: `.purchases-item` with the attribute `sale_item_id`; link `[data-tid="download"]`; checkbox mount inside `[data-tid="links"]` (skipped when it has the class `deleted-badge`); title `.purchases-item-title` (`"<title> by <artist>"`), cover `.purchases-item-art img`, `.item-art img` or `img[src*="bcbits.com"]`;
     - "select all": collection count `#grid-tabs>.active .count`, more button `.expand-container.show-button > button`; purchases count from the parent text of `.page-items-number` (`of N`), more button `.view-all-button`, list `.purchases`; active checkbox container `.grid.active`, else `.purchases`, else `<body>`;
-    - own elements: `#band-play-batch-overlay-root`, `.band-play-batch-checkbox`, attributes `data-band-play-batch-checkbox`, `data-band-play-batch-id`, `data-band-play-batch-checkbox-mount`.
-- **Download page data** (`src/downloads/services/bandcamp-parser.ts`, used by the background): the `data-blob` attribute of the element with `id="pagedata"` (read with a regular expression, because a service worker has no `DOMParser`), JSON `digital_items[]` (`downloads[<format>].url`, `size_mb`, `item_id` or `sale_id`, `artist`, `title`, `killed`) and `identities.fan.verified`.
+    - the cover element of a collection item (where the "Downloaded" badge sits): `.collection-item-art-container`, else the parent of `img.collection-item-art`; it is made `position: relative` when it is static. **Not checked against the real page** (the e2e fixture has the first); check it by hand;
+    - own elements: `#band-play-batch-overlay-root` (the bar, classes `bp-*`), `.band-play-batch-checkbox`, `.band-play-downloaded-badge`, the body class `band-play-selecting`, attributes `data-band-play-batch-checkbox`, `data-band-play-batch-id`, `data-band-play-batch-checkbox-mount`; on the collection page the donate and rate tabs (`#band-play-tab-donate`, `#band-play-tab-rate`) get a small icon. The styles are `src/content/styles/batch-download.scss` (plain CSS, source of the design: `design/bandcamp-ui/band-play.css`).
+- **Download page data** (`src/background/batch-download/bandcamp-parser.ts`): the `data-blob` attribute of the element with `id="pagedata"` (read with a regular expression, because a service worker has no `DOMParser`), JSON `digital_items[]` (`downloads[<format>].url`, `size_mb`, `item_id` or `sale_id`, `artist`, `title`, `killed`) and `identities.fan.verified`.
 
 ## Rules for selectors
 
@@ -68,10 +69,10 @@ All paths are under `src/content/` unless noted.
 
 - `tests/e2e/fixtures/capture-pages.mjs` (`npm run test:snapshots`) downloads the snapshot pages (album, track, artist home) and fails when a page lacks a string in `REQUIRED_MARKUP` (album: `class="playbutton`, `class="nextbutton`, `class="prevbutton`, `play-col`; track: the first three; artist: none).
 - `.github/workflows/markup.yml` (daily) runs that capture, commits changed snapshots to `master`, runs `npm run test:e2e` and `npm run test:live`, and opens or comments on a `markup-drift` issue on failure ([docs-and-ci.md](docs-and-ci.md)).
-- Not covered by any automated check: Discover, feed, collection, wishlist, purchases and the batch download selectors. Check them by hand after a change.
+- Covered only by hand-written pages (`tests/e2e/fixtures/synthetic/`, `batch-download-ui.spec.ts`), not by real Bandcamp markup: the collection, wishlist and purchases batch download selectors. Not covered at all: Discover and the feed. Check the real pages by hand after a change.
 - When you rely on new album or track markup, add it to `REQUIRED_MARKUP` so a Bandcamp change fails in the capture step.
 
 ## Verifying changes
 
-- Test on: an album page and a track page (Space, next/previous, Shift+digit, seek, speed, pitch, wishlist, open in new tab), an artist home page (arrows and Space must still scroll), `/discover`, the feed (feed player, autoplay of the next item), a collection and a wishlist (autoplay, visited highlight, the donate and rate tabs), and the purchases page (checkboxes, overlay, select all). Navigate between pages without a reload and check that nothing is added twice.
+- Test on: an album page and a track page (Space, next/previous, Shift+digit, seek, speed, pitch, wishlist, open in new tab), an artist home page (arrows and Space must still scroll), `/discover`, the feed (feed player, autoplay of the next item), a collection and a wishlist (autoplay, visited highlight, the donate and rate tabs), and the purchases page (checkboxes, the bar, select all). Navigate between pages without a reload and check that nothing is added twice.
 - In-browser checks with the `chrome-devtools` MCP server (`.mcp.json`): after `npm run build`, call `install_extension` with the absolute path of `dist/`, and `reload_extension` after every rebuild. Open the pages above, check `html[data-band-play="ready"]` and `list_console_messages` for errors. The feed and the purchases page need a signed-in Bandcamp account: check them by hand in a signed-in browser profile.

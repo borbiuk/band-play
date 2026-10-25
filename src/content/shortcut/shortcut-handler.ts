@@ -1,5 +1,6 @@
 import { ShortcutType } from '@shared/enums';
-import { PageService } from '@shared/interfaces';
+
+import { PageService } from '../page-services/page-service';
 
 import { ShortcutSet } from './shortcut-set';
 

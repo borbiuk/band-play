@@ -1,13 +1,17 @@
-import { exist } from '@shared/utils';
-
-import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
-import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
-import { DownloadStatus } from '../../downloads/download-status';
-import { DownloadType } from '../../downloads/download-type';
+import { BATCH_DOWNLOAD_ITEMS_KEY } from '@shared/constants/storage-keys';
+import { BatchDownloadItemModel } from '@shared/models/batch-download/batch-download-item-model';
+import { BatchDownloadPendingItemModel } from '@shared/models/batch-download/batch-download-pending-item-model';
+import {
+	DownloadStatus,
+	isPausedStatus,
+	isTerminalStatus,
+} from '@shared/models/batch-download/download-status';
+import { DownloadType } from '@shared/models/batch-download/download-type';
+import { createSerialQueue, exist } from '@shared/utils';
+import { toBatchDownloadItems } from '@shared/utils/batch-download-items.utils';
 
 export const BATCH_DOWNLOAD_TAB_ID_KEY = 'batchDownloadTabId';
 export const BATCH_DOWNLOAD_QUEUED_ITEMS_KEY = 'batchDownloadQueuedItems';
-export const BATCH_DOWNLOAD_ITEMS_KEY = 'batchDownloadItems';
 
 // setShelfEnabled is deprecated since Chrome 117 in favor of setUiOptions.
 const isDownloadsUiOptionsAvailable =
@@ -48,26 +52,32 @@ export const setBatchDownloadTabId = async (
 	await chrome.storage.local.set({ [BATCH_DOWNLOAD_TAB_ID_KEY]: tabId });
 };
 
-export const isActiveBatchDownloadItem = (
-	x: BatchDownloadItemModel
-): boolean => {
-	if (x.type === DownloadType.Pending) {
-		return x.status !== DownloadStatus.Failed;
-	}
+export const isActiveBatchDownloadItem = (x: BatchDownloadItemModel): boolean =>
+	!isTerminalStatus(x.status);
 
-	if (x.type === DownloadType.Single) {
-		return (
-			x.status !== DownloadStatus.Completed &&
-			x.status !== DownloadStatus.Failed
-		);
-	}
-
-	// multiple
-	return (
-		x.status !== DownloadStatus.Completed &&
-		x.status !== DownloadStatus.Failed
+/**
+ * Applies `patch` to the item with the given id and type; every other item stays as it is.
+ * The result is always a new array, as with `map`.
+ *
+ * @param items - The list.
+ * @param id - The id of the item to change.
+ * @param type - The type of the item to change: an item of another type with the same id is left alone.
+ * @param patch - Returns the new item (or the same one to leave it unchanged).
+ * @returns The new list.
+ */
+export const patchItem = <T extends DownloadType>(
+	items: BatchDownloadItemModel[],
+	id: string,
+	type: T,
+	patch: (
+		item: Extract<BatchDownloadItemModel, { type: T }>
+	) => BatchDownloadItemModel
+): BatchDownloadItemModel[] =>
+	items.map((x) =>
+		x.id === id && x.type === type
+			? patch(x as Extract<BatchDownloadItemModel, { type: T }>)
+			: x
 	);
-};
 
 /**
  * True for an item the extension is working on. Paused and Duplicate items wait for the user:
@@ -75,20 +85,13 @@ export const isActiveBatchDownloadItem = (
  */
 export const isRunningBatchDownloadItem = (
 	x: BatchDownloadItemModel
-): boolean =>
-	isActiveBatchDownloadItem(x) &&
-	x.status !== DownloadStatus.Paused &&
-	x.status !== DownloadStatus.Duplicate;
+): boolean => isActiveBatchDownloadItem(x) && !isPausedStatus(x.status);
 
 export const getBatchDownloadItems = async (): Promise<
 	BatchDownloadItemModel[]
 > => {
 	const data = await chrome.storage.local.get([BATCH_DOWNLOAD_ITEMS_KEY]);
-	const raw = data[BATCH_DOWNLOAD_ITEMS_KEY] as unknown;
-	if (!Array.isArray(raw)) {
-		return [];
-	}
-	return raw as BatchDownloadItemModel[];
+	return toBatchDownloadItems(data[BATCH_DOWNLOAD_ITEMS_KEY]);
 };
 
 const setBatchDownloadItems = async (
@@ -100,13 +103,7 @@ const setBatchDownloadItems = async (
 // Serializes every mutation of the batch-download storage keys: concurrent
 // read-modify-write cycles (runner tick, progress poller, user actions)
 // would otherwise overwrite each other's changes.
-let stateWriteChain: Promise<unknown> = Promise.resolve();
-
-const enqueueStateWrite = <T>(run: () => Promise<T>): Promise<T> => {
-	const result = stateWriteChain.then(run, run);
-	stateWriteChain = result.catch(() => void 0);
-	return result;
-};
+const enqueueStateWrite = createSerialQueue();
 
 export const updateBatchDownloadItems = (
 	update: (

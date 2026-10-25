@@ -1,65 +1,91 @@
-import { ExternalLinksPopup } from '@shared/components/external-links';
+import { useConfig } from '@shared/hooks/use-config';
 import { renderErrorOptions } from '@shared/utils/render-error.utils';
-import React from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './options.scss';
-import { BatchDownload } from './components/batch-download';
-import { Configuration } from './components/configuration';
-import { PlaybackStep } from './components/playback-step';
-import { ShortcutInput } from './components/shortcut-input';
+import { ImportPage } from './components/import-page';
+import { DownloadsTab } from './components/panels/downloads-tab';
+import { PageTab } from './components/panels/page-tab';
+import { PlaybackTab } from './components/panels/playback-tab';
+import { ShortcutsTab } from './components/panels/shortcuts-tab';
+import { PopupFooter } from './components/popup-footer';
+import { PopupHeader } from './components/popup-header';
+import { panelId, tabId, Tabs, TabItem } from './components/tabs';
+import { useDownloadSummary } from './hooks/use-download-summary';
+
+type TabName = 'playback' | 'page' | 'downloads' | 'shortcuts';
 
 /**
- * Main Options component representing the user interface of the Chrome extension popup.
+ * The toolbar popup (400 x 560 px): glass header with the tabs, the settings of the selected tab,
+ * and a glass footer for import, export and reset. The popup never saves anything by itself:
+ * a setting is written only when the user changes it.
  *
- * This component renders the extension's popup UI with:
- * - Header with logo and title
- * - Configuration panel for user settings
- * - Shortcut input for keyboard shortcuts
- * - Footer with links and information
- *
- * @returns JSX element containing the complete options interface
+ * @returns JSX element containing the complete settings interface
  */
 const Options = () => {
+	const { config, update } = useConfig();
+	const summary = useDownloadSummary();
+	const [tab, setTab] = useState<TabName>('playback');
+
+	const tabs: TabItem<TabName>[] = [
+		{
+			id: 'playback',
+			label: 'Playback',
+		},
+		{
+			id: 'page',
+			label: 'Page',
+		},
+		{
+			id: 'downloads',
+			label: 'Downloads',
+			dot: (summary?.active ?? 0) > 0,
+			dotLabel: 'Downloads are running',
+		},
+		{
+			id: 'shortcuts',
+			label: 'Shortcuts',
+		},
+	];
+
 	return (
-		<div className="relative inline-flex select-none flex-col gap-6 overflow-hidden bg-band-100/35 p-3 pb-4 align-middle">
-			<div className="flex flex-row items-center justify-between">
-				<div className="ml-2 flex w-46 flex-row items-center gap-1.5 transition-all duration-300 ease-in-out hover:scale-102">
-					<img
-						src="./../assets/logo-128.png"
-						alt="Bandplay logo"
-						className="h-12 w-12 rounded-full shadow-xl shadow-gray-300"
-					/>
-					<span className="ml-2 text-2xl font-medium text-gray-800">
-						BandPlay
-					</span>
-				</div>
+		<div className="bp-popup relative h-[560px] w-[400px] overflow-hidden font-ui text-[13px] text-ink-900">
+			<PopupHeader>
+				<Tabs<TabName>
+					ariaLabel="Settings"
+					items={tabs}
+					selected={tab}
+					onSelect={setTab}
+				/>
+			</PopupHeader>
 
-				<div className="w-46">
-					<ExternalLinksPopup />
-				</div>
-			</div>
+			<main
+				role="tabpanel"
+				id={panelId(tab)}
+				aria-labelledby={tabId(tab)}
+				className={`absolute inset-0 px-3.5 pb-[62px] pt-[118px] ${
+					tab === 'downloads' || tab === 'shortcuts'
+						? 'overflow-hidden'
+						: 'overflow-y-auto'
+				}`}
+			>
+				{config === null && <p className="m-0 text-ink-500">...</p>}
+				{config !== null && tab === 'playback' && (
+					<PlaybackTab config={config} update={update} />
+				)}
+				{config !== null && tab === 'page' && (
+					<PageTab config={config} update={update} />
+				)}
+				{config !== null && tab === 'downloads' && (
+					<DownloadsTab config={config} update={update} />
+				)}
+				{config !== null && tab === 'shortcuts' && (
+					<ShortcutsTab config={config} update={update} />
+				)}
+			</main>
 
-			<div className="mb-2 flex flex-row items-stretch gap-4">
-				<div className="w-46">
-					<Configuration />
-				</div>
-
-				<div className="flex w-46 flex-col gap-4">
-					<div className="grow">
-						<ShortcutInput />
-					</div>
-					<PlaybackStep />
-				</div>
-
-				<div className="w-46">
-					<BatchDownload />
-				</div>
-			</div>
-
-			<span className="absolute bottom-0.5 right-2 text-[10px] text-gray-500">
-				by borbiuk
-			</span>
+			<PopupFooter />
 		</div>
 	);
 };
@@ -68,9 +94,9 @@ const Options = () => {
 const container = document.getElementById('root');
 const root = createRoot(container, renderErrorOptions(container, 'settings'));
 
-/** Render the Options component in React StrictMode */
+/** Render the popup in React StrictMode, or the import page when it was opened in a tab */
 root.render(
 	<React.StrictMode>
-		<Options />
+		{window.location.hash === '#import' ? <ImportPage /> : <Options />}
 	</React.StrictMode>
 );

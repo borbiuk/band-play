@@ -1,10 +1,5 @@
 import { MessageCode } from '@shared/enums';
-import {
-	BatchDownloadItemsMessage,
-	BatchDownloadItemIdMessage,
-	MessageModel,
-	NewTabMessage,
-} from '@shared/models/messages';
+import { Message } from '@shared/models/messages';
 import messageService from '@shared/services/message-service';
 
 import { BatchDownloadBackgroundService } from '../batch-download/batch-download-background-service';
@@ -32,11 +27,11 @@ export class MessagesBackgroundService implements IBackgroundService {
 
 	public start(): void {
 		messageService.addListener(
-			async (message: MessageModel<unknown>) => {
+			async (message: Message) => {
 				switch (message.code) {
 					// Open a new tab
 					case MessageCode.CreateNewTab: {
-						const { url, active } = message.data as NewTabMessage;
+						const { url, active } = message.data;
 						// The URL comes from the page: only web pages are opened
 						if (!isWebUrl(url)) {
 							break;
@@ -49,7 +44,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadSendItemsToBackground: {
-						const data = message.data as BatchDownloadItemsMessage;
+						const data = message.data;
 
 						if (!data?.items || data.items.length === 0) {
 							break;
@@ -68,7 +63,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadRetryItem: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -92,7 +87,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 						break;
 					}
 					case MessageCode.BatchDownloadResumeItem: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -102,7 +97,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadPauseItem: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -112,7 +107,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadCancelItem: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -122,7 +117,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadDeleteFile: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -142,7 +137,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadRemoveItem: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}
@@ -152,7 +147,7 @@ export class MessagesBackgroundService implements IBackgroundService {
 					}
 
 					case MessageCode.BatchDownloadShowInFolder: {
-						const data = message.data as BatchDownloadItemIdMessage;
+						const data = message.data;
 						if (!data?.id) {
 							break;
 						}

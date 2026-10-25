@@ -5,8 +5,14 @@ package-lock.json
 *.zip
 band-play-build*
 
+# Design prototypes are not extension code
+design
+
 # Page snapshots are saved as captured
 tests/e2e/fixtures/pages
+
+# Hand-written Bandcamp-like pages: the markup (for example a title on one line) is what the extension reads
+tests/e2e/fixtures/synthetic
 test-results
 playwright-report
 test-results-live

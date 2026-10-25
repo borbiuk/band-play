@@ -12,7 +12,7 @@ Reviews one change to the Playwright test suite against the standard in [referen
 - Writing, running and debugging tests: the [playwright skill](../playwright/SKILL.md); test conventions: [testing.md](../../rules/testing.md).
 - The read-only [e2e-reviewer](../../agents/e2e-reviewer.md) agent runs this skill in a separate context.
 - Changes under `src/`: the read-only [code-reviewer](../../agents/code-reviewer.md) agent, not this skill.
-- The suite lives in `playwright.config.ts`, `tests/unit/**`, `tests/setup/**` (the `dist` project that builds `dist/`), `tests/e2e/**` (including `seed.spec.ts` for the Playwright test agents) and `tests/live/**`. CI test steps: `npm run test:unit` in job `build` and job `e2e` in `.github/workflows/build.yml`, plus `.github/workflows/markup.yml` (daily snapshot refresh, e2e and live; it commits snapshots to `master` and opens a `markup-drift` issue on failure).
+- The suite lives in `playwright.config.ts`, `tests/unit/**`, `tests/helpers/**`, `tests/setup/**` (the `dist` project that builds `dist/`), `tests/e2e/**` (including `seed.spec.ts` for the Playwright test agents) and `tests/live/**`. CI test steps: `npm run test:unit` in job `build` and job `e2e` in `.github/workflows/build.yml`, plus `.github/workflows/markup.yml` (daily snapshot refresh, e2e and live; it commits snapshots to `master` and opens a `markup-drift` issue on failure).
 - GitHub: the repository is `borbiuk/band-play`; run `gh` as `GH_TOKEN=$(gh auth token --user borbiuk) gh … -R borbiuk/band-play`, never `gh auth switch`.
 
 ## Hard rules

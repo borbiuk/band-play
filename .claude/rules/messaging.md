@@ -9,7 +9,7 @@ paths:
 
 ## Message model
 
-- Every message is a `MessageModel<T>` (`src/shared/models/messages/base/message-model.ts`): `{ code: MessageCode; data?: T }`. Payload types live in `src/shared/models/messages/` and are exported from its `index.ts`: `NewTabMessage` (`url`, `active`), `BatchDownloadItemsMessage` (`items`, optional `format`), `BatchDownloadItemIdMessage` (`id`), `BatchDownloadProgressMessage` (`updates: { id, progress }[]`, 0–100).
+- Every message is a `Message` (`src/shared/models/messages/message-payloads.ts`): `{ code, data? }`, where the type of `data` follows the code through the `MessagePayloads` map. `switch (message.code)` narrows `message.data` without a cast, and a `MessageCode` missing from the map does not compile. The types exist only at compile time: a message from another page is still untrusted, so handlers keep their runtime checks. `CommandCode` (no data) and `ItemCommandCode` (the id of one item) type the commands of the downloads page. Payload types live in `src/shared/models/messages/` and are exported from its `index.ts`: `NewTabMessage` (`url`, `active`), `BatchDownloadItemsMessage` (`items`, optional `format`), `BatchDownloadItemIdMessage` (`id`), `BatchDownloadProgressMessage` (`updates: { id, progress }[]`, 0–100).
 - `MessageCode` (`src/shared/enums/message-code.ts`), every value prefixed `band-play-`:
 
 | Code                                                                                                                                                                                        | From → to                                   | Payload                                             |
@@ -18,14 +18,14 @@ paths:
 | `UrlChanged`                                                                                                                                                                                | background → content (the tab that changed) | none                                                |
 | `NewUpdateAvailable`                                                                                                                                                                        | background → content (active tab)           | `runtime.onUpdateAvailable` details; no handler yet |
 | `BatchDownloadSendItemsToBackground`                                                                                                                                                        | content → background                        | `BatchDownloadItemsMessage`                         |
-| `BatchDownloadOpenDownloadsTab`                                                                                                                                                             | popup → background                          | none                                                |
+| `BatchDownloadOpenDownloadsTab`                                                                                                                                                             | popup and content bar → background          | none                                                |
 | `BatchDownloadRetryItem`, `BatchDownloadResumeItem`, `BatchDownloadPauseItem`, `BatchDownloadCancelItem`, `BatchDownloadDeleteFile`, `BatchDownloadRemoveItem`, `BatchDownloadShowInFolder` | downloads page → background                 | `BatchDownloadItemIdMessage`                        |
 | `BatchDownloadRetryAllFailed`, `BatchDownloadPauseAll`, `BatchDownloadResumeAll`, `BatchDownloadClearCompleted`, `BatchDownloadClearAll`                                                    | downloads page → background                 | none                                                |
 | `BatchDownloadProgressUpdate`                                                                                                                                                               | background → downloads page, over the port  | `BatchDownloadProgressMessage`                      |
 
 ## `messageService` (`src/shared/services/message-service.ts`)
 
-- `sendToBackground(message)` → `chrome.runtime.sendMessage`; `sendToContent(tabId, message)` → `chrome.tabs.sendMessage`; `sendToActiveContent(message)` sends to the active tab of the current window.
+- `sendToBackground(message)` → `chrome.runtime.sendMessage`; `sendToContent(tabId, message)` → `chrome.tabs.sendMessage`; `sendToActiveContent(message)` sends to the active tab of the current window; `post(message)` is `sendToBackground` for a command whose failure the sender cannot act on (it ignores the result). All take a typed `Message`.
 - `addListener(func, errorHandler?)` wraps `chrome.runtime.onMessage`: it ignores messages without `code`, calls `func` and routes a thrown error **or a rejected promise** to `errorHandler`. Without an `errorHandler` the error is dropped silently, so pass one (`(e) => console.error(e)`) when the handler can fail. The listener never calls `sendResponse` and returns nothing: messages are one-way, and `sendToBackground` resolves with no value.
 - Listeners: `MessagesBackgroundService` (background, a `switch` over the codes, no `errorHandler` today) and, in the content script, `PageServiceWorker` and `BatchDownloadService` (both react to `UrlChanged`).
 - Background handlers validate the payload and do nothing on bad data (missing `items` or `id`). `CreateNewTab` opens only absolute `http:` / `https:` URLs (`isWebUrl`), because the URL comes from the page.
@@ -39,12 +39,12 @@ paths:
 ## Ports
 
 - `PortName` (`src/shared/enums/port-name.ts`): `BatchDownloadUi` = `band-play-batch-download-ui`, the only `chrome.runtime.connect` port.
-- The downloads page (`src/downloads/downloads-app.tsx`) connects on mount and reconnects 1 s after a disconnect (the MV3 service worker can stop at any time). The background (`src/background/batch-download/ui-presence.ts`) keeps the open ports in a `Set` in memory: `isDownloadsUiConnected()` is true while one is open, a new connection starts the progress poller, and `broadcastBatchDownloadProgress(updates)` posts `BatchDownloadProgressUpdate` to every port. Progress values sent this way are volatile (not written to storage); state changes still go through `batchDownloadItems` in storage ([batch-download.md](batch-download.md)).
+- The downloads page (`src/downloads/hooks/use-downloads.ts`, used by `downloads-app.tsx`) connects on mount and reconnects 1 s after a disconnect (the MV3 service worker can stop at any time). The background (`src/background/batch-download/ui-presence.ts`) keeps the open ports in a `Set` in memory: `isDownloadsUiConnected()` is true while one is open, a new connection starts the progress poller, and `broadcastBatchDownloadProgress(updates)` posts `BatchDownloadProgressUpdate` to every port. Progress values sent this way are volatile (not written to storage); state changes still go through `batchDownloadItems` in storage ([batch-download.md](batch-download.md)).
 
 ## Adding a message
 
 1. Add a `MessageCode` member with the `band-play-` prefix and a comment that names sender and receiver.
-2. Add a payload interface under `src/shared/models/messages/` and export it from `index.ts` (keep `data` small and serializable: no DOM nodes, no functions).
+2. Add a payload interface under `src/shared/models/messages/` and export it from `index.ts` (keep `data` small and serializable: no DOM nodes, no functions), then add the code to `MessagePayloads` in `message-payloads.ts` (a code without data goes to `CommandCode`, one with an item id to `ItemCommandCode`).
 3. Handle it in `MessagesBackgroundService` (background) or with `messageService.addListener` (content); keep the handler small and delegate the work to a service.
 4. Handle the "no receiver" rejection at the sender.
 5. Update the table above.

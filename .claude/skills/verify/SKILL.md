@@ -19,13 +19,13 @@ This is the order of the `build` job in [build.yml](../../../.github/workflows/b
 
 ## Expected `web-ext lint` warnings
 
-`web-ext lint` exits 0 with **0 errors, 0 notices and 18 warnings** (measured on version 10.2.2). All 18 are expected:
+`web-ext lint` exits 0 with **0 errors, 0 notices and 16 warnings** (measured on version 10.3.0). All 16 are expected:
 
 | Count | Code                                             | File                                                | Why it is expected                                                                                                                                                                                                             |
 | ----- | ------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1     | `KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION`         | `manifest.json`                                     | `browser_specific_settings.gecko.data_collection_permissions` needs Firefox 140, but `strict_min_version` is 128. AMO requires the key; older Firefox versions ignore it                                                       |
 | 1     | `KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION` | `manifest.json`                                     | The same key needs Firefox for Android 142                                                                                                                                                                                     |
-| 10    | `UNSUPPORTED_API`                                | `background.js` (8), `options.js`, `downloads.js`   | Chrome-only APIs that the code feature-detects: `downloads.setUiOptions`, `downloads.setShelfEnabled`, `downloads.onDeterminingFilename` (batch download) and `power.requestKeepAwake` / `power.releaseKeepAwake` (Keep Awake) |
+| 8     | `UNSUPPORTED_API`                                | `background.js`                                     | Chrome-only APIs that the code feature-detects: `downloads.setUiOptions`, `downloads.setShelfEnabled`, `downloads.onDeterminingFilename` (batch download) and `power.requestKeepAwake` / `power.releaseKeepAwake` (Keep Awake) |
 | 6     | `UNSAFE_VAR_ASSIGNMENT` (innerHTML)              | `content.js`, `options.js`, `downloads.js` (2 each) | Bundled React DOM code; `src/` has no `innerHTML`                                                                                                                                                                              |
 
 Report any other warning, any change in these counts, and every error or notice as a finding. Print the full list with `npx --no web-ext lint --source-dir dist-firefox --output json` when the counts differ.

@@ -5,7 +5,7 @@ import {
 	BandcampRateLimitError,
 	BandcampUnverifiedError,
 	parseBandcampDownloads,
-} from '../../src/downloads/services/bandcamp-parser';
+} from '../../src/background/batch-download/bandcamp-parser';
 
 const PAGE_URL = 'https://bandcamp.com/download?id=1&sig=abc';
 

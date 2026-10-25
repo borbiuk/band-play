@@ -1,6 +1,6 @@
 import { BatchDownloadFormat } from '@shared/enums';
 
-import { BatchDownloadPendingItemModel } from '../../../downloads/batch-download-pending-item-model';
+import { BatchDownloadPendingItemModel } from '../batch-download/batch-download-pending-item-model';
 
 /**
  * Message data payload for sending batch-download items.

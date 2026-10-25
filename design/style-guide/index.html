@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Band Play style guide</title>
+		<link rel="stylesheet" href="style-guide.css" />
+	</head>
+	<body>
+		<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+			<symbol id="i-play" viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4" /></symbol>
+			<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" /></symbol>
+			<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14" /></symbol>
+			<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></symbol>
+			<symbol id="i-retry" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" /></symbol>
+			<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10" /></symbol>
+			<symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v6M12 16.5h.01" /></symbol>
+			<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></symbol>
+			<symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3v4l5 5-5 5v4M17 3v4l-5 5 5 5v4" /></symbol>
+			<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h8" /></symbol>
+			<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 22 20H2L12 3zM12 10v5M12 17.5h.01" /></symbol>
+		</svg>
+
+		<nav class="nav" aria-label="Sections">
+			<div class="nav__brand"><img src="logo.svg" alt="" /><div>Band Play<small>Style guide</small></div></div>
+			<a href="#principles">Principles</a>
+			<a href="#logo">Logo</a>
+			<a href="#color">Color</a>
+			<a href="#type">Typography</a>
+			<a href="#shape">Shape and depth</a>
+			<a href="#components">Components</a>
+			<a href="#bandcamp">On Bandcamp pages</a>
+			<a href="#motion">Motion and access</a>
+			<a href="#voice">Voice</a>
+			<a href="#code">For developers</a>
+			<a href="#files">Files</a>
+		</nav>
+
+		<main>
+			<h1>Band Play style guide</h1>
+			<p class="lead">One light, soft visual language for the popup, the downloads page, the elements on Bandcamp and the store banners. Brand color is Bandcamp Aqua <code>#1DA0C3</code>.</p>
+
+			<section id="principles">
+				<h2>Principles</h2>
+				<ul class="rules">
+					<li><b>Light only.</b> White or very light aqua backgrounds, like Bandcamp itself. No dark theme.</li>
+					<li><b>Soft, in the spirit of Arc.</b> Rounded shapes, thin lines, calm shadows, one clear primary action per area.</li>
+					<li><b>Transparency with a reason.</b> Glass is used for bars that content scrolls under (popup header and footer, downloads header, batch bar). Never for body text surfaces.</li>
+					<li><b>Bandcamp first on Bandcamp.</b> Elements injected into Bandcamp pages copy its flat, small, aqua-link look and only borrow our corner radius, primary color and shadow. The Bandcamp player and our feed player are not restyled.</li>
+					<li><b>Never color alone.</b> Every status has an icon and a label. Every text pair passes WCAG AA (see Color).</li>
+				</ul>
+			</section>
+
+			<section id="logo">
+				<h2>Logo</h2>
+				<p>The mark is the Band Play mask on the Bandcamp-shaped slab, in Bandcamp Aqua. Source: <code>design/logo/logo.svg</code>.</p>
+				<div class="grid grid--2">
+					<div class="logo-stage" style="background: #fff"><img src="logo.svg" alt="Band Play logo on white" /></div>
+					<div class="logo-stage" style="background: linear-gradient(135deg, var(--aqua-100), var(--aqua-50))"><img src="logo.svg" alt="Band Play logo on light aqua" /></div>
+				</div>
+
+				<h3>Sizes</h3>
+				<div class="panel sizes px">
+					<figure><img src="../logo/logo-128.png" width="128" height="128" alt="" />128 (extension)</figure>
+					<figure><img src="../logo/logo-48.png" width="48" height="48" alt="" />48</figure>
+					<figure><img src="../logo/logo-32.png" width="32" height="32" alt="" />32</figure>
+					<figure><img src="../logo/logo-16.png" width="16" height="16" alt="" />16 (toolbar)</figure>
+					<figure><img src="../logo/logo-store-128.png" width="128" height="128" alt="" style="background: repeating-conic-gradient(#e8eff2 0 25%, #fff 0 50%) 0 0 / 12px 12px" />128 store (96 px art)</figure>
+				</div>
+				<p style="margin-top: 10px">Use <code>logo-16/32/48/128.png</code> in the manifest and the toolbar. Use <code>logo-store-128.png</code> as the store listing icon (96 px artwork with 16 px transparent padding). The mark is a flat shape: at 16 px the eyes and mouth merge into the black mask, which is expected.</p>
+
+				<h3>Clear space and minimum size</h3>
+				<div class="row-flex" style="gap: 28px; align-items: flex-start">
+					<div class="clearspace"><img src="logo.svg" alt="" /></div>
+					<ul class="rules">
+						<li>Keep clear space of one mask height (x) on every side.</li>
+						<li>Minimum size: 16 px wide in the toolbar, 24 px wide in the UI.</li>
+						<li>Place it on white or very light aqua, or on the aqua gradient of the banners.</li>
+					</ul>
+				</div>
+
+				<h3>Do not</h3>
+				<div class="grid grid--4">
+					<div class="dont"><img src="logo.svg" alt="" style="transform: scaleY(1.5)" />Stretch it</div>
+					<div class="dont"><img src="logo.svg" alt="" style="filter: hue-rotate(120deg)" />Recolor it</div>
+					<div class="dont"><img src="logo.svg" alt="" style="transform: rotate(-18deg)" />Rotate it</div>
+					<div class="dont"><img src="logo.svg" alt="" style="filter: drop-shadow(4px 4px 3px #000)" />Add effects</div>
+				</div>
+
+				<h3>"for Bandcamp" lockup</h3>
+				<div class="lockup-demo"><img src="logo.svg" alt="Band Play" /><b>Band Play</b><span>for</span><img src="../banners/assets/bandcamp-bc-circle-aqua.png" alt="Bandcamp" /></div>
+				<ul class="rules" style="margin-top: 12px">
+					<li>Always say "for" between the two logos. Band Play is unofficial: long banners also carry "Unofficial extension. Not affiliated with Bandcamp."</li>
+					<li>Use the official Bandcamp aqua "bc circle" button from bandcamp.com/buttons, unchanged: no recolor, crop, shadow or rotation. Minimum 28 px wide.</li>
+					<li>Our logo is never smaller than the Bandcamp badge in the same lockup.</li>
+				</ul>
+			</section>
+
+			<section id="color">
+				<h2>Color</h2>
+				<p>Tokens live in <code>design/tokens.css</code>. The swatches below read the real values.</p>
+				<h3>Brand: Bandcamp Aqua</h3>
+				<div class="grid grid--4" id="sw-aqua"></div>
+				<h3>Accent: pink (sparingly: counters, the "changed" and "running" dots, the donate heart)</h3>
+				<div class="grid grid--4" id="sw-pink"></div>
+				<h3>Coral: warnings and errors</h3>
+				<div class="grid grid--4" id="sw-coral"></div>
+				<h3>Text and lines</h3>
+				<div class="grid grid--4" id="sw-ink"></div>
+				<h3>Status</h3>
+				<div class="grid grid--4" id="sw-status"></div>
+
+				<h3>Usage</h3>
+				<ul class="rules">
+					<li><b>aqua-500</b> is for fills and non-text UI: switch on, slider fill, focus ring, selected frame, progress. It is not used for small text or as a button fill for white text.</li>
+					<li><b>aqua-700</b> is the primary button fill and the aqua text color on white. <b>aqua-800</b> is hover and text on aqua-100.</li>
+					<li><b>pink-700</b> is the counter badge fill (white text); <b>pink-500</b> is for dots and the heart only, never for text.</li>
+					<li><b>danger</b> and <b>warn</b> are deep coral on a coral tint; coral-500 is for bars and borders.</li>
+					<li><b>ink-400</b> is for icons and dividers only. Placeholders and hints use ink-500.</li>
+					<li>On Bandcamp pages the visited color stays purple <code>#7b1fa2</code>.</li>
+				</ul>
+
+				<h3>Contrast (WCAG 2.2, computed live)</h3>
+				<table id="contrast"><thead><tr><th>Pair</th><th>Used for</th><th>Ratio</th><th>Needs</th><th></th></tr></thead><tbody></tbody></table>
+				<p style="margin-top: 10px">While writing this guide four earlier choices failed AA and were fixed in the tokens: success text (now <code>#1A7A44</code>), the counter badge text (now white on pink-700), placeholder text (now ink-500) and the off switch (now has a 3:1 outline).</p>
+			</section>
+
+			<section id="type">
+				<h2>Typography</h2>
+				<p>One stack, the same one Bandcamp uses: <code>"Helvetica Neue", Helvetica, Arial, sans-serif</code>. These are system fonts, so nothing is bundled. Sentence case everywhere.</p>
+				<div class="panel">
+					<div class="type-row"><small>Display<br />88 / 0.98, 700, -0.035em</small><span style="font-size: 56px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Play more.</span></div>
+					<div class="type-row"><small>Page title<br />40 / 1.05, 700</small><span style="font-size: 40px; font-weight: 700; letter-spacing: -0.035em">Downloads</span></div>
+					<div class="type-row"><small>Section title<br />24, 700</small><span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">Batch download</span></div>
+					<div class="type-row"><small>Summary number<br />20, 600</small><span style="font-size: 20px; font-weight: 600">11 of 20 downloaded</span></div>
+					<div class="type-row"><small>Brand name<br />16, 700</small><span style="font-size: 16px; font-weight: 700">Band Play</span></div>
+					<div class="type-row"><small>Body / label<br />13, 400-500</small><span>Autoplay next track</span></div>
+					<div class="type-row"><small>Control text<br />13, 600</small><span style="font-weight: 600">Pause all</span></div>
+					<div class="type-row"><small>Hint, meta<br />12, 400, ink-500</small><span style="font-size: 12px; color: var(--ink-500)">Start the next track when one ends</span></div>
+					<div class="type-row"><small>Overline<br />11, 700, +0.07em, caps</small><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-500)">Player</span></div>
+				</div>
+				<p style="margin-top: 10px">Numbers that change use <code>font-variant-numeric: tabular-nums</code> (percent, size, speed, counters).</p>
+			</section>
+
+			<section id="shape">
+				<h2>Shape and depth</h2>
+				<h3>Radius</h3>
+				<div class="grid grid--4">
+					<div class="shape" style="border-radius: 8px">8 (small controls)</div>
+					<div class="shape" style="border-radius: 10px">10 (buttons, fields)</div>
+					<div class="shape" style="border-radius: 12px">12 (menus)</div>
+					<div class="shape" style="border-radius: 16px">16 (cards)</div>
+				</div>
+				<p style="margin-top: 10px">Pills and switches use 999 px. Dialogs use 18 px. Inside Bandcamp pages: 6-8 px for checkboxes, 10 px for buttons, 14 px for the batch bar.</p>
+				<h3>Shadow and focus</h3>
+				<div class="grid grid--3">
+					<div class="shape" style="border-radius: 16px; box-shadow: var(--shadow-1)">shadow-1: cards</div>
+					<div class="shape" style="border-radius: 16px; box-shadow: var(--shadow-2)">shadow-2: menus, dialogs</div>
+					<div class="shape" style="border-radius: 16px; box-shadow: var(--focus)">focus ring: 2 px white + 2 px aqua</div>
+				</div>
+				<h3>Glass</h3>
+				<div class="grid grid--2">
+					<div class="glass-demo"><div>Frosted bar over a colorful background</div></div>
+					<pre>background: rgba(255,255,255,.72);
+backdrop-filter: blur(18px) saturate(1.5);
+border: 1px solid rgba(18,38,46,.08);
+
+@supports not (backdrop-filter: blur(1px)) {
+  background: rgba(255,255,255,.96);
+}</pre>
+				</div>
+				<p style="margin-top: 10px">Use glass only for bars that content scrolls under. The page behind needs a soft aqua glow so the blur is visible. The batch bar on Bandcamp uses blur 12 px on a 94% white fill so it stays readable over any cover.</p>
+			</section>
+
+			<section id="components">
+				<h2>Components</h2>
+				<p>Live from <code>design/components.css</code>. Controls are 32 px high (28 px for the small size), with 8-12 px gaps.</p>
+
+				<h3>Buttons</h3>
+				<div class="demo row-flex">
+					<button class="btn btn--primary"><svg class="icon"><use href="#i-play" /></svg>Primary</button>
+					<button class="btn">Default</button>
+					<button class="btn btn--ghost">Ghost</button>
+					<button class="btn btn--danger"><svg class="icon"><use href="#i-trash" /></svg>Danger</button>
+					<button class="btn btn--danger-solid">Danger solid</button>
+					<button class="btn btn--icon" aria-label="Pause"><svg class="icon"><use href="#i-pause" /></svg></button>
+					<button class="btn btn--sm">Small</button>
+					<button class="btn" disabled>Disabled</button>
+				</div>
+				<p style="margin-top: 8px">One primary button per area. Destructive actions are outlined danger; the confirming button in a dialog is solid danger.</p>
+
+				<h3>Switches, fields, stepper, chips</h3>
+				<div class="demo">
+					<div class="row-flex" style="gap: 24px">
+						<label class="row-flex" style="gap: 8px"><input class="switch" type="checkbox" role="switch" checked />On</label>
+						<label class="row-flex" style="gap: 8px"><input class="switch" type="checkbox" role="switch" />Off</label>
+						<label class="row-flex" style="gap: 8px"><input class="switch switch--danger" type="checkbox" role="switch" checked />Risky setting</label>
+						<label class="row-flex" style="gap: 8px"><input class="switch" type="checkbox" role="switch" disabled />Disabled</label>
+					</div>
+					<div class="row-flex" style="gap: 14px; margin-top: 16px">
+						<input class="field field-w" placeholder="Search shortcuts" aria-label="Text field" />
+						<select class="field field-w" aria-label="Select"><option>WAV</option><option>FLAC</option></select>
+						<div class="field-w"><input class="range" type="range" min="1" max="15" value="8" style="--pct: 50%" aria-label="Slider" /></div>
+						<div class="stepper"><button type="button" aria-label="Decrease">&minus;</button><output>10<small>sec</small></output><button type="button" aria-label="Increase">+</button></div>
+					</div>
+					<div class="row-flex" style="margin-top: 16px">
+						<button class="chip" aria-pressed="true">All <span class="chip__n">18</span></button>
+						<button class="chip" aria-pressed="false">Active</button>
+						<button class="chip" aria-pressed="false">Paused</button>
+						<kbd class="kbd">⇧</kbd><kbd class="kbd">V</kbd><kbd class="kbd">Space</kbd>
+						<span class="badge">Chrome</span>
+						<span class="badge badge--accent">3</span>
+						<span class="badge badge--danger"><svg class="icon" style="width: 11px; height: 11px"><use href="#i-warn" /></svg>Use with care</span>
+					</div>
+				</div>
+
+				<h3>Notes</h3>
+				<div class="demo grid grid--2">
+					<div class="note note--warn"><svg class="icon" style="margin-top: 1px"><use href="#i-warn" /></svg><span>Already used by <b>Play next track</b>. Pick another key.</span></div>
+					<div class="note note--info"><svg class="icon" style="margin-top: 1px"><use href="#i-alert" /></svg><span>Visited history is stored only in this browser.</span></div>
+				</div>
+
+				<h3>Status pills and progress</h3>
+				<div class="demo">
+					<div class="row-flex" id="pills"></div>
+					<div class="grid grid--3" style="margin-top: 16px">
+						<div><div class="bar"><i class="fill" style="width: 62%"></i></div><small>Downloading</small></div>
+						<div><div class="bar bar--paused"><i class="fill" style="width: 40%"></i></div><small>Paused</small></div>
+						<div><div class="bar bar--warn"><i class="fill" style="width: 55%"></i></div><small>Already exists</small></div>
+					</div>
+					<div class="bar bar--lg" style="margin-top: 14px"><i class="bar__done" style="width: 55%"></i><i class="bar__fail" style="width: 8%"></i></div>
+					<small>Summary bar: done (aqua) and failed (red)</small>
+				</div>
+
+				<h3>Dialog</h3>
+				<div class="demo">
+					<div class="dialog">
+						<h2>Clear all downloads?</h2>
+						<p>The list will be emptied and active downloads will be cancelled. Files already saved stay on your disk.</p>
+						<div class="dialog__actions"><button class="btn">Cancel</button><button class="btn btn--danger-solid">Clear all</button></div>
+					</div>
+				</div>
+			</section>
+
+			<section id="bandcamp">
+				<h2>On Bandcamp pages</h2>
+				<p>Styles: <code>design/bandcamp-ui/band-play.css</code>. Flat, 13 px, aqua links. Only <code>band-play</code> classes and ids are used.</p>
+				<h3>Checkbox and downloaded badge</h3>
+				<div class="demo row-flex" style="align-items: flex-start; gap: 24px">
+					<div class="cb-demo"><div class="cover"><input class="band-play-batch-checkbox" type="checkbox" aria-label="Unchecked" /></div><div class="t">Unchecked</div></div>
+					<div class="cb-demo sel"><div class="cover"><input class="band-play-batch-checkbox" type="checkbox" checked aria-label="Checked" /></div><div class="t">Selected</div></div>
+					<div class="cb-demo"><div class="cover"><span class="band-play-downloaded-badge"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>Downloaded</span></div><div class="t">Downloaded</div></div>
+					<div class="cb-demo"><div class="cover"></div><div class="t" style="color: #7b1fa2">Visited</div></div>
+					<div class="row-flex" style="gap: 10px; align-self: center">Purchases: <input class="band-play-batch-checkbox" type="checkbox" aria-label="Purchases unchecked" /><input class="band-play-batch-checkbox" type="checkbox" checked aria-label="Purchases checked" /></div>
+				</div>
+				<h3>Batch bar</h3>
+				<div class="demo" style="display: grid; gap: 14px; justify-items: start">
+					<div class="bp-bar"><div class="bp-bar__brand"><img src="../logo/logo-128.png" alt="" /></div><div class="bp-bar__count"><small>Batch download</small></div><div class="bp-bar__sep"></div><button class="bp-btn">Select all</button><button class="bp-btn">Select new</button><div class="bp-split"><button class="bp-btn bp-btn--primary" disabled>Download <span style="opacity: 0.75; font-weight: 500">WAV</span></button><button class="bp-btn bp-btn--primary" disabled aria-label="Format">▾</button></div></div>
+					<div class="bp-bar"><div class="bp-bar__count">3 selected</div><div class="bp-bar__sep"></div><button class="bp-btn">Select all</button><button class="bp-btn">Select new</button><div class="bp-split"><button class="bp-btn bp-btn--primary">Download 3 <span style="opacity: 0.75; font-weight: 500">WAV</span></button><button class="bp-btn bp-btn--primary" aria-label="Format">▾</button></div></div>
+					<div class="bp-bar"><div class="bp-bar__progress"><span>Selecting 120 of 847</span><div class="bp-track"><i style="width: 14%"></i></div></div><button class="bp-btn">Stop</button></div>
+				</div>
+				<ul class="rules" style="margin-top: 12px">
+					<li>The bar sits bottom right, 96 px above the bottom so it clears Bandcamp's player.</li>
+					<li>No batch UI on the wishlist. The feed player and Bandcamp's own player are never restyled.</li>
+					<li>Donate and rate tabs reuse Bandcamp's tab style with a small icon (pink heart, aqua star).</li>
+					<li>Never use <code>!important</code> except for the visited color, which must beat Bandcamp's link colors.</li>
+				</ul>
+			</section>
+
+			<section id="motion">
+				<h2>Motion and accessibility</h2>
+				<ul class="rules">
+					<li><b>Motion:</b> 120-180 ms ease for hover, switch and chevron; 400 ms for progress fills. Nothing moves for decoration. <code>prefers-reduced-motion</code> turns all transitions off.</li>
+					<li><b>Focus:</b> always visible, the 2 px aqua ring with a 2 px white gap (<code>--focus</code>). Never remove an outline without a replacement.</li>
+					<li><b>Targets:</b> at least 28 px, 32 px for icon buttons. Hover-only controls are also shown on focus.</li>
+					<li><b>Keyboard:</b> tabs use arrow keys, Home and End. Dialogs are native <code>&lt;dialog&gt;</code> opened with <code>showModal()</code> (Escape closes, focus is trapped). Switches are checkboxes with <code>role="switch"</code>.</li>
+					<li><b>Status:</b> icon plus label plus color. Live counters use <code>aria-live="polite"</code>.</li>
+					<li><b>Browsers:</b> Chrome and Firefox 128+. <code>:has()</code> and <code>backdrop-filter</code> have fallbacks (frame becomes outline-only, bars become solid white).</li>
+				</ul>
+			</section>
+
+			<section id="voice">
+				<h2>Voice</h2>
+				<ul class="rules">
+					<li>English, sentence case, short. Verbs on buttons: "Clear history", "Retry failed", "Download 3".</li>
+					<li>Say what happens and what it costs: "Stops the display from sleeping and drains battery".</li>
+					<li>Units after numbers with a space: "10 sec", "184 MB", "18.4 MB/s".</li>
+					<li>No exclamation marks, no emoji. Errors say what to do next: "Already used by Play next track. Pick another key."</li>
+				</ul>
+			</section>
+
+			<section id="code">
+				<h2>For developers</h2>
+				<p>The popup and the downloads page use React with Tailwind 3. Map the tokens into <code>tailwind.config.js</code> (replace the current <code>band</code> palette; keep exact versions, no new dependencies):</p>
+<pre>theme: {
+  extend: {
+    colors: {
+      aqua: { 50:'#f1fafc', 100:'#e3f5f9', 200:'#c4e8f1', 300:'#92d4e5', 400:'#52bad6',
+              500:'#1da0c3', 600:'#168aa9', 700:'#0f6f8a', 800:'#0b566c' },
+      pink: { 100:'#fde8f0', 500:'#e8508a', 700:'#be2f6a' },
+      coral: { 100:'#ffe9e2', 500:'#ff7a59', 600:'#e85f3e' },
+      ink: { 900:'#12262e', 700:'#2f4650', 500:'#5b7078', 400:'#8197a0' },
+    },
+    borderRadius: { md: '10px', lg: '12px', xl: '16px' },
+    boxShadow: { card: '0 1px 2px rgba(18,38,46,.06), 0 1px 1px rgba(18,38,46,.04)',
+                 pop: '0 10px 28px -8px rgba(18,38,46,.18), 0 2px 6px rgba(18,38,46,.06)' },
+    fontFamily: { sans: ['"Helvetica Neue"','Helvetica','Arial','sans-serif'] },
+  },
+}</pre>
+				<ul class="rules" style="margin-top: 12px">
+					<li>Port <code>components.css</code> classes to components (Button, Switch, Chip, Pill, Dialog) instead of copying them.</li>
+					<li>Injected Bandcamp styles stay plain CSS in <code>src/content/styles/</code> (no Tailwind in the content script overlay).</li>
+					<li>Per-page notes: <code>popup/NOTES.md</code>, <code>downloads/NOTES.md</code>, <code>bandcamp-ui/NOTES.md</code>, <code>banners/NOTES.md</code>.</li>
+				</ul>
+			</section>
+
+			<section id="files">
+				<h2>Files</h2>
+<pre class="tree">design/
+  tokens.css, components.css          shared tokens and components
+  logo/                               logo.svg, logo-16/32/48/128.png, logo-store-128.png, 512, 1024
+  popup/                              popup.html, screens/, NOTES.md
+  downloads/                          downloads.html, screens/, NOTES.md
+  bandcamp-ui/                        band-play.css (injected), collection/purchases/wishlist mocks, NOTES.md
+  banners/                            marquee-1400x560.png, small-promo-440x280.png, sources, NOTES.md
+  style-guide/                        this page</pre>
+			</section>
+		</main>
+		<script src="style-guide.js"></script>
+	</body>
+</html>

@@ -12,9 +12,9 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - 🔁 Loop track: Repeat the current track
 - 🎨 Highlight visited: Albums and tracks you already opened or played are marked on Bandcamp pages
 - 🧩 Feed player: A small player with cover, title and progress bar on the feed page
-- 📥 Batch download: Select items on your collection, wishlist or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV or AIFF
-- 📋 Downloads page: See the progress of every file; pause, resume, retry, cancel or remove items; set how many files download at the same time (1 to 15)
-- 🗂️ Filename template (Chrome): Name and sort files with {artist}, {title} and {format}, for example {artist}/{artist} - {title}
+- 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV or AIFF
+- 📋 Downloads page: See the overall progress, speed and time left; filter, search and sort the list; pause, resume, retry, cancel or remove items; set how many files download at the same time (1 to 15)
+- ⚙️ Popup: Four tabs (Playback, Page, Downloads, Shortcuts); turn each shortcut on or off, record a new key, skip releases you already downloaded, get a notification when a batch finishes, import, export or reset your settings
 - 💤 Keep Awake (Chrome): Keeps the display on while you listen
 
 🎹 Default shortcuts
@@ -47,11 +47,12 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - ⏰ Alarms — Keeps a long batch download going and retries it later when Bandcamp asks to slow down.
 - 🔋 Power (Chrome only) — Keeps the display awake while Keep Awake is on.
 - 🧺 Downloads shelf and Downloads UI (Chrome only) — Hides the browser's download bubble while a batch download runs, so it does not pop up for every file, and shows it again afterwards.
+- 🔔 Notifications (optional) — Asked only when you turn on "notify when a batch finishes". Shows one notification when a batch download ends.
 - 🌐 Access to bandcamp.com and its subdomains — Runs the player features on Bandcamp pages and loads the Bandcamp download pages for batch download. The extension runs on no other site.
 
 🦊 Firefox
 
-- Works in Firefox 128 or newer. Keep Awake and the filename template are not available in Firefox, so they are hidden there; downloaded files keep the names Bandcamp gives them.
+- Works in Firefox 128 or newer. Keep Awake is not available in Firefox, so it is hidden there.
 
 🆘 Support
 

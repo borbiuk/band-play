@@ -38,12 +38,11 @@ marks for albums and tracks you already opened, and batch download of your purch
 
 ### Batch download
 
-- **Where**: on your collection and wishlist pages (items you bought, that have a download link) and on your purchases page. Band Play adds a checkbox to each item and a small panel at the bottom right of the page.
-- **Select**: click checkboxes one by one; Shift+click selects the range from the last clicked checkbox. **Select All** loads the whole list and selects every item (it shows the progress and can be stopped). **Select New** selects only the items you have not downloaded yet in the current format.
+- **Where**: on your collection page (items you bought, that have a download link) and on your purchases page; there is nothing to download on the wishlist. Band Play adds a checkbox to each item and a small bar at the bottom right of the page. The checkbox shows when you point at an item, and all of them stay visible while something is selected.
+- **Select**: click checkboxes one by one; Shift+click selects the range from the last clicked checkbox. **Select All** loads the whole list and selects every item (it shows the progress and can be stopped). **Select New** selects only the items you have not downloaded yet in the current format. Releases you already have in that format show a **Downloaded** mark. After **Download** the bar says how many releases were sent to the downloads page.
 - **Format**: MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV (default) or AIFF. Set the default in the popup, or pick a format for one batch with the arrow next to the **Download** button.
 - **Concurrency**: how many files download at the same time (1 to 15, default 8).
-- **Filename template** (Chrome only): for example `{artist}/{artist} - {title}`. The tokens are `{artist}`, `{title}` and `{format}`, and `/` creates folders. The template must contain `{title}`, otherwise it is not used. Leave it empty to keep the file names Bandcamp sends.
-- **Downloads page**: a download starts a Band Play downloads page in a browser tab. It shows every item with its status and progress and has **Clear all**, **Pause all**, **Resume all**, **Retry failed** and **Clear completed**, and per item Pause, Resume, Cancel, Retry, Show in folder, Copy Bandcamp URL, Delete file from disk and Remove. While downloads are active, the popup shows an **Open downloads** button.
+- **Downloads page**: a download starts a Band Play downloads page in a browser tab. It shows the overall progress, with speed and time left, and every item with its status and progress. You can filter by status (All, Active, Paused, Failed, Done), search, and sort by queue order, title or status. A purchase with several downloads (a bundle) folds into one row. The page has **Pause all** or **Resume all**, **Retry failed**, **Clear completed** and **Clear all** (it asks first), and per item Pause, Resume, Cancel, Retry, Show in folder, Copy Bandcamp link, Delete file from disk (it asks first) and Remove. The popup has an **Open downloads** button.
 - **Reliable**: when Bandcamp answers "too many requests" (HTTP 429), the download is retried later with a growing delay. In Chrome the browser's download bubble is hidden while a batch runs and shown again afterwards.
 - **History**: completed downloads are remembered per release and format, so **Select New** and the marks on the page know what you already have.
 
@@ -91,20 +90,21 @@ Pitch preservation is not available on the discover page.
 
 ### Settings popup
 
-Click the Band Play icon in the toolbar. The popup has three panels:
+Click the Band Play icon in the toolbar. The popup has four tabs:
 
-- **Common**: Autoplay, Autoscroll, Keep Awake (Chrome only), Show feed player, Highlight visited.
-- **Shortcuts** and the **seek step**.
-- **Downloads**: the batch download format, the concurrency, the filename template (Chrome only) and **Open downloads** while downloads are active.
+- **Playback**: Autoplay next track, Loop track, Media keys, Keep screen awake (Chrome only) and the seek step.
+- **Page**: Highlight visited, Autoscroll, Feed player, and the visited history with a **Clear** button.
+- **Downloads**: **Open downloads**, the batch download format and concurrency, a notification when a batch finishes, opening the downloads page when a batch starts, and skipping releases you already downloaded in the same format.
+- **Shortcuts**: a search, a switch to turn each shortcut on or off, a pencil to record a new key, and **Reset**.
 
-All settings are saved at once in the extension's local storage (`chrome.storage.local`).
+The footer has **Import** and **Export** (a settings file) and **Reset all**. All settings are saved at once in the extension's local storage (`chrome.storage.local`).
 
 ### Firefox
 
 Band Play works in Firefox 128 or newer, with two differences:
 
 - **Keep Awake** is hidden, because Firefox has no `chrome.power` API.
-- The **filename template** is hidden, because Firefox has no `downloads.onDeterminingFilename`. Files keep the names Bandcamp sends.
+- **Import** of a settings file opens in a browser tab, because Firefox closes the popup when a file dialog opens.
 
 <hr/>
 
@@ -162,6 +162,8 @@ The two manifests differ only in:
 - `background`: `service_worker` in Chrome, `scripts` (an event page) in Firefox.
 - `permissions`: Chrome also has `power`, `downloads.shelf` and `downloads.ui`.
 
+Both manifests list `notifications` as an optional permission. The popup asks for it only when you turn on the "notify when a batch finishes" switch.
+
 ### Installation
 
 #### Chrome
@@ -198,8 +200,8 @@ The Husky hook `.husky/pre-commit` runs on every commit, with `set -e`, so the c
 
 The tests use [Playwright](https://playwright.dev) and live in `tests/`. Projects in `playwright.config.ts`:
 
-- **`unit`** (`npm run test:unit`, `tests/unit/`): pure logic, no browser: the config defaults, shortcut parsing, the filename template and the filename router, the Bandcamp download page parser and the page URL matching.
-- **`e2e`** (`npm run test:e2e`, `tests/e2e/`): the built extension (`dist/`) in Playwright's bundled Chromium. Bandcamp pages come from offline snapshots in `tests/e2e/fixtures/pages/` (an album, a track and an artist page) and every other request is blocked, so the tests need no network and no Bandcamp account. They cover the shortcuts on the album and track pages, settings used on the page and the popup (settings and the shortcut recorder).
+- **`unit`** (`npm run test:unit`, `tests/unit/`): pure logic, no browser: the config defaults and the settings file, shortcut parsing, the expected filenames of downloads, the pending queue, the decisions of a runner tick, the downloads page list, row and overall progress logic, the Bandcamp download page parser and the page URL matching.
+- **`e2e`** (`npm run test:e2e`, `tests/e2e/`): the built extension (`dist/`) in Playwright's bundled Chromium. Bandcamp pages come from offline snapshots in `tests/e2e/fixtures/pages/` (an album, a track and an artist page) and every other request is blocked, so the tests need no network and no Bandcamp account. They cover the shortcuts on the album and track pages, settings used on the page, the popup (settings and the shortcut recorder) and the downloads page. The batch download checkboxes and bar run on hand-written collection, purchases and wishlist pages in `tests/e2e/fixtures/synthetic/`.
 - **`live`** (`npm run test:live`, `tests/live/`): a short smoke check against real bandcamp.com. It exists only when `BAND_PLAY_LIVE` is set (the script sets it), so a plain `npx playwright test` never reaches the network.
 
 A setup project (`dist`) runs `npm run build` before `e2e` and `live`; `unit` does not build. First time on a
@@ -209,7 +211,7 @@ machine, install the browser: `npx playwright install chromium`.
 
 Retries are off, so a flaky test is a bug to fix. A trace is kept for every failed test in `test-results/`, and the HTML report is written to `playwright-report/` (`npx playwright show-report`).
 
-Not covered by automated tests: the feed, collection, wishlist, purchases and discover pages, batch download and the downloads page (they need a signed-in account), and **Firefox** (the tests run in **Chromium only**, because Playwright cannot load extensions into Firefox). Check these by hand, and run `npm run lint:firefox` for Firefox.
+Not covered by automated tests: the real feed, collection, wishlist, purchases and discover pages, batch download itself, media keys, the notification permission prompt and live download progress (they need a signed-in account), and **Firefox** (the tests run in **Chromium only**, because Playwright cannot load extensions into Firefox). Check these by hand, and run `npm run lint:firefox` for Firefox.
 
 ### CI
 

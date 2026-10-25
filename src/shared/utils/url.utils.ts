@@ -47,3 +47,19 @@ export const isBandcampFileUrl = (value: unknown): boolean => {
 			hasHost(url.hostname, 'bcbits.com'))
 	);
 };
+
+/**
+ * Check if a URL is a Bandcamp wishlist page (the path ends with `/wishlist`).
+ *
+ * @param value - The URL to check
+ * @returns True for a wishlist page, false otherwise
+ */
+export const isWishlistUrl = (value: string): boolean => {
+	try {
+		return new URL(value).pathname
+			.replace(/\/+$/, '')
+			.endsWith('/wishlist');
+	} catch {
+		return false;
+	}
+};

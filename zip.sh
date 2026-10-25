@@ -5,14 +5,13 @@ set -euo pipefail
 
 # Files that will be included to .zip (paths are relative to the build directory)
 include_files=(
-	"assets/buymeacoffee.png"
-	"assets/github.png"
-	"assets/logo-16.png"
-	"assets/logo-32.png"
-	"assets/logo-48.png"
+	"assets/icon-16.png"
+	"assets/icon-32.png"
+	"assets/icon-48.png"
+	"assets/icon-128.png"
 	"assets/logo-128.png"
+	"assets/logo-store-128.png"
 	"assets/nextprev.png"
-	"assets/rate.png"
 	"background.js"
 	"content.js"
 	"downloads.html"

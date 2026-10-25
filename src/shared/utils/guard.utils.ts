@@ -19,6 +19,17 @@ export const notExist = <T>(value: T) =>
 export const exist = <T>(value: T) => !notExist(value);
 
 /**
+ * Check if a value is a plain object: an object that is not null and not an array.
+ *
+ * @param value - The value to check
+ * @returns True for an object with named keys, false for null, arrays and primitives
+ */
+export const isPlainObject = (
+	value: unknown
+): value is Record<string, unknown> =>
+	typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/**
  * Check if a string is a valid number.
  *
  * @param value - The string to check

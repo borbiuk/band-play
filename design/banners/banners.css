@@ -1,0 +1,225 @@
+@import url('../tokens.css');
+
+html,
+body {
+	margin: 0;
+	background: #fff;
+}
+.canvas {
+	position: relative;
+	overflow: hidden;
+	background:
+		radial-gradient(520px 420px at 96% 8%, rgba(29, 160, 195, 0.3), transparent 70%),
+		radial-gradient(460px 380px at 52% 112%, rgba(82, 186, 214, 0.26), transparent 70%),
+		radial-gradient(360px 300px at -4% -10%, rgba(255, 122, 89, 0.12), transparent 70%),
+		linear-gradient(180deg, #eef9fc, #ffffff 70%);
+	font-family: var(--font);
+	color: var(--ink-900);
+	-webkit-font-smoothing: antialiased;
+}
+.lockup {
+	display: flex;
+	align-items: center;
+}
+.lockup__logo {
+	display: block;
+}
+.lockup__name {
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+.lockup__for {
+	color: var(--ink-500);
+	font-weight: 500;
+}
+.lockup__bc {
+	display: block;
+}
+h1 {
+	margin: 0;
+	font-weight: 700;
+	letter-spacing: -0.035em;
+}
+h1 em {
+	font-style: normal;
+	color: var(--aqua-700);
+}
+.sub {
+	margin: 0;
+	color: var(--ink-500);
+	text-wrap: balance;
+}
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.chips li {
+	display: inline-flex;
+	align-items: center;
+	border: 1px solid var(--line-strong);
+	background: rgba(255, 255, 255, 0.85);
+	font-weight: 600;
+	color: var(--ink-700);
+}
+.chips svg {
+	fill: none;
+	stroke: var(--aqua-600);
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.shot {
+	position: absolute;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid rgba(18, 38, 46, 0.1);
+	box-shadow:
+		0 30px 60px -20px rgba(18, 38, 46, 0.35),
+		0 8px 20px rgba(18, 38, 46, 0.1);
+}
+.shot iframe {
+	display: block;
+	border: 0;
+	transform-origin: 0 0;
+	pointer-events: none;
+}
+.legal {
+	position: absolute;
+	color: var(--ink-400);
+}
+
+/* Marquee 1400 x 560 */
+.mq {
+	width: 1400px;
+	height: 560px;
+}
+.mq .lockup {
+	position: absolute;
+	left: 52px;
+	top: 40px;
+	gap: 10px;
+}
+.mq .lockup__logo {
+	width: 108px;
+	height: 108px;
+	margin: 0;
+}
+.mq .lockup__name {
+	font-size: 34px;
+}
+.mq .lockup__for {
+	margin: 0 4px 0 6px;
+	font-size: 26px;
+}
+.mq .lockup__bc {
+	width: 96px;
+	height: 96px;
+}
+.mq h1 {
+	position: absolute;
+	left: 72px;
+	top: 158px;
+	font-size: 88px;
+	line-height: 0.98;
+}
+.mq .sub {
+	position: absolute;
+	left: 76px;
+	top: 372px;
+	width: 520px;
+	font-size: 22px;
+	line-height: 1.4;
+}
+.mq .chips {
+	position: absolute;
+	left: 76px;
+	top: 460px;
+	gap: 8px;
+}
+.mq .chips li {
+	gap: 8px;
+	height: 40px;
+	padding: 0 14px 0 11px;
+	border-radius: 999px;
+	font-size: 15.5px;
+}
+.mq .chips svg {
+	width: 18px;
+	height: 18px;
+}
+.mq .legal {
+	left: 76px;
+	bottom: 20px;
+	font-size: 13px;
+}
+.mq .shot--coll {
+	left: 696px;
+	top: 138px;
+	width: 560px;
+	height: 386px;
+	border-radius: 20px;
+}
+.mq .shot--coll iframe {
+	width: 760px;
+	height: 524px;
+	transform: scale(0.737);
+}
+.mq .shot--popup {
+	left: 1040px;
+	top: 70px;
+	width: 312px;
+	height: 374px;
+	border-radius: 18px;
+}
+.mq .shot--popup iframe {
+	width: 400px;
+	height: 480px;
+	transform: scale(0.78);
+}
+
+/* Small promo 440 x 280: logos first, no UI screenshot */
+.sm {
+	width: 440px;
+	height: 280px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+.sm .lockup {
+	gap: 8px;
+	margin-top: -6px;
+}
+.sm .lockup__logo {
+	width: 96px;
+	height: 96px;
+	margin: 0;
+}
+.sm .lockup__for {
+	margin: 0 6px 0 2px;
+	font-size: 26px;
+}
+.sm .lockup__bc {
+	width: 84px;
+	height: 84px;
+}
+.sm h1 {
+	margin-top: 14px;
+	font-size: 40px;
+	line-height: 1;
+}
+.sm .tag {
+	margin: 8px 0 0;
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: var(--aqua-700);
+}
+.sm .sub {
+	margin-top: 10px;
+	font-size: 12.5px;
+}

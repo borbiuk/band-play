@@ -1,6 +1,8 @@
-import { PageService } from '@shared/interfaces';
-import { BandcampTrackModel } from '@shared/models';
-import { exist, notExist } from '@shared/utils';
+import { DONATE_URL, getRateUrl } from '@shared/constants/links';
+import { exist, isWishlistUrl, notExist } from '@shared/utils';
+
+import { BandcampTrackModel } from '../../models/bandcamp-track-model';
+import { PageService } from '../page-service';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
@@ -19,7 +21,7 @@ export class CollectionPageService
 	}
 
 	isServiceUrl(url: string): boolean {
-		this.isWishlist = url.includes('/wishlist');
+		this.isWishlist = isWishlistUrl(url);
 		const collectionPageRegex =
 			/^https:\/\/bandcamp\.com\/[a-zA-Z0-9-_]+(?:\/wishlist)?$/;
 		return collectionPageRegex.test(url.split('?')[0]);
@@ -44,14 +46,10 @@ export class CollectionPageService
 			return false;
 		}
 
-		nextTrackToPlay.element.querySelector('a')?.click();
-
-		if (this.config.autoscroll) {
-			nextTrackToPlay.element.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
+		this.clickAndReveal(
+			nextTrackToPlay.element.querySelector('a'),
+			nextTrackToPlay.element
+		);
 
 		return true;
 	}
@@ -62,30 +60,7 @@ export class CollectionPageService
 		}
 
 		const track = this.tracks[index];
-		track.element.querySelector('a')?.click();
-		if (this.config.autoscroll) {
-			track.element.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
-	}
-
-	tryAutoplay(): void {
-		const progress = this.audioOperator<number>(
-			(audio: HTMLAudioElement) =>
-				(audio.currentTime / audio.duration) * 100
-		);
-		if (!this.autoplayNeeded(progress)) {
-			return;
-		}
-
-		if (this.config.loopTrack) {
-			this.seekToPercentage(0);
-			return;
-		}
-
-		this.playNextTrack(true);
+		this.clickAndReveal(track.element.querySelector('a'), track.element);
 	}
 
 	initTracks(): void {
@@ -138,11 +113,29 @@ export class CollectionPageService
 			return;
 		}
 
-		const donateUrl = 'https://www.buymeacoffee.com/borbiuk';
-		const rateUrl =
-			'https://chromewebstore.google.com/detail/bandcamp-play/nooegmjcddclidfdlibmgcpaahkikmlh/reviews';
+		const rateUrl = getRateUrl();
 
-		const createExternalTab = (id: string, title: string, url: string) => {
+		const svgNamespace = 'http://www.w3.org/2000/svg';
+		// A small stroke icon before the title (the colors are in batch-download.scss)
+		const createIcon = (paths: string[]): SVGSVGElement => {
+			const svg = document.createElementNS(svgNamespace, 'svg');
+			svg.setAttribute('viewBox', '0 0 24 24');
+			svg.setAttribute('aria-hidden', 'true');
+			for (const d of paths) {
+				const path = document.createElementNS(svgNamespace, 'path');
+				path.setAttribute('d', d);
+				svg.appendChild(path);
+			}
+
+			return svg;
+		};
+
+		const createExternalTab = (
+			id: string,
+			title: string,
+			url: string,
+			icon: SVGSVGElement
+		) => {
 			const li = document.createElement('li');
 			li.id = id;
 			li.classList.add('band-play-external-tab');
@@ -152,6 +145,7 @@ export class CollectionPageService
 			const titleSpan = document.createElement('span');
 			titleSpan.className = 'tab-title';
 
+			titleSpan.appendChild(icon);
 			titleSpan.appendChild(document.createTextNode(title));
 			li.appendChild(titleSpan);
 
@@ -172,11 +166,27 @@ export class CollectionPageService
 			return li;
 		};
 
-		const donateTab = createExternalTab(donateTabId, 'donate', donateUrl);
-		const rateTab = createExternalTab(rateTabId, 'rate', rateUrl);
+		const heart = createIcon([
+			'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z',
+		]);
+		const star = createIcon([
+			'M12 2.5 15.1 8.8 22 9.8 17 14.7 18.2 21.5 12 18.2 5.8 21.5 7 14.7 2 9.8 8.9 8.8z',
+		]);
+		const donateTab = createExternalTab(
+			donateTabId,
+			'donate',
+			DONATE_URL,
+			heart
+		);
 
 		tabs.appendChild(donateTab);
-		tabs.appendChild(rateTab);
+
+		// Firefox has no store page to rate on
+		if (exist(rateUrl)) {
+			tabs.appendChild(
+				createExternalTab(rateTabId, 'rate', rateUrl, star)
+			);
+		}
 
 		this.externalTabsInjected = true;
 	}
@@ -211,17 +221,7 @@ export class CollectionPageService
 			return;
 		}
 
-		if (
-			buttonContainer.parentElement.parentElement.classList.contains(
-				'wishlisted'
-			)
-		) {
-			buttonContainer
-				.querySelector<HTMLElement>('.wishlisted-msg')
-				.click();
-		} else {
-			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
-		}
+		this.toggleWishlist(buttonContainer);
 	}
 
 	private getNowPlayingTrackId(): string {

@@ -7,6 +7,8 @@
  * to mark already-downloaded releases on Bandcamp pages.
  */
 
+import { createSerialQueue, isPlainObject } from '../utils';
+
 export const BATCH_DOWNLOAD_HISTORY_KEY = 'batchDownloadHistory';
 
 /** Map of `${sourceId}::${format}` -> completion timestamp (ms). */
@@ -49,7 +51,7 @@ export const getBatchDownloadHistory =
 			BATCH_DOWNLOAD_HISTORY_KEY,
 		]);
 		const raw = data[BATCH_DOWNLOAD_HISTORY_KEY] as unknown;
-		if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+		if (!isPlainObject(raw)) {
 			return {};
 		}
 
@@ -57,7 +59,7 @@ export const getBatchDownloadHistory =
 	};
 
 // Serializes history writes so concurrent completions don't lose entries.
-let historyWriteChain: Promise<unknown> = Promise.resolve();
+const enqueueHistoryWrite = createSerialQueue();
 
 export const addBatchDownloadHistoryEntries = (
 	entries: BatchDownloadHistoryEntry[]
@@ -78,7 +80,5 @@ export const addBatchDownloadHistoryEntries = (
 		});
 	};
 
-	const result = historyWriteChain.then(run, run);
-	historyWriteChain = result.catch(() => void 0);
-	return result;
+	return enqueueHistoryWrite(run);
 };

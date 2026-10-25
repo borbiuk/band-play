@@ -1,0 +1,86 @@
+/*
+ * Styles for the UI primitives that Tailwind utilities cannot express:
+ * range thumbs, the select arrow and the dialog backdrop.
+ * Colors are the redesign tokens (see tailwind.config.js and design/tokens.css).
+ */
+
+/* Range slider with a filled track; set --bp-pct from the component */
+.bp-range {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 100%;
+	height: 22px;
+	margin: 0;
+	background: transparent;
+	cursor: pointer;
+	--bp-pct: 50%;
+}
+.bp-range::-webkit-slider-runnable-track {
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		#1da0c3 var(--bp-pct),
+		#d3e3e9 var(--bp-pct)
+	);
+}
+.bp-range::-moz-range-track {
+	height: 6px;
+	border-radius: 999px;
+	background: #d3e3e9;
+}
+.bp-range::-moz-range-progress {
+	height: 6px;
+	border-radius: 999px;
+	background: #1da0c3;
+}
+.bp-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 20px;
+	height: 20px;
+	margin-top: -7px;
+	border-radius: 50%;
+	background: #fff;
+	border: 1px solid #c9dce3;
+	box-shadow: 0 1px 4px rgba(18, 38, 46, 0.3);
+}
+.bp-range::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	border: 1px solid #c9dce3;
+	box-shadow: 0 1px 4px rgba(18, 38, 46, 0.3);
+}
+.bp-range:focus-visible {
+	outline: none;
+}
+.bp-range:focus-visible::-webkit-slider-thumb {
+	box-shadow:
+		0 0 0 2px #fff,
+		0 0 0 4px #1da0c3;
+}
+.bp-range:focus-visible::-moz-range-thumb {
+	box-shadow:
+		0 0 0 2px #fff,
+		0 0 0 4px #1da0c3;
+}
+
+/* Select with a custom arrow */
+.bp-select {
+	appearance: none;
+	-webkit-appearance: none;
+	padding-right: 30px;
+	cursor: pointer;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b7078' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 8px center;
+	background-size: 16px;
+}
+
+/* Modal dialog backdrop */
+.bp-dialog::backdrop {
+	background: rgba(18, 38, 46, 0.28);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+}
