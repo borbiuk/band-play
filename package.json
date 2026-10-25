@@ -60,7 +60,7 @@
 		"globals": "17.13.0",
 		"husky": "9.1.7",
 		"knip": "6.41.0",
-		"markdownlint-cli2": "0.23.3",
+		"markdownlint-cli2": "0.24.0",
 		"postcss": "8.5.31",
 		"postcss-loader": "8.2.1",
 		"postcss-preset-env": "11.6.1",
