@@ -1,5 +1,14 @@
 # Release Notes
 
+<!--
+Rules for this file (scripts/tag-releases.sh and scripts/check-docs.mjs read it):
+- One `## x.y.z` heading per release, newest first. Nothing else in this file uses that heading pattern.
+- A one-sentence summary under each heading.
+- The sections Added, Changed, Fixed and Removed, only when they have items.
+- Bullets are written for users: what changes for them, in plain words.
+- A Permissions bullet whenever a permission is added, removed or explained differently.
+-->
+
 ## 11.0.0
 
 A new look for the popup, the downloads page and the Bandcamp page elements, a new icon, and more control over batch download.
