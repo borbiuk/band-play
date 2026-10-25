@@ -1,8 +1,5 @@
 import { BatchDownloadFormat, MessageCode } from '@shared/enums';
-import {
-	BatchDownloadItemsMessage,
-	MessageModel,
-} from '@shared/models/messages';
+import { BatchDownloadPendingItemModel } from '@shared/models/batch-download/batch-download-pending-item-model';
 import {
 	BATCH_DOWNLOAD_HISTORY_KEY,
 	downloadedSourceIdsForFormat,
@@ -10,17 +7,37 @@ import {
 } from '@shared/services/batch-download-history-service';
 import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
-import { exist, notExist } from '@shared/utils';
+import { exist, isWishlistUrl, notExist } from '@shared/utils';
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
+import { BatchDownloadBar } from '../components/batch-download-bar';
 import { BatchDownloadCheckboxesLayer } from '../components/batch-download-checkboxes-layer';
-import { BatchDownloadOverlay } from '../components/batch-download-overlay';
+import {
+	COLLECTION_TITLE_SELECTOR,
+	DOWNLOADED_BADGE_CLASS,
+	ensurePositioned,
+	getDownloadableCollectionItems,
+	PURCHASES_CHECKBOX_MOUNT_ATTR,
+	PURCHASES_ITEM_CLASS,
+	PURCHASES_ITEM_SELECTOR,
+	PURCHASES_LINKS_SELECTOR,
+	PURCHASES_TITLE_SELECTOR,
+	REDOWNLOAD_ITEM_SELECTOR,
+} from '../utils/batch-download-dom';
 
 const BATCH_OVERLAY_ROOT_ID = 'band-play-batch-overlay-root';
 
 const CHECKBOX_CLASS = 'band-play-batch-checkbox';
+
+/** Class of the body while something is selected: every checkbox stays visible then. */
+const SELECTING_CLASS = 'band-play-selecting';
+
+/** How long "N releases sent to Downloads" stays in the bar. */
+const SENT_NOTICE_MS = 4000;
+
+/** The wishlist has nothing to download: no checkboxes and no bar there. */
+const isWishlistPage = (): boolean => isWishlistUrl(window.location.href);
 
 /** True when a mutation only adds or removes the checkboxes this service renders. */
 const isOwnCheckboxMutation = (record: MutationRecord): boolean =>
@@ -30,7 +47,6 @@ const isOwnCheckboxMutation = (record: MutationRecord): boolean =>
 			node.hasAttribute('data-band-play-batch-checkbox')
 	);
 const CHECKBOX_ATTR = 'data-band-play-batch-id';
-const PURCHASES_CHECKBOX_MOUNT_ATTR = 'data-band-play-batch-checkbox-mount';
 
 const wait = (ms: number) =>
 	new Promise((resolve) => {
@@ -101,7 +117,9 @@ const loadTargetCount = async (
 const parseCollectionItem = (
 	container: Element
 ): BatchDownloadPendingItemModel | null => {
-	const redownloadAnchor = container.querySelector('.redownload-item a');
+	const redownloadAnchor = container.querySelector(
+		`${REDOWNLOAD_ITEM_SELECTOR} a`
+	);
 	if (!(redownloadAnchor instanceof HTMLAnchorElement)) {
 		return null;
 	}
@@ -112,7 +130,7 @@ const parseCollectionItem = (
 	}
 
 	const titleRaw = container
-		.querySelector('.collection-item-title')
+		.querySelector(COLLECTION_TITLE_SELECTOR)
 		?.textContent?.split('\n')[0];
 	const artistRaw = container
 		.querySelector('.collection-item-artist')
@@ -155,7 +173,7 @@ const parsePurchaseItem = (
 	}
 
 	const split = container
-		.querySelector('.purchases-item-title')
+		.querySelector(PURCHASES_TITLE_SELECTOR)
 		?.textContent?.split(' by ');
 
 	let title = split ? `${split[1]} - ${split[0]}` : id;
@@ -193,8 +211,11 @@ export class BatchDownloadService {
 	private overlayContainer: HTMLElement = null;
 	private overlayPage: 'collection' | 'purchases' = null;
 	private downloadedSourceIds = new Set<string>();
+	private defaultFormat: BatchDownloadFormat = BatchDownloadFormat.Wav;
 	private selectionProgress: { current: number; target: number } = null;
 	private isSelectionAborted = false;
+	private sentCount: number | null = null;
+	private sentTimerId: number | null = null;
 
 	public start(): void {
 		if (!isBandcamp()) {
@@ -222,7 +243,7 @@ export class BatchDownloadService {
 		});
 
 		// Re-init on URL changes (Band Play background sends UrlChanged).
-		messageService.addListener(async (message: MessageModel<unknown>) => {
+		messageService.addListener(async (message) => {
 			if (message.code !== MessageCode.UrlChanged) {
 				return;
 			}
@@ -236,9 +257,10 @@ export class BatchDownloadService {
 	private async refreshDownloadedSourceIds(): Promise<void> {
 		const [history, format] = await Promise.all([
 			getBatchDownloadHistory(),
-			configService.get<BatchDownloadFormat>('batchDownloadFormat'),
+			configService.get('batchDownloadFormat'),
 		]);
 
+		this.defaultFormat = format;
 		this.downloadedSourceIds = downloadedSourceIdsForFormat(
 			history,
 			String(format)
@@ -253,10 +275,11 @@ export class BatchDownloadService {
 			return;
 		}
 
-		// Collection / wishlist page
+		// Collection page (the wishlist has no downloads: nothing is added there)
 		if (
-			document.getElementById('collection-grid') ||
-			document.getElementById('wishlist-grid')
+			!isWishlistPage() &&
+			(document.getElementById('collection-grid') ||
+				document.getElementById('wishlist-grid'))
 		) {
 			this.setupCollectionPage();
 			return;
@@ -318,25 +341,8 @@ export class BatchDownloadService {
 	}
 
 	private attachCollectionCheckboxes(): void {
-		const containers = document.querySelectorAll(
-			'[id*="collection-item-container"], .collection-item-container'
-		);
-
-		for (const element of containers) {
-			const tralbumId = element.getAttribute('data-tralbumid');
-			if (!tralbumId) {
-				continue;
-			}
-
-			// Only items that have a redownload link.
-			if (notExist(element.querySelector('.redownload-item'))) {
-				continue;
-			}
-
-			const host = element as HTMLElement;
-			if (getComputedStyle(host).position === 'static') {
-				host.style.position = 'relative';
-			}
+		for (const host of getDownloadableCollectionItems()) {
+			ensurePositioned(host);
 		}
 
 		this.renderOverlay();
@@ -358,7 +364,7 @@ export class BatchDownloadService {
 					const element = node as Element;
 					if (
 						element?.nodeType === 1 &&
-						element.classList.contains('purchases-item')
+						element.classList.contains(PURCHASES_ITEM_CLASS)
 					) {
 						this.attachPurchasesCheckbox(element);
 					}
@@ -371,7 +377,7 @@ export class BatchDownloadService {
 			subtree: true,
 		});
 
-		const items = document.getElementsByClassName('purchases-item');
+		const items = document.getElementsByClassName(PURCHASES_ITEM_CLASS);
 		for (const item of items) {
 			this.attachPurchasesCheckbox(item);
 		}
@@ -381,7 +387,7 @@ export class BatchDownloadService {
 	}
 
 	private attachPurchasesCheckbox(item: Element): void {
-		const toAppend = item.querySelector('[data-tid="links"]');
+		const toAppend = item.querySelector(PURCHASES_LINKS_SELECTOR);
 		if (notExist(toAppend)) {
 			return;
 		}
@@ -443,6 +449,8 @@ export class BatchDownloadService {
 			this.stateRef.current.selected
 		).filter((x) => exist(x)).length;
 
+		document.body.classList.toggle(SELECTING_CLASS, selectedCount > 0);
+
 		this.overlayRoot.render(
 			React.createElement(
 				React.StrictMode,
@@ -458,22 +466,31 @@ export class BatchDownloadService {
 							this.handleCheckboxClick(itemId, target, shiftKey);
 						},
 					}),
-					React.createElement(BatchDownloadOverlay, {
+					React.createElement(BatchDownloadBar, {
 						selectedCount,
-						showSelectUndownloaded:
-							this.downloadedSourceIds.size > 0,
+						defaultFormat: this.defaultFormat,
+						showSelectNew: this.downloadedSourceIds.size > 0,
 						selectionProgress: this.selectionProgress,
+						sentCount: this.sentCount,
 						onSelectAllClick: async () => {
 							await this.handleSelectAll();
 						},
-						onSelectUndownloadedClick: async () => {
+						onSelectNewClick: async () => {
 							await this.handleSelectAll(true);
+						},
+						onClearSelectionClick: () => {
+							this.clearSelection();
 						},
 						onCancelSelectionClick: () => {
 							this.isSelectionAborted = true;
 						},
 						onDownloadClick: (format?: BatchDownloadFormat) => {
 							this.handleDownload(format);
+						},
+						onOpenDownloadsClick: () => {
+							messageService.post({
+								code: MessageCode.BatchDownloadOpenDownloadsTab,
+							});
 						},
 					})
 				)
@@ -498,7 +515,7 @@ export class BatchDownloadService {
 			return parseCollectionItem(container);
 		}
 
-		const container = checkbox.closest('.purchases-item');
+		const container = checkbox.closest(PURCHASES_ITEM_SELECTOR);
 		if (notExist(container)) {
 			return null;
 		}
@@ -511,6 +528,11 @@ export class BatchDownloadService {
 		target: HTMLInputElement,
 		shiftKey: boolean
 	): void {
+		// A new selection replaces the "sent to Downloads" notice
+		if (exist(this.sentCount)) {
+			this.dismissSentNotice();
+		}
+
 		const all = getAllCheckboxes();
 		const index = all.indexOf(target);
 		const baseCollectionIndex = index >= 0 ? index + 1 : undefined;
@@ -577,20 +599,48 @@ export class BatchDownloadService {
 			return;
 		}
 
-		messageService
-			.sendToBackground<BatchDownloadItemsMessage>({
-				code: MessageCode.BatchDownloadSendItemsToBackground,
-				data: { items: selected, format },
-			})
-			.catch(() => void 0);
+		messageService.post({
+			code: MessageCode.BatchDownloadSendItemsToBackground,
+			data: { items: selected, format },
+		});
 
+		this.showSentNotice(selected.length);
+		this.clearSelection();
+	}
+
+	/** Unchecks every checkbox and forgets the selection. */
+	private clearSelection(): void {
 		this.stateRef.current.selected = {};
+		this.stateRef.current.lastClickedIndex = -1;
 
 		for (const checkbox of getAllCheckboxes()) {
 			checkbox.checked = false;
 		}
 
 		this.onSelectionChanged();
+	}
+
+	private dismissSentNotice(): void {
+		if (exist(this.sentTimerId)) {
+			window.clearTimeout(this.sentTimerId);
+			this.sentTimerId = null;
+		}
+
+		this.sentCount = null;
+	}
+
+	/** Shows "N releases sent to Downloads" in the bar for a few seconds. */
+	private showSentNotice(count: number): void {
+		if (exist(this.sentTimerId)) {
+			window.clearTimeout(this.sentTimerId);
+		}
+
+		this.sentCount = count;
+		this.sentTimerId = window.setTimeout(() => {
+			this.sentTimerId = null;
+			this.sentCount = null;
+			this.renderOverlay();
+		}, SENT_NOTICE_MS);
 	}
 
 	private async handleSelectAll(
@@ -659,7 +709,7 @@ export class BatchDownloadService {
 					await loadTargetCount(
 						target,
 						container,
-						'purchases-item',
+						PURCHASES_ITEM_CLASS,
 						(current) => onProgress(current, target),
 						() => this.isSelectionAborted
 					);
@@ -705,6 +755,17 @@ export class BatchDownloadService {
 		Array.from(document.getElementsByClassName(CHECKBOX_CLASS)).forEach(
 			(x) => x.remove()
 		);
+		document
+			.querySelectorAll(`.${DOWNLOADED_BADGE_CLASS}`)
+			.forEach((x) => x.remove());
+		document.body.classList.remove(SELECTING_CLASS);
+
+		if (exist(this.sentTimerId)) {
+			window.clearTimeout(this.sentTimerId);
+			this.sentTimerId = null;
+		}
+
+		this.sentCount = null;
 
 		document
 			.querySelectorAll(`[${PURCHASES_CHECKBOX_MOUNT_ATTR}]`)

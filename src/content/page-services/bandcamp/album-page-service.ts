@@ -1,5 +1,6 @@
-import { PageService } from '@shared/interfaces';
 import { exist, notExist } from '@shared/utils';
+
+import { PageService } from '../page-service';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
@@ -60,12 +61,7 @@ export class AlbumPageService
 			return;
 		}
 
-		const progress = this.audioOperator<number>(
-			(audio: HTMLAudioElement) =>
-				(audio.currentTime / audio.duration) * 100
-		);
-
-		if (this.autoplayNeeded(progress)) {
+		if (this.autoplayNeeded(this.getPlaybackProgress())) {
 			this.seekToPercentage(0);
 		}
 	}

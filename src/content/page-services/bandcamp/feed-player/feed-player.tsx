@@ -70,21 +70,15 @@ export const FeedPlayer = ({
 	);
 	const hasTrackRef = useRef(false);
 
-	useEffect(() => {
-		// The player can render before the page service has loaded the config
-		configService
-			.getAll()
-			.then((config) => {
+	// The player can render before the page service has loaded the config
+	useEffect(
+		() =>
+			configService.watch((config) => {
 				showSettingRef.current = config.showFeedPlayer;
 				setShow(showSettingRef.current && hasTrackRef.current);
-			})
-			.catch((e) => console.error(e));
-
-		return configService.addListener((newConfig) => {
-			showSettingRef.current = newConfig.showFeedPlayer;
-			setShow(showSettingRef.current && hasTrackRef.current);
-		});
-	}, []);
+			}),
+		[]
+	);
 
 	useEffect(() => {
 		const onAudio = (audio: HTMLAudioElement) => {

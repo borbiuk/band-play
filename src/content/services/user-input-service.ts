@@ -1,13 +1,11 @@
-import {
-	PlaybackPitchAction,
-	PlaybackSpeedAction,
-	ShortcutType,
-} from '@shared/enums';
-import { PageService } from '@shared/interfaces';
+import { ShortcutType } from '@shared/enums';
 import { ConfigModel, ShortcutConfig } from '@shared/models/config-model';
 import configService from '@shared/services/config-service';
 import { exist, notExist } from '@shared/utils';
 
+import { PlaybackPitchAction } from '../enums/playback-pitch-action';
+import { PlaybackSpeedAction } from '../enums/playback-speed-action';
+import { PageService } from '../page-services/page-service';
 import { ShortcutHandler } from '../shortcut/shortcut-handler';
 import { ShortcutSet } from '../shortcut/shortcut-set';
 
@@ -86,6 +84,15 @@ const toShortcutSet = (event: KeyboardEvent): ShortcutSet => {
  * - Integration with page services for command execution
  */
 export class UserInputService {
+	/** Shortcuts the user switched off: they do nothing, and their keys stay with the page. */
+	private disabledShortcuts = new Set<string>();
+
+	/** Whether the media keys are used. */
+	private mediaKeysEnabled = true;
+
+	/** Registers or removes the media key handlers; set by `listenNavigator`. */
+	private syncMediaKeys: (() => void) | null = null;
+
 	/**
 	 * Starts the user input service with the given page service worker.
 	 * Sets up keyboard listeners and configuration updates.
@@ -96,16 +103,21 @@ export class UserInputService {
 		this.listenHotkeys(serviceWorker);
 		this.listenNavigator(serviceWorker);
 
-		const updateShortcutHandlers = (x: ShortcutConfig) => {
-			this.updateShortcutHandlers(x);
+		const applyConfig = ({
+			shortcuts,
+			disabledShortcuts,
+			mediaKeys,
+		}: ConfigModel) => {
+			this.updateShortcutHandlers(shortcuts);
+			this.disabledShortcuts = new Set(disabledShortcuts);
+			this.mediaKeysEnabled = mediaKeys;
+			this.syncMediaKeys?.();
 		};
 
-		configService.addListener(({ shortcuts }: ConfigModel) =>
-			updateShortcutHandlers(shortcuts)
-		);
+		configService.addListener(applyConfig);
 		return configService
-			.get<ShortcutConfig>('shortcuts')
-			.then(updateShortcutHandlers)
+			.getAll()
+			.then(applyConfig)
 			.catch((e) => console.error(e));
 	}
 
@@ -142,7 +154,10 @@ export class UserInputService {
 
 				const keys = toShortcutSet(event);
 				const handler = this.shortcutHandlers.find(
-					({ set }) => exist(set) && set.equal(keys)
+					({ set, type }) =>
+						exist(set) &&
+						!this.disabledShortcuts.has(type) &&
+						set.equal(keys)
 				);
 				if (notExist(handler)) {
 					return;
@@ -269,14 +284,15 @@ export class UserInputService {
 		];
 
 		// A registered handler replaces the browser's own media key handling, so the
-		// handlers exist only while the page has a page service
+		// handlers exist only while the page has a page service and the media keys are on
 		const syncHandlers = (): void => {
-			const hasService = exist(serviceWorker.pageService);
+			const isActive =
+				exist(serviceWorker.pageService) && this.mediaKeysEnabled;
 			for (const [action, handler] of handlers) {
 				try {
 					mediaSession.setActionHandler(
 						action,
-						hasService ? handler : null
+						isActive ? handler : null
 					);
 				} catch (error) {
 					console.error(error);
@@ -285,6 +301,7 @@ export class UserInputService {
 		};
 
 		serviceWorker.onPageServiceChange = syncHandlers;
+		this.syncMediaKeys = syncHandlers;
 		syncHandlers();
 	}
 }

@@ -1,8 +1,5 @@
 import { MessageCode, PortName } from '@shared/enums';
-import {
-	BatchDownloadProgressMessage,
-	MessageModel,
-} from '@shared/models/messages';
+import { BatchDownloadProgressMessage, Message } from '@shared/models/messages';
 import { exist } from '@shared/utils';
 
 /**
@@ -53,7 +50,7 @@ export const broadcastBatchDownloadProgress = (
 		return;
 	}
 
-	const message: MessageModel<BatchDownloadProgressMessage> = {
+	const message: Message<MessageCode.BatchDownloadProgressUpdate> = {
 		code: MessageCode.BatchDownloadProgressUpdate,
 		data: { updates },
 	};

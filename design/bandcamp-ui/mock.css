@@ -1,0 +1,382 @@
+/* A rough copy of Bandcamp's fan pages, only to judge the Band Play elements in context. Not part of the extension. */
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	background: #fff;
+	color: #292929;
+	font:
+		13px/1.35 'Helvetica Neue',
+		Helvetica,
+		Arial,
+		sans-serif;
+}
+a {
+	color: #1da0c3;
+	text-decoration: none;
+}
+.site {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	height: 52px;
+	padding: 0 224px;
+	border-bottom: 1px solid #ececec;
+}
+.site img {
+	height: 40px;
+	margin-left: -8px;
+}
+.site .search {
+	width: 305px;
+	height: 38px;
+	padding: 0 14px;
+	display: flex;
+	align-items: center;
+	border-radius: 3px;
+	background: #f0f0f0;
+	color: #777;
+	font-size: 14px;
+}
+.site .right {
+	margin-left: auto;
+	display: flex;
+	gap: 20px;
+	align-items: center;
+}
+.site .avatar-s {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #e8a09a, #a14b49);
+}
+.cats {
+	display: flex;
+	justify-content: center;
+	gap: 38px;
+	height: 52px;
+	align-items: center;
+	border-bottom: 1px solid #ececec;
+	color: #333;
+	font-size: 14px;
+}
+.wrap {
+	width: 1190px;
+	margin: 0 auto;
+}
+.fan {
+	display: flex;
+	gap: 40px;
+	padding-top: 28px;
+}
+.fan .pic {
+	width: 205px;
+	height: 205px;
+	flex: none;
+	background: linear-gradient(135deg, #f6d9d4, #c8706b 55%, #7a2f33);
+}
+.fan h1 {
+	margin: 6px 0 4px;
+	font-size: 32px;
+	font-weight: 400;
+	color: #333;
+}
+.fan .meta {
+	color: #777;
+	margin: 3px 0;
+}
+.fan .about {
+	margin-top: 18px;
+	font-size: 14px;
+	color: #222;
+	line-height: 1.55;
+}
+.tabs {
+	list-style: none;
+	display: flex;
+	align-items: flex-end;
+	gap: 0;
+	margin: 30px 0 0;
+	padding: 0;
+	border-bottom: 1px solid #e6e6e6;
+}
+.tabs li {
+	line-height: 19px;
+	padding: 13px 20px 12px;
+	margin-bottom: -1px;
+	font-size: 14px;
+	font-weight: 700;
+	border-bottom: 2px solid transparent;
+}
+.tabs li a {
+	color: #1da0c3;
+}
+.tabs li .count {
+	margin-left: 6px;
+	font-weight: 400;
+	color: #8a8a8a;
+}
+.tabs li.active {
+	border-bottom-color: #292929;
+}
+.tabs li.active a {
+	color: #292929;
+}
+.tabs li.new .tag {
+	display: inline-block;
+	margin-right: 6px;
+	padding: 1px 5px;
+	border-radius: 3px;
+	background: #bfe6f1;
+	color: #0b566c;
+	font-size: 10px;
+}
+.tabs .push {
+	margin-left: auto;
+	padding: 13px 0 12px;
+	font-weight: 400;
+	color: #777;
+	font-size: 12px;
+}
+.coll-search {
+	display: flex;
+	justify-content: space-between;
+	margin: 20px 0 22px;
+}
+.coll-search .in {
+	width: 178px;
+	height: 26px;
+	padding: 0 10px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	color: #888;
+	font-size: 11px;
+	display: flex;
+	align-items: center;
+}
+.coll-search .hid {
+	color: #888;
+	font-size: 12px;
+}
+#collection-grid,
+#wishlist-grid {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 130px;
+	display: grid;
+	grid-template-columns: repeat(5, 221px);
+	gap: 22px 21px;
+}
+.collection-item-container {
+	padding: 8px 8px 12px;
+	border: 1px solid transparent;
+	background: #fff;
+}
+.collection-item-container:hover {
+	border-color: #ddd;
+}
+.collection-item-art-container {
+	width: 205px;
+	height: 205px;
+	background: #eee;
+	overflow: hidden;
+}
+.collection-item-art {
+	display: block;
+	width: 205px;
+	height: 205px;
+}
+.collection-item-details-container {
+	padding-top: 12px;
+}
+.collection-item-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: #1da0c3;
+	line-height: 1.25;
+}
+.collection-item-artist {
+	margin-top: 3px;
+	font-size: 11px;
+	color: #1da0c3;
+}
+.collection-item-actions {
+	margin-top: 14px;
+	font-size: 11px;
+	color: #888;
+}
+.collection-item-actions a {
+	color: #888;
+}
+.move {
+	position: absolute;
+	right: 16px;
+	top: 16px;
+	z-index: 5;
+	width: 26px;
+	height: 26px;
+	display: none;
+	place-items: center;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	color: #1da0c3;
+}
+.collection-item-container:hover .move {
+	display: grid;
+}
+.move svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.player {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 50;
+	height: 76px;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	padding: 0 16px;
+	border-top: 1px solid #e3e3e3;
+	background: #fff;
+}
+.player .pc {
+	width: 58px;
+	height: 58px;
+	background: linear-gradient(135deg, #134e4a, #5eead4);
+}
+.player .pt b {
+	display: block;
+	font-size: 14px;
+}
+.player .pt span {
+	color: #777;
+}
+.player .pb {
+	width: 40px;
+	height: 40px;
+	background: #292929;
+	border-radius: 3px;
+	display: grid;
+	place-items: center;
+	margin-left: 300px;
+}
+.player .pb i {
+	border-left: 14px solid #fff;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+	margin-left: 4px;
+}
+.player .bar {
+	flex: 1;
+	height: 6px;
+	background: #ddd;
+	border-radius: 3px;
+}
+.player .bar i {
+	display: block;
+	width: 18%;
+	height: 100%;
+	background: #292929;
+	border-radius: 3px;
+}
+/* purchases */
+.p-wrap {
+	width: 954px;
+	margin: 0 auto;
+	padding: 46px 0 160px;
+}
+.p-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+.p-top h1 {
+	margin: 0;
+	font-size: 40px;
+	font-weight: 300;
+	color: #333;
+}
+.p-info {
+	width: 356px;
+	padding: 14px 20px;
+	border: 1px solid #ececec;
+	color: #333;
+	font-size: 12px;
+}
+.p-count {
+	display: flex;
+	justify-content: space-between;
+	margin: 56px 0 28px;
+	font-size: 12px;
+	color: #333;
+}
+.purchases {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 34px;
+}
+.purchases-item {
+	border: 1px solid #ececec;
+}
+.p-main {
+	display: grid;
+	grid-template-columns: 123px 1fr 220px;
+	gap: 16px;
+	padding: 16px;
+}
+.p-art {
+	width: 123px;
+	height: 123px;
+}
+.purchases-item-title {
+	font-size: 12px;
+	color: #333;
+}
+.purchases-item-title b {
+	font-weight: 700;
+}
+.p-type {
+	margin-top: 6px;
+	font-size: 12px;
+	color: #333;
+}
+.p-help {
+	margin-top: 20px;
+	font-size: 12px;
+}
+.p-links {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	font-size: 12px;
+}
+.p-links .mount {
+	margin-bottom: 6px;
+}
+.p-foot {
+	display: grid;
+	grid-template-columns: 138px 1fr 150px 160px 90px;
+	gap: 14px;
+	align-items: center;
+	padding: 22px 16px;
+	border-top: 1px solid #ececec;
+	font-size: 11px;
+	color: #555;
+}
+.p-foot b {
+	color: #222;
+}

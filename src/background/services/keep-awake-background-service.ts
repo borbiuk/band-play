@@ -28,14 +28,7 @@ export class KeepAwakeBackgroundService implements IBackgroundService {
 			currentKeepAwake = keepAwake;
 		};
 
-		configService
-			.get<boolean>('keepAwake')
-			.then(update)
-			.catch((e) => console.error(e));
-
-		// React to settings changes in real time
-		configService.addListener((newConfig) => {
-			update(Boolean(newConfig.keepAwake));
-		});
+		// Applies the stored setting now and follows its changes in real time
+		configService.watch((config) => update(Boolean(config.keepAwake)));
 	}
 }

@@ -1,6 +1,7 @@
-import { PlaybackPitchAction } from '@shared/enums';
-import { PageService } from '@shared/interfaces';
 import { notExist, convertTimeStringToSeconds } from '@shared/utils';
+
+import { PlaybackPitchAction } from '../../enums/playback-pitch-action';
+import { PageService } from '../page-service';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 
@@ -47,14 +48,7 @@ export class DiscoverPageService
 			this.tracks[
 				nowPlayingIndex + (next ? 1 : -1)
 			].element.querySelector<HTMLButtonElement>('.play-pause-button');
-		nextTrackPlayButton.click();
-
-		if (this.config.autoscroll) {
-			nextTrackPlayButton.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
+		this.clickAndReveal(nextTrackPlayButton);
 	}
 
 	playTrackByIndex(index: number): void {
@@ -86,20 +80,6 @@ export class DiscoverPageService
 		}));
 	}
 
-	tryAutoplay(): void {
-		const progress = this.getPlayingTrackProgress();
-		if (!this.autoplayNeeded(progress)) {
-			return;
-		}
-
-		if (this.config.loopTrack) {
-			this.seekToPercentage(0);
-			return;
-		}
-
-		this.playNextTrack(true);
-	}
-
 	open(active: boolean): void {
 		const itemUrl =
 			document.querySelector<HTMLAnchorElement>('.buy-button')?.href;
@@ -114,7 +94,8 @@ export class DiscoverPageService
 		return;
 	}
 
-	private getPlayingTrackProgress(): number {
+	// The player of this page has no usable audio element: the progress is read from its time labels
+	protected getPlaybackProgress(): number {
 		// Retrieve the time strings
 		const positionStr = document.querySelector(
 			'.playback-time.current'

@@ -45,6 +45,36 @@ test('should use a play/pause key combination stored in the settings', async ({
 	]);
 });
 
+test('should leave the key of a disabled shortcut to the page', async ({
+	page,
+	storage,
+}) => {
+	await storage.set({ disabledShortcuts: [ShortcutType.PlayPause] });
+	await openBandcamp(page, PAGES.album);
+	await addPlayerAudio(page);
+	const readKeys = await recordKeys(page);
+
+	await page.keyboard.press('Space');
+
+	await expect
+		.poll(readKeys)
+		.toEqual([{ code: 'Space', defaultPrevented: false }]);
+	expect((await readAudio(page)).paused).toBe(true);
+});
+
+test('should keep the other shortcuts working when one is disabled', async ({
+	page,
+	storage,
+}) => {
+	await storage.set({ disabledShortcuts: [ShortcutType.NextTrack] });
+	await openBandcamp(page, PAGES.album);
+	await addPlayerAudio(page);
+
+	await page.keyboard.press('Space');
+
+	await expect.poll(async () => (await readAudio(page)).paused).toBe(false);
+});
+
 test('should leave the arrow keys to a Bandcamp page without a player service', async ({
 	page,
 }) => {

@@ -1,7 +1,5 @@
 import { MessageCode } from '@shared/enums';
-import { PageService } from '@shared/interfaces';
 import { ConfigModel } from '@shared/models/config-model';
-import { MessageModel } from '@shared/models/messages';
 import configService from '@shared/services/config-service';
 import messageService from '@shared/services/message-service';
 import { exist, notExist } from '@shared/utils';
@@ -10,6 +8,7 @@ import { AlbumPageService } from '../page-services/bandcamp/album-page-service';
 import { CollectionPageService } from '../page-services/bandcamp/collection-page-service';
 import { DiscoverPageService } from '../page-services/bandcamp/discover-page-service';
 import { FeedPageService } from '../page-services/bandcamp/feed-page-service';
+import { PageService } from '../page-services/page-service';
 
 /**
  * Service worker that manages page-specific services and handles page type detection.
@@ -72,7 +71,7 @@ export class PageServiceWorker {
 
 		// Register URL changes listener
 		messageService.addListener(
-			async (message: MessageModel<unknown>) => {
+			async (message) => {
 				if (message.code === MessageCode.UrlChanged) {
 					this.pageService = await this.currentService();
 					this.onPageServiceChange?.();

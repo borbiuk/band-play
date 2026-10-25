@@ -1,0 +1,80 @@
+/* Band Play design tokens (shared by popup, downloads page and style guide) */
+:root {
+	/* Brand: Bandcamp Aqua */
+	--aqua-50: #f1fafc;
+	--aqua-100: #e3f5f9;
+	--aqua-200: #c4e8f1;
+	--aqua-300: #92d4e5;
+	--aqua-400: #52bad6;
+	--aqua-500: #1da0c3;
+	--aqua-600: #168aa9;
+	--aqua-700: #0f6f8a;
+	--aqua-800: #0b566c;
+
+	/* Accent: pink, used sparingly (counters, dots, highlights) */
+	--pink-100: #fde8f0;
+	--pink-500: #e8508a;
+	--pink-700: #be2f6a;
+
+	/* Coral: warnings and errors */
+	--coral-100: #ffe9e2;
+	--coral-500: #ff7a59;
+	--coral-600: #e85f3e;
+
+	/* Text and lines */
+	--ink-900: #12262e;
+	--ink-700: #2f4650;
+	--ink-500: #5b7078;
+	--ink-400: #8197a0;
+	--line: #dceaef;
+	--line-strong: #c9dce3;
+
+	/* Status */
+	--danger: #c2410c;
+	--danger-bg: #ffe9e2;
+	--warn: #9a3f14;
+	--warn-bg: #fff0e8;
+	--success: #1a7a44;
+	--success-bg: #e6f6ec;
+
+	/* Surfaces */
+	--bg: #ffffff;
+	--bg-tint: #f1fafc;
+	--surface: #ffffff;
+	--glass: rgba(255, 255, 255, 0.72);
+	--glass-border: rgba(18, 38, 46, 0.08);
+
+	/* Shape and depth */
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+	--shadow-1:
+		0 1px 2px rgba(18, 38, 46, 0.06), 0 1px 1px rgba(18, 38, 46, 0.04);
+	--shadow-2:
+		0 10px 28px -8px rgba(18, 38, 46, 0.18),
+		0 2px 6px rgba(18, 38, 46, 0.06);
+	--focus: 0 0 0 2px #fff, 0 0 0 4px var(--aqua-500);
+
+	/* Type: the same stack Bandcamp uses */
+	--font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font: 400 13px/1.35 var(--font);
+	color: var(--ink-900);
+	-webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+	font: inherit;
+	color: inherit;
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Band Play marquee promo</title>
+		<link rel="stylesheet" href="banners.css" />
+	</head>
+	<body>
+		<div class="canvas mq" id="banner">
+			<div class="lockup">
+				<img class="lockup__logo" src="assets/logo-512.png" alt="" />
+				<span class="lockup__name">Band Play</span>
+				<span class="lockup__for">for</span>
+				<img class="lockup__bc" src="assets/bandcamp-bc-circle-aqua.png" alt="Bandcamp" />
+			</div>
+			<h1>Play more.<br /><em>Click less.</em></h1>
+			<p class="sub">Autoplay, shortcuts, speed and pitch control, and one-click batch downloads.</p>
+			<ul class="chips">
+				<li><svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4" /></svg>Autoplay</li>
+				<li><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" /></svg>Shortcuts</li>
+				<li><svg viewBox="0 0 24 24"><path d="M3 12h3l3-8 4 16 3-8h5" /></svg>Speed &amp; pitch</li>
+				<li><svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14" /></svg>Batch download</li>
+			</ul>
+			<div class="shot shot--coll"><iframe src="../bandcamp-ui/collection.html?scroll=468&noplayer&barleft#selected" title="Collection"></iframe></div>
+			<div class="shot shot--popup"><iframe src="../popup/popup.html?embed" title="Popup"></iframe></div>
+			<div class="legal">Unofficial extension. Not affiliated with Bandcamp.</div>
+		</div>
+	</body>
+</html>

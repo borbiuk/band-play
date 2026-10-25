@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "10.3.0",
+	"version": "11.0.0",
 	"description": "Enhanced playback for Bandcamp: autoplay, speed, pitch, hotkeys, history, batch download, and more.",
 	"private": true,
 	"author": "Nazarii Borbiuk",
@@ -37,8 +37,7 @@
 	"dependencies": {
 		"lucide-react": "1.61.0",
 		"react": "19.3.1",
-		"react-dom": "19.3.1",
-		"react-tooltip": "6.0.9"
+		"react-dom": "19.3.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "10.0.1",

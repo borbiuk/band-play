@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Band Play Downloads</title>
+		<link rel="stylesheet" href="downloads.css" />
+	</head>
+	<body>
+		<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+			<symbol id="i-download" viewBox="0 0 24 24">
+				<path d="M12 4v11M7 11l5 5 5-5M5 20h14" />
+			</symbol>
+			<symbol id="i-pause" viewBox="0 0 24 24">
+				<path d="M8 5v14M16 5v14" />
+			</symbol>
+			<symbol id="i-play" viewBox="0 0 24 24">
+				<polygon points="7 4 20 12 7 20 7 4" />
+			</symbol>
+			<symbol id="i-x" viewBox="0 0 24 24">
+				<path d="M6 6l12 12M18 6 6 18" />
+			</symbol>
+			<symbol id="i-folder" viewBox="0 0 24 24">
+				<path
+					d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+				/>
+			</symbol>
+			<symbol id="i-link" viewBox="0 0 24 24">
+				<path
+					d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"
+				/>
+			</symbol>
+			<symbol id="i-file-x" viewBox="0 0 24 24">
+				<path
+					d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5zM14 3v5h5M10 12l4 4M14 12l-4 4"
+				/>
+			</symbol>
+			<symbol id="i-trash" viewBox="0 0 24 24">
+				<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+			</symbol>
+			<symbol id="i-retry" viewBox="0 0 24 24">
+				<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" />
+			</symbol>
+			<symbol id="i-check" viewBox="0 0 24 24">
+				<path d="m5 12 5 5 9-10" />
+			</symbol>
+			<symbol id="i-check-all" viewBox="0 0 24 24">
+				<path d="m2 13 4 4 8-10M12 17l1 1 9-11" />
+			</symbol>
+			<symbol id="i-alert" viewBox="0 0 24 24">
+				<circle cx="12" cy="12" r="9" />
+				<path d="M12 7v6M12 16.5h.01" />
+			</symbol>
+			<symbol id="i-clock" viewBox="0 0 24 24">
+				<circle cx="12" cy="12" r="9" />
+				<path d="M12 7v5l3 2" />
+			</symbol>
+			<symbol id="i-hourglass" viewBox="0 0 24 24">
+				<path d="M6 3h12M6 21h12M7 3v4l5 5-5 5v4M17 3v4l-5 5 5 5v4" />
+			</symbol>
+			<symbol id="i-copy" viewBox="0 0 24 24">
+				<rect x="9" y="9" width="11" height="11" rx="2" />
+				<path d="M5 15V6a2 2 0 0 1 2-2h8" />
+			</symbol>
+			<symbol id="i-chevron" viewBox="0 0 24 24">
+				<path d="m9 6 6 6-6 6" />
+			</symbol>
+			<symbol id="i-more" viewBox="0 0 24 24">
+				<path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3" />
+			</symbol>
+			<symbol id="i-search" viewBox="0 0 24 24">
+				<circle cx="11" cy="11" r="7" />
+				<path d="m20 20-3.5-3.5" />
+			</symbol>
+			<symbol id="i-github" viewBox="0 0 24 24">
+				<path
+					d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+				/>
+				<path d="M9 18c-4.51 2-5-2-7-2" />
+			</symbol>
+			<symbol id="i-coffee" viewBox="0 0 24 24">
+				<path
+					d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z M6 2v2M10 2v2M14 2v2"
+				/>
+			</symbol>
+			<symbol id="i-star" viewBox="0 0 24 24">
+				<polygon
+					points="12 2.5 15.1 8.8 22 9.8 17 14.7 18.2 21.5 12 18.2 5.8 21.5 7 14.7 2 9.8 8.9 8.8 12 2.5"
+				/>
+			</symbol>
+			<symbol id="i-expand" viewBox="0 0 24 24">
+				<path d="m7 9 5 5 5-5M7 4l5 5 5-5" transform="translate(0 3)" />
+			</symbol>
+			<symbol id="i-collapse" viewBox="0 0 24 24">
+				<path
+					d="m7 15 5-5 5 5M7 20l5-5 5 5"
+					transform="translate(0 -4)"
+				/>
+			</symbol>
+		</svg>
+
+		<div class="page" id="page">
+			<!-- Sticky glass: brand, batch settings, summary and controls -->
+			<header class="top glass">
+				<div class="wrap">
+					<div class="top__row">
+						<div class="brand">
+							<img src="logo-128.png" alt="" />
+							<div>
+								<div class="brand__name">Band Play</div>
+								<div class="brand__sub">Downloads</div>
+							</div>
+						</div>
+						<div
+							class="batch"
+							role="group"
+							aria-label="Batch settings"
+						>
+							<label class="batch__item" for="format"
+								><span>Format</span>
+								<select class="field field--sm" id="format">
+									<option>MP3 v0</option>
+									<option>MP3 320</option>
+									<option>FLAC</option>
+									<option>AAC</option>
+									<option>Ogg Vorbis</option>
+									<option>ALAC</option>
+									<option selected>WAV</option>
+									<option>AIFF</option>
+								</select>
+							</label>
+							<label class="batch__item" for="conc"
+								><span>Parallel</span>
+								<input
+									class="range"
+									id="conc"
+									type="range"
+									min="1"
+									max="15"
+									value="8"
+								/>
+								<output id="conc-out" for="conc">8</output>
+							</label>
+						</div>
+					</div>
+
+					<section
+						class="summary"
+						id="summary"
+						aria-label="Overall progress"
+						hidden
+					>
+						<div class="summary__text">
+							<div class="summary__main">
+								<b id="sum-done">0</b> of
+								<b id="sum-total">0</b> downloaded<span
+									class="summary__fail"
+									id="sum-fail"
+									hidden
+								></span>
+							</div>
+							<div class="summary__meta" id="sum-meta"></div>
+						</div>
+						<div
+							class="bar bar--lg"
+							role="progressbar"
+							aria-label="Overall progress"
+							aria-valuemin="0"
+							aria-valuemax="100"
+							id="sum-bar"
+						>
+							<i class="bar__done"></i><i class="bar__fail"></i>
+						</div>
+					</section>
+
+					<div class="controls" id="controls" hidden>
+						<div
+							class="chips"
+							role="group"
+							aria-label="Filter by status"
+							id="filters"
+						></div>
+						<div class="search">
+							<svg class="icon"><use href="#i-search" /></svg>
+							<input
+								class="field field--sm"
+								id="search"
+								type="search"
+								placeholder="Search downloads"
+								aria-label="Search downloads"
+							/>
+						</div>
+						<label class="sort"
+							><span class="sr-only">Sort by</span>
+							<select class="field field--sm" id="sort">
+								<option value="queue">Queue order</option>
+								<option value="title">Title A&ndash;Z</option>
+								<option value="status">Status</option>
+							</select>
+						</label>
+						<button
+							class="btn btn--sm btn--ghost btn--icon"
+							type="button"
+							id="toggle-all"
+							title="Collapse all bundles"
+							aria-label="Collapse all bundles"
+						>
+							<svg class="icon"><use href="#i-collapse" /></svg>
+						</button>
+						<div class="controls__actions">
+							<button
+								class="btn btn--sm btn--primary"
+								type="button"
+								id="main-action"
+							>
+								<svg class="icon"><use href="#i-pause" /></svg
+								><span>Pause all</span>
+							</button>
+							<button
+								class="btn btn--sm"
+								type="button"
+								id="retry-failed"
+								hidden
+							>
+								<svg class="icon"><use href="#i-retry" /></svg
+								>Retry failed
+								<span
+									class="badge badge--danger"
+									style="margin-left: 2px"
+									id="retry-count"
+									>1</span
+								>
+							</button>
+							<div class="menu">
+								<button
+									class="btn btn--sm btn--icon"
+									type="button"
+									id="menu-btn"
+									aria-haspopup="menu"
+									aria-expanded="false"
+									aria-label="More actions"
+								>
+									<svg class="icon">
+										<use href="#i-more" />
+									</svg>
+								</button>
+								<div
+									class="menu__list"
+									role="menu"
+									id="menu"
+									hidden
+								>
+									<button
+										role="menuitem"
+										class="menu__item"
+										id="clear-completed"
+									>
+										<svg class="icon">
+											<use href="#i-check-all" /></svg
+										>Clear completed
+									</button>
+									<button
+										role="menuitem"
+										class="menu__item menu__item--danger"
+										id="clear-all"
+									>
+										<svg class="icon">
+											<use href="#i-trash" /></svg
+										>Clear all&hellip;
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<main class="wrap main">
+				<div class="note note--warn banner" id="banner" hidden>
+					<svg class="icon" style="margin-top: 1px">
+						<use href="#i-alert" />
+					</svg>
+					<span
+						>Bandcamp requires a verified email address before it
+						allows downloads. Check your inbox, verify your account,
+						then press <b>Retry failed</b>.</span
+					>
+				</div>
+
+				<section
+					class="card list"
+					id="list-card"
+					aria-label="Downloads"
+					hidden
+				>
+					<ul class="rows" id="rows"></ul>
+					<div class="nomatch" id="nomatch" hidden>
+						<b>No matches</b>
+						<span>Try another filter or search.</span>
+					</div>
+				</section>
+
+				<section class="card empty" id="empty" hidden>
+					<svg
+						class="empty__art"
+						viewBox="0 0 160 96"
+						aria-hidden="true"
+					>
+						<rect
+							x="14"
+							y="22"
+							width="52"
+							height="52"
+							rx="12"
+							fill="#c4e8f1"
+							transform="rotate(-8 40 48)"
+						/>
+						<rect
+							x="54"
+							y="14"
+							width="52"
+							height="52"
+							rx="12"
+							fill="#92d4e5"
+							transform="rotate(5 80 40)"
+						/>
+						<rect
+							x="92"
+							y="26"
+							width="52"
+							height="52"
+							rx="12"
+							fill="#1da0c3"
+							transform="rotate(-3 118 52)"
+						/>
+						<path
+							d="M118 40v22m-9-9 9 9 9-9"
+							stroke="#fff"
+							stroke-width="4"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							fill="none"
+						/>
+					</svg>
+					<h1 class="empty__title">Nothing to download yet</h1>
+					<ol class="empty__steps">
+						<li>
+							<span>1</span>Open your collection or purchases on
+							Bandcamp
+						</li>
+						<li><span>2</span>Tick the releases you want</li>
+						<li>
+							<span>3</span>Press Download. They will appear here
+						</li>
+					</ol>
+					<a class="btn btn--primary" href="#">Open Bandcamp</a>
+				</section>
+			</main>
+
+			<footer class="wrap foot">
+				<span>Band Play v10.3.0 &middot; by borbiuk</span>
+				<span class="spacer"></span>
+				<a class="btn btn--ghost btn--sm" href="#"
+					><svg class="icon"><use href="#i-github" /></svg>GitHub</a
+				>
+				<a class="btn btn--ghost btn--sm" href="#"
+					><svg class="icon"><use href="#i-coffee" /></svg>Buy me a
+					coffee</a
+				>
+				<a class="btn btn--ghost btn--sm" href="#"
+					><svg class="icon"><use href="#i-star" /></svg>Rate</a
+				>
+			</footer>
+
+			<dialog class="dialog" id="dlg-clear" aria-labelledby="dlg-clear-t">
+				<h2 id="dlg-clear-t">Clear all downloads?</h2>
+				<p id="dlg-clear-text">
+					The list will be emptied and active downloads will be
+					cancelled. Files already saved stay on your disk.
+				</p>
+				<div class="dialog__actions">
+					<button class="btn" type="button" id="dlg-clear-cancel">
+						Cancel
+					</button>
+					<button
+						class="btn btn--danger-solid"
+						type="button"
+						id="dlg-clear-ok"
+					>
+						Clear all
+					</button>
+				</div>
+			</dialog>
+		</div>
+		<script src="downloads.js"></script>
+	</body>
+</html>

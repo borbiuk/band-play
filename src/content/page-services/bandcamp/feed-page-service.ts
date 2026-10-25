@@ -1,7 +1,8 @@
-import { PageService } from '@shared/interfaces';
-import EventEmitter from '@shared/services/event-emitter';
-import visitedService from '@shared/services/visited-service';
 import { exist, notExist } from '@shared/utils';
+
+import EventEmitter from '../../services/event-emitter';
+import visitedService from '../../services/visited-service';
+import { PageService } from '../page-service';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
 import { renderPlayer } from './feed-player/feed-player';
@@ -74,13 +75,7 @@ export class FeedPageService
 			return;
 		}
 
-		playPauseButton.click();
-		if (this.config.autoscroll) {
-			playPauseButton.scrollIntoView({
-				block: 'center',
-				behavior: 'smooth',
-			});
-		}
+		this.clickAndReveal(playPauseButton);
 	}
 
 	initTracks(): void {
@@ -159,23 +154,6 @@ export class FeedPageService
 		});
 	}
 
-	tryAutoplay(): void {
-		const progress = this.audioOperator<number>(
-			(audio: HTMLAudioElement) =>
-				(audio.currentTime / audio.duration) * 100
-		);
-		if (!this.autoplayNeeded(progress)) {
-			return;
-		}
-
-		if (this.config.loopTrack) {
-			this.seekToPercentage(0);
-			return;
-		}
-
-		this.playNextTrack(true);
-	}
-
 	open(active: boolean): void {
 		if (notExist(this.nowPlaying)) {
 			return;
@@ -200,17 +178,7 @@ export class FeedPageService
 			return;
 		}
 
-		if (
-			buttonContainer.parentElement.parentElement.classList.contains(
-				'wishlisted'
-			)
-		) {
-			buttonContainer
-				.querySelector<HTMLElement>('.wishlisted-msg')
-				.click();
-		} else {
-			buttonContainer.querySelector<HTMLElement>('.wishlist-msg').click();
-		}
+		this.toggleWishlist(buttonContainer);
 	}
 
 	getNowPlayingInfo(): {

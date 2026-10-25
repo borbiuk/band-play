@@ -1,4 +1,4 @@
-import { MessageModel } from '@shared/models/messages';
+import { Message } from '@shared/models/messages';
 import { exist, notExist } from '@shared/utils';
 
 /**
@@ -12,10 +12,7 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToContent<TMessageData>(
-		tabId: number,
-		message: MessageModel<TMessageData>
-	): Promise<void> {
+	public async sendToContent(tabId: number, message: Message): Promise<void> {
 		return chrome.tabs.sendMessage(tabId, message);
 	}
 
@@ -25,9 +22,7 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToActiveContent<TMessageData>(
-		message: MessageModel<TMessageData>
-	): Promise<void> {
+	public async sendToActiveContent(message: Message): Promise<void> {
 		return chrome.tabs
 			.query({ active: true, currentWindow: true })
 			.then(async (tabs) => {
@@ -41,10 +36,18 @@ class MessageService {
 	 * @param message - The message to be sent.
 	 * @returns A promise that resolves when the message has been sent.
 	 */
-	public async sendToBackground<TMessageData>(
-		message: MessageModel<TMessageData>
-	): Promise<void> {
+	public async sendToBackground(message: Message): Promise<void> {
 		await chrome.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Sends a message to the background script and ignores the outcome: for commands
+	 * whose failure the sender cannot act on.
+	 *
+	 * @param message - The message to be sent.
+	 */
+	public post(message: Message): void {
+		this.sendToBackground(message).catch(() => void 0);
 	}
 
 	/**
@@ -53,13 +56,13 @@ class MessageService {
 	 * @param func - The callback function to handle incoming messages.
 	 * @param errorHandler - Optional. A callback function to handle errors that may occur during message processing.
 	 */
-	public addListener<TMessageData>(
-		func: (message: MessageModel<TMessageData>) => void | Promise<void>,
+	public addListener(
+		func: (message: Message) => void | Promise<void>,
 		errorHandler?: (error: Error) => void
 	): void {
 		chrome.runtime.onMessage.addListener(
 			(
-				message: MessageModel<TMessageData>,
+				message: Message,
 				_sender: chrome.runtime.MessageSender,
 				_sendResponse: (response?: unknown) => void
 			) => {

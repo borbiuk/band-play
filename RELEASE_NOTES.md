@@ -1,5 +1,26 @@
 # Release Notes
 
+## 11.0.0
+
+A new look for the popup, the downloads page and the Bandcamp page elements, a new icon, and more control over batch download.
+
+### Added
+
+- New popup with four tabs (Playback, Page, Downloads, Shortcuts): a switch for each shortcut, a dialog to record a new key, search, a media keys switch, and **Import**, **Export** and **Reset all** for a settings file.
+- Downloads page: overall progress with speed and time left, filters (All, Active, Paused, Failed, Done), search, sorting, bundles folded into one row, Pause all, Resume all, Clear all, and per item Show in folder, Copy Bandcamp link and Delete file from disk.
+- Batch download options: skip releases already downloaded in the same format, open the downloads page when a batch starts, and a notification when a batch finishes (optional `notifications` permission, asked only when you turn the switch on).
+- **Select New** and a **Downloaded** mark on collection items.
+- A **Clear** button for the visited history.
+
+### Changed
+
+- New icon, store images and Bandcamp page elements (checkboxes, bar, tab icons); light theme only.
+- An album download is one zip file, so the downloads page shows it as one item.
+
+### Removed
+
+- The filename template for batch download (Chrome). Files keep the names Bandcamp gives them; Band Play still detects duplicates.
+
 ## 10.2.2
 
 AMO add-on ID fix.

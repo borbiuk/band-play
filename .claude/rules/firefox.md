@@ -22,8 +22,8 @@ paths:
 ## What is different at runtime
 
 - **`chrome.*` namespace works.** Firefox MV3 supports `chrome.*` with promises. Do not add a `browser.*` polyfill or `webextension-polyfill`.
-- **Keep Awake is hidden**: no `chrome.power`; the popup does not render the checkbox and `KeepAwakeBackgroundService` does nothing.
-- **Filename template is hidden**: no `chrome.downloads.onDeterminingFilename`; the router is inactive, the popup hides the field and the server file names are kept. Duplicate detection looks for the file without the ` (n)` suffix in the browser downloads (`downloads.search({ filename })`).
+- **Keep Awake is hidden**: no `chrome.power`; the popup does not render the row and `KeepAwakeBackgroundService` does nothing.
+- **No `onDeterminingFilename`**: the expected filename recorder is inactive. Duplicate detection looks for the file without the ` (n)` suffix in the browser downloads (`downloads.search({ filename })`).
 - **Download UI**: no `downloads.setUiOptions` / `setShelfEnabled`; `setDownloadsShelfEnabledSafe` does nothing.
 - **Event page**: like the Chrome service worker, it can be unloaded when idle. The batch download state is in storage and the alarms wake the background, so the same recovery code runs ([batch-download.md](batch-download.md)).
 - **Temporary install**: `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → pick `dist-firefox/manifest.json`. The add-on is removed when Firefox restarts.
@@ -31,9 +31,9 @@ paths:
 
 ## `web-ext lint`
 
-- `npm run lint:firefox` (`web-ext lint --source-dir dist-firefox`) currently reports 0 errors, 0 notices and 18 expected warnings:
+- `npm run lint:firefox` (`web-ext lint --source-dir dist-firefox`) currently reports 0 errors, 0 notices and 16 expected warnings:
     - `KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION` (1) and `KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION` (1): `data_collection_permissions` needs Firefox 140 (Android 142) but the minimum is 128; older versions ignore the key;
-    - `UNSUPPORTED_API` (10: `background.js` 8, `options.js` 1, `downloads.js` 1): the feature-detected Chrome-only APIs `downloads.setUiOptions`, `downloads.setShelfEnabled`, `downloads.onDeterminingFilename`, `power.requestKeepAwake`, `power.releaseKeepAwake`;
+    - `UNSUPPORTED_API` (8, all in `background.js`): the feature-detected Chrome-only APIs `downloads.setUiOptions`, `downloads.setShelfEnabled`, `downloads.onDeterminingFilename`, `power.requestKeepAwake`, `power.releaseKeepAwake`;
     - `UNSAFE_VAR_ASSIGNMENT` (6: `content.js`, `options.js`, `downloads.js`, 2 each): `innerHTML` in the bundled React DOM; `src/` has no `innerHTML`.
 - Any other warning, a change in these counts, an error or a notice is a finding. The `/verify` skill keeps the same list; update both together. Full list: `npx --no web-ext lint --source-dir dist-firefox --output json`.
 
@@ -45,4 +45,4 @@ paths:
 
 1. Both manifests updated (`public/manifest.json`, `public/manifest.firefox.json`), differing only as listed above.
 2. `npm run build:firefox` and `npm run lint:firefox` pass with the expected warnings only.
-3. Loaded in Firefox 128+ and checked on an album page (shortcuts), the popup (Keep Awake and the template field hidden) and, with an account, a batch download.
+3. Loaded in Firefox 128+ and checked on an album page (shortcuts), the popup (Keep Awake hidden) and, with an account, a batch download.

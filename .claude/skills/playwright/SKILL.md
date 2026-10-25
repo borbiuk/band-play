@@ -96,7 +96,7 @@ Keep URLs, titles and audio values in `bandcamp.ts`, not repeated in specs (DATA
 
 ## Spec layout
 
-`tests/unit` (`bandcamp-parser`, `config-service`, `filename`, `filename-router`, `page-service-urls`, `shortcut-set`, `shortcut-utils`), `tests/e2e` (`seed`, then per feature: `album-shortcuts`, `settings-on-page`, `popup-settings`, `popup-shortcuts`) and `tests/live/smoke.spec.ts`. `album-shortcuts.spec.ts` is the reference for page tests, `popup-shortcuts.spec.ts` for settings page tests. Unit tests that need `chrome.storage.local` build a per-test fake (see `config-service.spec.ts`); tests that depend on the platform pin `navigator.platform` per describe and restore it (see `shortcut-utils.spec.ts`).
+`tests/unit` (`bandcamp-parser`, `batch-download-items`, `config-service`, `downloads-list`, `downloads-row-view`, `downloads-overall`, `enqueue-pending-items`, `expected-filenames`, `guard-utils`, `page-service-urls`, `serial-queue`, `shortcut-set`, `shortcut-utils`, `tick-logic`, `url-utils`), `tests/helpers` (`fake-chrome`, `download-items`), `tests/e2e` (`seed`, then per feature: `album-shortcuts`, `settings-on-page`, `popup-settings`, `popup-shortcuts`, `downloads-page`) and `tests/live/smoke.spec.ts`. `album-shortcuts.spec.ts` is the reference for page tests, `popup-shortcuts.spec.ts` for settings page tests. Unit tests that need `chrome.storage.local` build a per-test `FakeLocalStorage` and install it with `installChrome()` from `tests/helpers/fake-chrome.ts` (see `config-service.spec.ts`); tests that depend on the platform pin `navigator.platform` per describe and restore it (see `shortcut-utils.spec.ts`).
 
 ## Firefox
 

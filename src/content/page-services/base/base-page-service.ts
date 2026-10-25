@@ -1,13 +1,11 @@
-import {
-	MessageCode,
-	PlaybackPitchAction,
-	PlaybackSpeedAction,
-} from '@shared/enums';
-import { PageService } from '@shared/interfaces';
+import { MessageCode } from '@shared/enums';
 import { ConfigModel } from '@shared/models/config-model';
-import { NewTabMessage } from '@shared/models/messages';
 import messageService from '@shared/services/message-service';
 import { notExist } from '@shared/utils';
+
+import { PlaybackPitchAction } from '../../enums/playback-pitch-action';
+import { PlaybackSpeedAction } from '../../enums/playback-speed-action';
+import { PageService } from '../page-service';
 
 /**
  * Abstract base class for page-specific services.
@@ -65,7 +63,7 @@ export abstract class BasePageService<TTrackModel> implements PageService {
 		}
 
 		messageService
-			.sendToBackground<NewTabMessage>({
+			.sendToBackground({
 				code: MessageCode.CreateNewTab,
 				data: {
 					url,

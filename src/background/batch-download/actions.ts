@@ -1,13 +1,22 @@
 import { BatchDownloadFormat } from '@shared/enums';
+import {
+	BatchDownloadItemModel,
+	SingleItem,
+} from '@shared/models/batch-download/batch-download-item-model';
+import { BatchDownloadPendingItemModel } from '@shared/models/batch-download/batch-download-pending-item-model';
+import { DownloadStatus } from '@shared/models/batch-download/download-status';
+import { DownloadType } from '@shared/models/batch-download/download-type';
+import {
+	batchDownloadHistoryKey,
+	getBatchDownloadHistory,
+} from '@shared/services/batch-download-history-service';
+import configService from '@shared/services/config-service';
 import { exist, isBandcampFileUrl, isBandcampUrl } from '@shared/utils';
 
-import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
-import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
-import { DownloadStatus } from '../../downloads/download-status';
-import { DownloadType } from '../../downloads/download-type';
-
+import { markBatchNotifyPending } from './notify';
 import {
 	getBatchDownloadItems,
+	patchItem,
 	updateBatchDownloadItems,
 	updateParentsProgress,
 } from './state';
@@ -218,6 +227,28 @@ export const pauseAllBatchDownloads = async (
 	scheduleBatchTick();
 };
 
+/**
+ * A paused file, or a duplicate that waited for Resume, after the user resumes it:
+ * it continues its browser download, or waits to be started when it has none.
+ *
+ * @param x - The file.
+ * @returns The resumed file.
+ */
+export const resumedSingle = (x: SingleItem): SingleItem => {
+	const duplicateResumed =
+		x.status === DownloadStatus.Duplicate ? true : x.duplicateResumed;
+
+	if (x.download.browserDownloadId) {
+		return {
+			...x,
+			status: DownloadStatus.Downloading,
+			duplicateResumed,
+		};
+	}
+
+	return { ...x, status: DownloadStatus.Resolved, duplicateResumed };
+};
+
 export const resumeAllBatchDownloads = async (
 	scheduleBatchTick: () => void
 ): Promise<void> => {
@@ -249,20 +280,7 @@ export const resumeAllBatchDownloads = async (
 				return x;
 			}
 
-			const duplicateResumed =
-				x.status === DownloadStatus.Duplicate
-					? true
-					: x.duplicateResumed;
-
-			if (x.download.browserDownloadId) {
-				return {
-					...x,
-					status: DownloadStatus.Downloading,
-					duplicateResumed,
-				};
-			}
-
-			return { ...x, status: DownloadStatus.Resolved, duplicateResumed };
+			return resumedSingle(x);
 		});
 
 		return updateParentsProgress(items);
@@ -286,11 +304,7 @@ export const pauseBatchDownloadItem = async (
 
 		await pauseChromeDownloadSafe(item.download.browserDownloadId);
 
-		const items = current.map((x): BatchDownloadItemModel => {
-			if (x.id !== id || x.type !== DownloadType.Single) {
-				return x;
-			}
-
+		const items = patchItem(current, id, DownloadType.Single, (x) => {
 			return { ...x, status: DownloadStatus.Paused };
 		});
 
@@ -319,11 +333,7 @@ export const cancelBatchDownloadItem = async (
 		await cancelChromeDownloadSafe(item.download.browserDownloadId);
 
 		// The item stays in the list as failed so it can be retried later.
-		const items = current.map((x): BatchDownloadItemModel => {
-			if (x.id !== id || x.type !== DownloadType.Single) {
-				return x;
-			}
-
+		const items = patchItem(current, id, DownloadType.Single, (x) => {
 			return {
 				...x,
 				status: DownloadStatus.Failed,
@@ -359,11 +369,7 @@ export const deleteBatchDownloadFile = async (id: string): Promise<void> => {
 		}
 
 		// Drop the browser download id so file actions disappear from the row.
-		return current.map((x): BatchDownloadItemModel => {
-			if (x.id !== id || x.type !== DownloadType.Single) {
-				return x;
-			}
-
+		return patchItem(current, id, DownloadType.Single, (x) => {
 			return {
 				...x,
 				download: { ...x.download, browserDownloadId: undefined },
@@ -393,26 +399,12 @@ export const resumeBatchDownloadItem = async (
 			await resumeChromeDownloadSafe(item.download.browserDownloadId);
 		}
 
-		const items = current.map((x): BatchDownloadItemModel => {
-			if (x.id !== item.id || x.type !== DownloadType.Single) {
-				return x;
-			}
-
-			const duplicateResumed =
-				x.status === DownloadStatus.Duplicate
-					? true
-					: x.duplicateResumed;
-
-			if (x.download.browserDownloadId) {
-				return {
-					...x,
-					status: DownloadStatus.Downloading,
-					duplicateResumed,
-				};
-			}
-
-			return { ...x, status: DownloadStatus.Resolved, duplicateResumed };
-		});
+		const items = patchItem(
+			current,
+			item.id,
+			DownloadType.Single,
+			resumedSingle
+		);
 
 		return updateParentsProgress(items);
 	});
@@ -533,7 +525,7 @@ export const enqueuePendingItems = async (
 	}
 
 	// The items come from the page: only Bandcamp download pages are accepted
-	const validItems = items.filter(
+	let validItems = items.filter(
 		(item) =>
 			item &&
 			typeof item.id === 'string' &&
@@ -549,6 +541,28 @@ export const enqueuePendingItems = async (
 	)
 		? format
 		: undefined;
+
+	const config = await configService.getAll();
+
+	// "Skip already downloaded": a release downloaded in the same format before is left out
+	if (config.batchDownloadSkipDownloaded) {
+		const history = await getBatchDownloadHistory();
+		validItems = validItems.filter((item) => {
+			const itemFormat = Object.values(BatchDownloadFormat).includes(
+				item.format as BatchDownloadFormat
+			)
+				? item.format
+				: undefined;
+			const key = batchDownloadHistoryKey(
+				item.sourceId ?? item.id,
+				itemFormat ?? validFormat ?? config.batchDownloadFormat
+			);
+			return !(key in history);
+		});
+		if (validItems.length === 0) {
+			return;
+		}
+	}
 
 	setDownloadsShelfEnabledSafe(false);
 
@@ -574,9 +588,15 @@ export const enqueuePendingItems = async (
 	});
 	await appendQueuedBatchDownloadItems(normalized);
 
-	// The queue starts even when the downloads tab cannot be opened
+	if (config.batchDownloadNotify) {
+		await markBatchNotifyPending().catch(() => void 0);
+	}
+
+	// The queue starts even when the downloads tab cannot be opened or is not wanted
 	try {
-		await openOrFocusDownloadsTab();
+		if (config.batchDownloadOpenPage) {
+			await openOrFocusDownloadsTab();
+		}
 	} finally {
 		scheduleBatchTick();
 	}

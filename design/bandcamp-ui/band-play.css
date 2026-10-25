@@ -1,0 +1,395 @@
+/*
+ * Band Play: styles injected into Bandcamp pages.
+ * Bandcamp look first (flat, white, small type, aqua links), with a light nod to the Band Play kit
+ * (rounded corners, aqua-700 primary, soft shadow). Every rule is scoped by a band-play class or id.
+ */
+:root {
+	--bp-aqua: #1da0c3;
+	--bp-aqua-600: #168aa9;
+	--bp-aqua-700: #0f6f8a;
+	--bp-aqua-800: #0b566c;
+	--bp-aqua-50: #f1fafc;
+	--bp-aqua-100: #e3f5f9;
+	--bp-ink: #12262e;
+	--bp-muted: #5b7078;
+	--bp-line: #dceaef;
+	--bp-line-strong: #c9dce3;
+	--bp-green: #1a7a44;
+	--bp-pink: #e8508a;
+	--bp-danger: #c2410c;
+	--bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* ---------- Checkbox (collection and purchases) ---------- */
+.band-play-batch-checkbox {
+	appearance: none;
+	-webkit-appearance: none;
+	flex: none;
+	width: 22px;
+	height: 22px;
+	margin: 0;
+	border: 1.5px solid #9db4bd;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
+	transition:
+		border-color 0.12s,
+		background-color 0.12s,
+		box-shadow 0.12s;
+}
+.band-play-batch-checkbox:hover {
+	border-color: var(--bp-aqua);
+}
+.band-play-batch-checkbox:checked {
+	border-color: var(--bp-aqua);
+	background: var(--bp-aqua)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+		center / 15px 15px no-repeat;
+}
+.band-play-batch-checkbox:focus-visible {
+	outline: 2px solid var(--bp-aqua);
+	outline-offset: 2px;
+}
+
+/* Collection: on the cover corner, shown on hover, on focus, when checked and while selecting */
+.collection-item-container {
+	position: relative;
+}
+.collection-item-container .band-play-batch-checkbox {
+	position: absolute;
+	left: 16px;
+	top: 16px;
+	z-index: 10;
+	width: 30px;
+	height: 30px;
+	border: 1px solid #a9d6e6;
+	border-radius: 6px;
+	box-shadow: none;
+	opacity: 0;
+	pointer-events: none;
+}
+.collection-item-container:hover .band-play-batch-checkbox,
+.collection-item-container .band-play-batch-checkbox:focus-visible,
+.collection-item-container .band-play-batch-checkbox:checked,
+.band-play-selecting .collection-item-container .band-play-batch-checkbox {
+	opacity: 1;
+	pointer-events: auto;
+}
+.collection-item-container .band-play-batch-checkbox:checked {
+	border-color: var(--bp-aqua);
+	box-shadow: none;
+}
+/* A selected card gets an aqua frame */
+.collection-item-container:has(.band-play-batch-checkbox:checked) {
+	outline: 2px solid var(--bp-aqua);
+	outline-offset: 2px;
+}
+
+/* "Already downloaded in this format": a badge on the cover, separate from the checkbox */
+.collection-item-art-container {
+	position: relative;
+}
+.band-play-downloaded-badge {
+	position: absolute;
+	left: 8px;
+	bottom: 8px;
+	z-index: 9;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	height: 20px;
+	padding: 0 7px 0 5px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.96);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	color: var(--bp-green);
+	font: 700 11px/1 var(--bp-font);
+	pointer-events: none;
+}
+.band-play-downloaded-badge svg {
+	width: 12px;
+	height: 12px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* Visited releases */
+.band-play-visited .collection-item-title,
+.band-play-visited .collection-item-artist,
+.band-play-visited a {
+	color: #7b1fa2 !important;
+}
+
+/* ---------- Donate and rate tabs ---------- */
+.band-play-external-tab a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 19px;
+	vertical-align: top;
+}
+.band-play-external-tab svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+#band-play-tab-donate svg {
+	color: var(--bp-pink);
+}
+
+/* ---------- Batch bar ---------- */
+#band-play-batch-overlay-root,
+#band-play-batch-overlay-root * {
+	box-sizing: border-box;
+}
+.bp-bar {
+	position: fixed;
+	right: 20px;
+	bottom: 96px;
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 6px;
+	width: 200px;
+	max-width: calc(100vw - 40px);
+	padding: 8px;
+	border: 1px solid var(--bp-line);
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.94);
+	-webkit-backdrop-filter: blur(12px) saturate(1.4);
+	backdrop-filter: blur(12px) saturate(1.4);
+	box-shadow:
+		0 10px 28px -8px rgba(18, 38, 46, 0.28),
+		0 2px 6px rgba(18, 38, 46, 0.1);
+	font: 13px/1 var(--bp-font);
+	color: var(--bp-ink);
+}
+.bp-bar__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 30px;
+}
+.bp-bar__head .bp-bar__count {
+	flex: 1;
+	justify-content: space-between;
+	padding: 0 0 0 4px;
+}
+.bp-bar__brand {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	margin-right: 2px;
+	border-radius: 9px;
+	background: var(--bp-aqua-50);
+}
+.bp-bar__brand img {
+	width: 22px;
+	height: 22px;
+}
+.bp-bar__count {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 6px 0 4px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+.bp-bar__count small {
+	font-weight: 500;
+	color: var(--bp-muted);
+}
+.bp-bar__sep {
+	width: 100%;
+	height: 1px;
+	margin: 2px 0;
+	background: var(--bp-line);
+}
+.bp-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 32px;
+	padding: 0 12px;
+	border: 1px solid var(--bp-line-strong);
+	border-radius: 10px;
+	background: #fff;
+	color: var(--bp-ink);
+	font: 600 13px/1 var(--bp-font);
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+}
+.bp-btn:hover {
+	border-color: var(--bp-aqua);
+	background: var(--bp-aqua-50);
+}
+.bp-btn:focus-visible {
+	outline: 2px solid var(--bp-aqua);
+	outline-offset: 2px;
+}
+.bp-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+.bp-btn--ghost {
+	border-color: transparent;
+	background: transparent;
+	color: var(--bp-aqua-700);
+}
+.bp-btn--primary {
+	border-color: var(--bp-aqua-700);
+	background: var(--bp-aqua-700);
+	color: #fff;
+}
+.bp-btn--primary:hover:not(:disabled) {
+	border-color: var(--bp-aqua-800);
+	background: var(--bp-aqua-800);
+}
+.bp-btn--icon {
+	width: 32px;
+	padding: 0;
+}
+.bp-btn svg {
+	width: 15px;
+	height: 15px;
+	flex: none;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.bp-split {
+	display: flex;
+}
+.bp-split .bp-btn:first-child {
+	flex: 1;
+	min-width: 0;
+}
+.bp-split .bp-btn:first-child {
+	border-radius: 10px 0 0 10px;
+}
+.bp-split .bp-btn + .bp-btn {
+	width: 30px;
+	padding: 0;
+	border-left-color: rgba(255, 255, 255, 0.35);
+	border-radius: 0 10px 10px 0;
+}
+.bp-split .bp-btn:disabled {
+	opacity: 0.45;
+}
+.bp-bar__progress {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	padding: 0 4px;
+}
+.bp-bar__progress .bp-track {
+	flex: 1;
+	height: 6px;
+	overflow: hidden;
+	border-radius: 999px;
+	background: #d9e8ee;
+}
+.bp-bar__progress .bp-track i {
+	display: block;
+	height: 100%;
+	border-radius: 999px;
+	background: linear-gradient(90deg, #52bad6, var(--bp-aqua));
+}
+.bp-bar__progress span {
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+/* Format menu */
+.bp-menu {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 10px);
+	width: 176px;
+	padding: 5px;
+	border: 1px solid var(--bp-line);
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 10px 28px -8px rgba(18, 38, 46, 0.28);
+}
+.bp-menu__title {
+	padding: 6px 8px 4px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--bp-muted);
+}
+.bp-menu button {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	height: 30px;
+	padding: 0 8px;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--bp-ink);
+	font: 500 13px/1 var(--bp-font);
+	text-align: left;
+	cursor: pointer;
+}
+.bp-menu button:hover,
+.bp-menu button:focus-visible {
+	outline: none;
+	background: var(--bp-aqua-50);
+}
+.bp-menu button[aria-checked='true'] {
+	font-weight: 700;
+	color: var(--bp-aqua-800);
+}
+.bp-menu button svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: var(--bp-aqua-700);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* Feedback after Download */
+.bp-toast {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 6px 0 10px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+.bp-toast svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: var(--bp-green);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.band-play-batch-checkbox {
+		transition: none;
+	}
+}

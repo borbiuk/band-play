@@ -1,6 +1,5 @@
 import { BatchDownloadFormat } from '@shared/enums';
-
-import { BatchDownloadPendingItemModel } from '../../downloads/batch-download-pending-item-model';
+import { BatchDownloadPendingItemModel } from '@shared/models/batch-download/batch-download-pending-item-model';
 
 import {
 	enqueuePendingItems,
@@ -18,7 +17,7 @@ import {
 	showBatchDownloadInFolder,
 } from './actions';
 import { openOrFocusDownloadsTab } from './downloads-tab';
-import { registerFilenameRouter } from './filename-router';
+import { registerExpectedFilenameRecorder } from './expected-filenames';
 import { registerDownloadsProgressHandling } from './progress-updates';
 import { BatchDownloadRunner } from './runner';
 import {
@@ -34,7 +33,7 @@ export class BatchDownloadBackgroundService {
 	public start(): void {
 		registerBatchDownloadTabCleanup();
 		registerDownloadsProgressHandling(this.runner);
-		registerFilenameRouter();
+		registerExpectedFilenameRecorder();
 		registerDownloadsUiPresence(() =>
 			this.runner.startDownloadsProgressPoller()
 		);

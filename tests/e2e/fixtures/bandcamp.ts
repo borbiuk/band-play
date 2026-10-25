@@ -23,6 +23,25 @@ export const PAGES = {
 	artist: 'https://baugruppe90.bandcamp.com/',
 } as const;
 
+/**
+ * Pages written by hand for what snapshots cannot give (they need a signed-in account): a collection with
+ * download links, a wishlist and a purchases page. They live in `fixtures/synthetic/`, are not touched by
+ * the snapshot capture, and keep only the markup the extension reads.
+ */
+export const SYNTHETIC_PAGES = {
+	collection: 'https://bandcamp.com/borbuk',
+	wishlist: 'https://bandcamp.com/borbuk/wishlist',
+	purchases: 'https://bandcamp.com/yourpurchases',
+} as const;
+
+const SYNTHETIC_FILES: Record<string, string> = {
+	'bandcamp.com/borbuk': 'collection.html',
+	'bandcamp.com/borbuk/wishlist': 'wishlist.html',
+	'bandcamp.com/yourpurchases': 'purchases.html',
+};
+
+const SYNTHETIC_DIR = path.join(__dirname, 'synthetic');
+
 /** URL of the silent audio the tests play instead of a Bandcamp stream */
 export const AUDIO_URL = 'https://t4.bcbits.com/stream/band-play-test.wav';
 
@@ -107,6 +126,29 @@ export async function routeBandcamp(
 						: {}),
 				},
 				body: SILENT_WAV.subarray(start, end + 1),
+			});
+			return;
+		}
+
+		// The download pages the background fetches for a batch: an empty page, so the batch fails at once
+		if (url.host === 'bandcamp.com' && url.pathname === '/download') {
+			await route.fulfill({
+				status: 200,
+				contentType: 'text/html; charset=utf-8',
+				body: '<!doctype html><title>Download</title>',
+			});
+			return;
+		}
+
+		const syntheticFile = SYNTHETIC_FILES[url.host + url.pathname];
+		if (syntheticFile && route.request().resourceType() === 'document') {
+			await route.fulfill({
+				status: 200,
+				contentType: 'text/html; charset=utf-8',
+				body: readFileSync(
+					path.join(SYNTHETIC_DIR, syntheticFile),
+					'utf8'
+				),
 			});
 			return;
 		}

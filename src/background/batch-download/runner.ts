@@ -1,4 +1,12 @@
 import { BatchDownloadFormat } from '@shared/enums';
+import { BatchDownloadFileModel } from '@shared/models/batch-download/batch-download-file-model';
+import {
+	BatchDownloadItemModel,
+	PendingItem,
+	SingleItem,
+} from '@shared/models/batch-download/batch-download-item-model';
+import { DownloadStatus } from '@shared/models/batch-download/download-status';
+import { DownloadType } from '@shared/models/batch-download/download-type';
 import {
 	addBatchDownloadHistoryEntries,
 	BatchDownloadHistoryEntry,
@@ -6,39 +14,41 @@ import {
 import configService from '@shared/services/config-service';
 import { exist, notExist } from '@shared/utils';
 
-import { BatchDownloadFileModel } from '../../downloads/batch-download-file-model';
-import { BatchDownloadItemModel } from '../../downloads/batch-download-item-model';
-import { DownloadStatus } from '../../downloads/download-status';
-import { DownloadType } from '../../downloads/download-type';
 import {
 	BandcampRateLimitError,
 	BandcampUnverifiedError,
 	parseBandcampDownloads,
-} from '../../downloads/services/bandcamp-parser';
-
-import { renderConfiguredFilename } from './filename';
+} from './bandcamp-parser';
 import {
 	getExpectedFilename,
 	isUniquifiedVariantOf,
-	registerDesiredFilename,
 	toBaseFileName,
-	unregisterDesiredFilename,
-} from './filename-router';
+} from './expected-filenames';
+import { notifyBatchFinished, takeBatchNotifyPending } from './notify';
 import {
 	drainQueuedBatchDownloadItems,
 	getBatchDownloadItems,
 	isRunningBatchDownloadItem,
+	patchItem,
 	setDownloadsShelfEnabledSafe,
-	toChildrenIds,
 	updateBatchDownloadItems,
 	updateParentsProgress,
 } from './state';
+import {
+	applySharedRateLimitPause,
+	isOccupyingConcurrencySlot,
+	MAX_RATE_LIMIT_ATTEMPTS,
+	pickPendingToResolve,
+	pickResolvedToStart,
+	planNextWake,
+	replacePendingWithBundle,
+	replacePendingWithSingle,
+} from './tick-logic';
 import {
 	broadcastBatchDownloadProgress,
 	isDownloadsUiConnected,
 } from './ui-presence';
 
-const MAX_PENDING_RESOLVE_PER_TICK = 3;
 const MAX_PROGRESS_UPDATE_PER_TICK = 10;
 
 // Periodic alarm that wakes the MV3 service worker while batch work is active,
@@ -61,7 +71,6 @@ const RETRY_BACKOFF_BASE_MS = 5000;
 // Backoff steps after Bandcamp HTTP 429 responses, with ±30% jitter.
 const RATE_LIMIT_BACKOFF_MS = [10_000, 15_000, 30_000, 60_000];
 const RATE_LIMIT_JITTER = 0.3;
-const MAX_RATE_LIMIT_ATTEMPTS = 8;
 
 // A "completed" file smaller than this is most likely an HTML error stub.
 const MIN_PLAUSIBLE_COMPLETED_BYTES = 16 * 1024;
@@ -131,6 +140,32 @@ export class BatchDownloadRunner {
 		}
 	}
 
+	/** Shows the "batch finished" notification once, when the setting is on and a batch is waiting for it. */
+	private async announceFinishedBatch(
+		items: BatchDownloadItemModel[]
+	): Promise<void> {
+		try {
+			const startedAt = await takeBatchNotifyPending();
+			if (notExist(startedAt)) {
+				return;
+			}
+
+			const config = await configService.getAll();
+			if (!config.batchDownloadNotify) {
+				return;
+			}
+
+			const failedCount = items.filter(
+				(x) =>
+					x.type !== DownloadType.Multiple &&
+					x.status === DownloadStatus.Failed
+			).length;
+			await notifyBatchFinished(startedAt, failedCount);
+		} catch (_e) {
+			// A missing notification must never stop the queue
+		}
+	}
+
 	private async pauseIfDuplicateDownload(
 		downloadId: number,
 		itemId: string,
@@ -194,11 +229,10 @@ export class BatchDownloadRunner {
 		}
 
 		await this.updateItems((current) =>
-			current.map((x) =>
-				x.id === itemId && x.type === DownloadType.Single
-					? { ...x, status: DownloadStatus.Duplicate }
-					: x
-			)
+			patchItem(current, itemId, DownloadType.Single, (x) => ({
+				...x,
+				status: DownloadStatus.Duplicate,
+			}))
 		);
 		this.scheduleBatchTickSoon(0);
 	}
@@ -225,29 +259,11 @@ export class BatchDownloadRunner {
 		return updateBatchDownloadItems(update);
 	}
 
-	private isOccupyingConcurrencySlot = (
-		x: BatchDownloadItemModel
-	): boolean => {
-		if (x.type !== DownloadType.Single) {
-			return false;
-		}
-
-		// A paused item holds a slot only when its browser download exists; one paused
-		// before it started has nothing to resume and must not block the queue
-		return (
-			x.status === DownloadStatus.Downloading ||
-			(x.status === DownloadStatus.Paused &&
-				exist(x.download.browserDownloadId))
-		);
-	};
-
 	/**
 	 * Schedules an automatic retry with exponential backoff for a failed
 	 * single download, or marks it as failed once attempts are exhausted.
 	 */
-	private scheduleAutoRetryOrFail(
-		x: Extract<BatchDownloadItemModel, { type: DownloadType.Single }>
-	): BatchDownloadItemModel {
+	private scheduleAutoRetryOrFail(x: SingleItem): BatchDownloadItemModel {
 		const attempt = (x.retryCount ?? 0) + 1;
 		if (attempt > MAX_AUTO_RETRIES) {
 			return { ...x, status: DownloadStatus.Failed };
@@ -278,7 +294,7 @@ export class BatchDownloadRunner {
 	 * a non-startable state (failed / waiting for a backoff).
 	 */
 	private async refreshDownloadFile(
-		item: Extract<BatchDownloadItemModel, { type: DownloadType.Single }>
+		item: SingleItem
 	): Promise<BatchDownloadFileModel | null> {
 		if (notExist(item.pageUrl)) {
 			return item.download;
@@ -300,14 +316,7 @@ export class BatchDownloadRunner {
 
 			if (notExist(match)) {
 				await this.updateItems((current) =>
-					current.map((x): BatchDownloadItemModel => {
-						if (
-							x.id !== item.id ||
-							x.type !== DownloadType.Single
-						) {
-							return x;
-						}
-
+					patchItem(current, item.id, DownloadType.Single, (x) => {
 						// A pause or cancel while the page was fetched wins
 						if (x.status !== DownloadStatus.Resolved) {
 							return x;
@@ -328,11 +337,7 @@ export class BatchDownloadRunner {
 			};
 
 			await this.updateItems((current) =>
-				current.map((x): BatchDownloadItemModel => {
-					if (x.id !== item.id || x.type !== DownloadType.Single) {
-						return x;
-					}
-
+				patchItem(current, item.id, DownloadType.Single, (x) => {
 					return {
 						...x,
 						needsUrlRefresh: false,
@@ -343,11 +348,7 @@ export class BatchDownloadRunner {
 			return refreshedFile;
 		} catch (e) {
 			await this.updateItems((current) =>
-				current.map((x): BatchDownloadItemModel => {
-					if (x.id !== item.id || x.type !== DownloadType.Single) {
-						return x;
-					}
-
+				patchItem(current, item.id, DownloadType.Single, (x) => {
 					// A pause or cancel while the page was fetched wins
 					if (x.status !== DownloadStatus.Resolved) {
 						return x;
@@ -480,7 +481,7 @@ export class BatchDownloadRunner {
 					x.status === DownloadStatus.Paused ||
 					x.status === DownloadStatus.Duplicate) &&
 				exist(x.download.browserDownloadId)
-		) as Extract<BatchDownloadItemModel, { type: DownloadType.Single }>[];
+		) as SingleItem[];
 
 		for (const item of tracked) {
 			await this.updateProgressForDownloadId(
@@ -615,7 +616,7 @@ export class BatchDownloadRunner {
 			(x) =>
 				x.type === DownloadType.Single &&
 				x.status === DownloadStatus.Queued
-		) as Extract<BatchDownloadItemModel, { type: DownloadType.Single }>[];
+		) as SingleItem[];
 		const hasStaleResolving = items.some(
 			(x) =>
 				x.type === DownloadType.Pending &&
@@ -735,384 +736,10 @@ export class BatchDownloadRunner {
 			}
 
 			// 3) Resolve a few pending items per tick to keep the pipeline filled.
-			const configForResolve = await configService.getAll();
-			const resolveNow = Date.now();
-			const toResolve = items
-				.filter((x) => {
-					if (x.type !== DownloadType.Pending) {
-						return false;
-					}
-
-					if (x.status === DownloadStatus.Pending) {
-						return true;
-					}
-
-					// Rate-limited items resolve again once the backoff elapsed.
-					return (
-						x.status === DownloadStatus.RateLimited &&
-						(notExist(x.nextRetryAt) || x.nextRetryAt <= resolveNow)
-					);
-				})
-				.slice(0, MAX_PENDING_RESOLVE_PER_TICK) as Extract<
-				BatchDownloadItemModel,
-				{ type: DownloadType.Pending }
-			>[];
-
-			for (const pending of toResolve) {
-				const { coverArtUrl, collectionIndex, createdAt, sourceId } =
-					pending;
-				const baseSourceId = sourceId ?? pending.id;
-				items = await this.updateItems((current) =>
-					current.map((x) =>
-						x.id === pending.id && x.type === DownloadType.Pending
-							? { ...x, status: DownloadStatus.Resolving }
-							: x
-					)
-				);
-
-				let downloads: Awaited<
-					ReturnType<typeof parseBandcampDownloads>
-				> = [];
-				try {
-					downloads = await parseBandcampDownloads(
-						pending.url,
-						pending.format ?? configForResolve.batchDownloadFormat
-					);
-				} catch (e) {
-					if (e instanceof BandcampUnverifiedError) {
-						items = await this.updateItems((current) =>
-							current.map((x): BatchDownloadItemModel => {
-								if (
-									x.id !== pending.id ||
-									x.type !== DownloadType.Pending
-								) {
-									return x;
-								}
-
-								return {
-									...x,
-									status: DownloadStatus.Failed,
-									failReason: 'unverified',
-								};
-							})
-						);
-						continue;
-					}
-
-					if (e instanceof BandcampRateLimitError) {
-						// One shared pause: the other pending items wait too
-						// (without using their own attempts), so Bandcamp is not
-						// asked again while it throttles
-						const retryAfterMs = e.retryAfterMs ?? 0;
-						items = await this.updateItems((current) => {
-							const failing = current.find(
-								(x) =>
-									x.id === pending.id &&
-									x.type === DownloadType.Pending
-							);
-							const attempt =
-								((failing as { rateLimitAttempt?: number })
-									?.rateLimitAttempt ?? 0) + 1;
-							const pauseUntil =
-								Date.now() +
-								Math.max(
-									rateLimitDelayMs(attempt),
-									retryAfterMs
-								);
-
-							return current.map((x): BatchDownloadItemModel => {
-								if (x.type !== DownloadType.Pending) {
-									return x;
-								}
-
-								if (x.id !== pending.id) {
-									return x.status === DownloadStatus.Pending
-										? {
-												...x,
-												status: DownloadStatus.RateLimited,
-												nextRetryAt: pauseUntil,
-											}
-										: x;
-								}
-
-								if (attempt > MAX_RATE_LIMIT_ATTEMPTS) {
-									return {
-										...x,
-										status: DownloadStatus.Failed,
-									};
-								}
-
-								return {
-									...x,
-									status: DownloadStatus.RateLimited,
-									rateLimitAttempt: attempt,
-									nextRetryAt: pauseUntil,
-								};
-							});
-						});
-						break;
-					}
-
-					items = await this.updateItems((current) =>
-						current.map((x) =>
-							x.id === pending.id &&
-							x.type === DownloadType.Pending
-								? { ...x, status: DownloadStatus.Failed }
-								: x
-						)
-					);
-					continue;
-				}
-
-				if (downloads.length === 0) {
-					items = await this.updateItems((current) =>
-						current.map((x) =>
-							x.id === pending.id &&
-							x.type === DownloadType.Pending
-								? { ...x, status: DownloadStatus.Failed }
-								: x
-						)
-					);
-					continue;
-				}
-
-				if (downloads.length === 1) {
-					const download = downloads[0];
-					items = await this.updateItems((current) =>
-						current.map((x) => {
-							if (x.id !== pending.id) {
-								return x;
-							}
-
-							return {
-								id: pending.id,
-								title: pending.title,
-								coverArtUrl,
-								collectionIndex,
-								createdAt,
-								sourceId: baseSourceId,
-								type: DownloadType.Single,
-								status: DownloadStatus.Resolved,
-								pageUrl: pending.url,
-								download: { ...download, progress: 0 },
-							};
-						})
-					);
-					continue;
-				}
-
-				items = await this.updateItems((current) => {
-					// Remove or Clear all during the page fetch wins
-					const stillResolving = current.some(
-						(x) =>
-							x.id === pending.id &&
-							x.type === DownloadType.Pending &&
-							x.status === DownloadStatus.Resolving
-					);
-					if (!stillResolving) {
-						return current;
-					}
-
-					const withoutParent = current.filter(
-						(x) => x.id !== pending.id
-					);
-					const childItems: BatchDownloadItemModel[] = downloads.map(
-						(d) => ({
-							id: `${pending.id}:${d.id}`,
-							title: d.title,
-							coverArtUrl,
-							collectionIndex,
-							createdAt,
-							sourceId: d.id,
-							type: DownloadType.Single,
-							status: DownloadStatus.Resolved,
-							parentId: pending.id,
-							pageUrl: pending.url,
-							download: { ...d, progress: 0 },
-						})
-					);
-					const parent: BatchDownloadItemModel = {
-						id: pending.id,
-						title: pending.title,
-						coverArtUrl,
-						collectionIndex,
-						createdAt,
-						sourceId: baseSourceId,
-						type: DownloadType.Multiple,
-						status: DownloadStatus.Resolved,
-						progress: 0,
-						children: toChildrenIds(downloads, pending.id),
-						pageUrl: pending.url,
-					};
-					return [...withoutParent, parent, ...childItems];
-				});
-			}
+			await this.resolvePendingItems(items);
 
 			// 4) Start downloads up to configured concurrency.
-			items = await getBatchDownloadItems();
-			const config = await configService.getAll();
-			const concurrency = config.batchDownloadConcurrency;
-
-			const countDownloading = items.filter(
-				this.isOccupyingConcurrencySlot
-			).length;
-
-			if (countDownloading > 0) {
-				// Make sure progress keeps being tracked after a service worker
-				// restart, even when no new download can be started.
-				this.startDownloadsProgressPoller();
-			}
-
-			let available = Math.max(concurrency - countDownloading, 0);
-			if (available > 0) {
-				const startNow = Date.now();
-				const toStart = items.filter(
-					(x) =>
-						x.type === DownloadType.Single &&
-						x.status === DownloadStatus.Resolved &&
-						(notExist(x.nextRetryAt) || x.nextRetryAt <= startNow)
-				) as Extract<
-					BatchDownloadItemModel,
-					{ type: DownloadType.Single }
-				>[];
-
-				for (const item of toStart) {
-					if (available <= 0) {
-						break;
-					}
-
-					// Retry flows re-resolve the (possibly expired) file URL.
-					let downloadFile = item.download;
-					if (item.needsUrlRefresh === true) {
-						const refreshedFile =
-							await this.refreshDownloadFile(item);
-						if (notExist(refreshedFile)) {
-							continue;
-						}
-
-						downloadFile = refreshedFile;
-					}
-					const downloadUrl = downloadFile.url;
-
-					// The loop awaits between items: a pause or cancel made meanwhile wins
-					let isQueued = false;
-					items = await this.updateItems((current) =>
-						current.map((x) => {
-							if (
-								x.id !== item.id ||
-								x.type !== DownloadType.Single ||
-								x.status !== DownloadStatus.Resolved
-							) {
-								return x;
-							}
-
-							isQueued = true;
-							return { ...x, status: DownloadStatus.Queued };
-						})
-					);
-					if (!isQueued) {
-						continue;
-					}
-
-					const desiredBaseName = renderConfiguredFilename(
-						config.batchDownloadFilenameTemplate,
-						downloadFile
-					);
-					if (exist(desiredBaseName)) {
-						await registerDesiredFilename(
-							downloadUrl,
-							desiredBaseName
-						);
-					}
-
-					try {
-						const downloadId = await chrome.downloads.download({
-							url: downloadUrl,
-							conflictAction: 'uniquify',
-							// A batch must not open a save dialog per file
-							saveAs: false,
-						});
-
-						// The user may have paused, cancelled or removed the item
-						// while chrome.downloads.download() was running.
-						let stateAfterStart: DownloadStatus | null = null;
-						items = await this.updateItems((current) =>
-							current.map((x) => {
-								if (
-									x.id !== item.id ||
-									x.type !== DownloadType.Single
-								) {
-									return x;
-								}
-
-								stateAfterStart = x.status;
-								if (x.status === DownloadStatus.Paused) {
-									// Keep the download, paused, so a resume continues it
-									return {
-										...x,
-										download: {
-											...x.download,
-											url: downloadUrl,
-											browserDownloadId: downloadId,
-										},
-									};
-								}
-
-								if (x.status !== DownloadStatus.Queued) {
-									return x;
-								}
-
-								return {
-									...x,
-									status: DownloadStatus.Downloading,
-									nextRetryAt: undefined,
-									download: {
-										...x.download,
-										url: downloadUrl,
-										browserDownloadId: downloadId,
-									},
-								};
-							})
-						);
-
-						if (stateAfterStart === DownloadStatus.Paused) {
-							await this.pauseBrowserDownloadSafe(downloadId);
-							continue;
-						}
-
-						if (stateAfterStart !== DownloadStatus.Queued) {
-							await this.cancelBrowserDownloadSafe(downloadId);
-							await unregisterDesiredFilename(downloadUrl);
-							continue;
-						}
-
-						available--;
-
-						this.startDownloadsProgressPoller();
-						this.pauseIfDuplicateDownload(
-							downloadId,
-							item.id
-						).catch(() => void 0);
-					} catch (_e) {
-						if (exist(desiredBaseName)) {
-							await unregisterDesiredFilename(downloadUrl);
-						}
-
-						items = await this.updateItems((current) =>
-							current.map((x): BatchDownloadItemModel => {
-								if (
-									x.id !== item.id ||
-									x.type !== DownloadType.Single
-								) {
-									return x;
-								}
-
-								return this.scheduleAutoRetryOrFail(x);
-							})
-						);
-					}
-				}
-			}
+			const concurrency = await this.startResolvedItems();
 
 			// 5) Update parent progress (derived).
 			await this.updateItems((current) => updateParentsProgress(current));
@@ -1124,65 +751,11 @@ export class BatchDownloadRunner {
 				setDownloadsShelfEnabledSafe(true);
 				this.stopDownloadsProgressPoller();
 				this.clearWatchdogAlarm();
+				await this.announceFinishedBatch(finalItems);
 			}
 
 			// 7) Keep ticking while there is work to do (fills concurrency without waiting for completion events).
-			const wakeNow = Date.now();
-			const hasPending = finalItems.some(
-				(x) =>
-					x.type === DownloadType.Pending &&
-					x.status === DownloadStatus.Pending
-			);
-			const hasResolvedSingles = finalItems.some(
-				(x) =>
-					x.type === DownloadType.Single &&
-					x.status === DownloadStatus.Resolved &&
-					(notExist(x.nextRetryAt) || x.nextRetryAt <= wakeNow)
-			);
-			// Use the same "occupied slot" definition as step 4, otherwise the
-			// tick keeps rescheduling itself when paused items hold every slot.
-			const busyNow = finalItems.filter(
-				this.isOccupyingConcurrencySlot
-			).length;
-			const hasCapacity = busyNow < concurrency;
-
-			if ((hasPending || hasResolvedSingles) && hasCapacity) {
-				this.scheduleBatchTickSoon(0);
-			} else {
-				// Wake up when the earliest scheduled retry backoff elapses.
-				const retryTimestamps = finalItems
-					.map((x) => {
-						if (
-							x.type === DownloadType.Pending &&
-							x.status === DownloadStatus.RateLimited
-						) {
-							return x.nextRetryAt ?? wakeNow;
-						}
-
-						if (
-							x.type === DownloadType.Single &&
-							x.status === DownloadStatus.Resolved &&
-							exist(x.nextRetryAt) &&
-							x.nextRetryAt > wakeNow
-						) {
-							return x.nextRetryAt;
-						}
-
-						return null;
-					})
-					.filter((x): x is number => exist(x));
-
-				if (retryTimestamps.length > 0) {
-					const retryDelayMs = Math.max(
-						Math.min(...retryTimestamps) - wakeNow,
-						0
-					);
-					this.scheduleBatchTickSoon(retryDelayMs);
-					// setTimeout dies with the worker: long backoffs are
-					// mirrored by a one-shot alarm that survives shutdown.
-					this.scheduleRetryAlarm(retryDelayMs);
-				}
-			}
+			this.scheduleNextTick(finalItems, concurrency);
 
 			// If something scheduled while we ran, run again.
 			if (this.isBatchTickScheduled) {
@@ -1194,6 +767,271 @@ export class BatchDownloadRunner {
 				this.runBatchTick().catch(() => void 0);
 			}
 		}
+	}
+
+	/** Step 7: tick again at once, at the earliest retry time, or not at all (`planNextWake`). */
+	private scheduleNextTick(
+		finalItems: BatchDownloadItemModel[],
+		concurrency: number
+	): void {
+		const wake = planNextWake(finalItems, concurrency, Date.now());
+
+		if (wake.action === 'tick-now') {
+			this.scheduleBatchTickSoon(0);
+			return;
+		}
+
+		if (wake.action === 'tick-at') {
+			this.scheduleBatchTickSoon(wake.delayMs);
+			// setTimeout dies with the worker: long backoffs are
+			// mirrored by a one-shot alarm that survives shutdown.
+			this.scheduleRetryAlarm(wake.delayMs);
+		}
+	}
+
+	/** Step 3: resolves the releases picked for this tick, one after another. */
+	private async resolvePendingItems(
+		items: BatchDownloadItemModel[]
+	): Promise<void> {
+		const configForResolve = await configService.getAll();
+		const toResolve = pickPendingToResolve(items, Date.now());
+
+		for (const pending of toResolve) {
+			const outcome = await this.resolvePendingItem(
+				pending,
+				configForResolve.batchDownloadFormat
+			);
+			if (outcome === 'stop') {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Parses the Bandcamp download page of one release and replaces the release with its file or files.
+	 *
+	 * @returns 'stop' when Bandcamp throttled us (the other releases wait too), else 'next'.
+	 */
+	private async resolvePendingItem(
+		pending: PendingItem,
+		defaultFormat: BatchDownloadFormat
+	): Promise<'next' | 'stop'> {
+		await this.updateItems((current) =>
+			patchItem(current, pending.id, DownloadType.Pending, (x) => ({
+				...x,
+				status: DownloadStatus.Resolving,
+			}))
+		);
+
+		let downloads: Awaited<ReturnType<typeof parseBandcampDownloads>> = [];
+		try {
+			downloads = await parseBandcampDownloads(
+				pending.url,
+				pending.format ?? defaultFormat
+			);
+		} catch (e) {
+			if (e instanceof BandcampUnverifiedError) {
+				await this.updateItems((current) =>
+					patchItem(
+						current,
+						pending.id,
+						DownloadType.Pending,
+						(x) => ({
+							...x,
+							status: DownloadStatus.Failed,
+							failReason: 'unverified',
+						})
+					)
+				);
+				return 'next';
+			}
+
+			if (e instanceof BandcampRateLimitError) {
+				const retryAfterMs = e.retryAfterMs ?? 0;
+				await this.updateItems((current) =>
+					applySharedRateLimitPause(
+						current,
+						pending.id,
+						Date.now(),
+						(attempt) =>
+							Math.max(rateLimitDelayMs(attempt), retryAfterMs)
+					)
+				);
+				return 'stop';
+			}
+
+			await this.markPendingFailed(pending.id);
+			return 'next';
+		}
+
+		if (downloads.length === 0) {
+			await this.markPendingFailed(pending.id);
+			return 'next';
+		}
+
+		if (downloads.length === 1) {
+			await this.updateItems((current) =>
+				replacePendingWithSingle(current, pending, downloads[0])
+			);
+			return 'next';
+		}
+
+		await this.updateItems((current) =>
+			replacePendingWithBundle(current, pending, downloads)
+		);
+		return 'next';
+	}
+
+	private async markPendingFailed(id: string): Promise<void> {
+		await this.updateItems((current) =>
+			patchItem(current, id, DownloadType.Pending, (x) => ({
+				...x,
+				status: DownloadStatus.Failed,
+			}))
+		);
+	}
+
+	/**
+	 * Step 4: starts resolved files while a concurrency slot is free.
+	 *
+	 * @returns The configured concurrency, which the next-tick decision uses.
+	 */
+	private async startResolvedItems(): Promise<number> {
+		const items = await getBatchDownloadItems();
+		const config = await configService.getAll();
+		const concurrency = config.batchDownloadConcurrency;
+
+		const countDownloading = items.filter(
+			isOccupyingConcurrencySlot
+		).length;
+
+		if (countDownloading > 0) {
+			// Make sure progress keeps being tracked after a service worker
+			// restart, even when no new download can be started.
+			this.startDownloadsProgressPoller();
+		}
+
+		let available = Math.max(concurrency - countDownloading, 0);
+		if (available > 0) {
+			const toStart = pickResolvedToStart(items, Date.now());
+
+			for (const item of toStart) {
+				if (available <= 0) {
+					break;
+				}
+
+				if (await this.startResolvedItem(item)) {
+					available--;
+				}
+			}
+		}
+
+		return concurrency;
+	}
+
+	/**
+	 * Starts the browser download of one resolved file.
+	 *
+	 * @returns Whether the download started and holds a slot now.
+	 */
+	private async startResolvedItem(item: SingleItem): Promise<boolean> {
+		// Retry flows re-resolve the (possibly expired) file URL.
+		let downloadFile = item.download;
+		if (item.needsUrlRefresh === true) {
+			const refreshedFile = await this.refreshDownloadFile(item);
+			if (notExist(refreshedFile)) {
+				return false;
+			}
+
+			downloadFile = refreshedFile;
+		}
+		const downloadUrl = downloadFile.url;
+
+		// The loop awaits between items: a pause or cancel made meanwhile wins
+		let isQueued = false;
+		await this.updateItems((current) =>
+			patchItem(current, item.id, DownloadType.Single, (x) => {
+				if (x.status !== DownloadStatus.Resolved) {
+					return x;
+				}
+
+				isQueued = true;
+				return { ...x, status: DownloadStatus.Queued };
+			})
+		);
+		if (!isQueued) {
+			return false;
+		}
+
+		let isStarted = false;
+		try {
+			const downloadId = await chrome.downloads.download({
+				url: downloadUrl,
+				conflictAction: 'uniquify',
+				// A batch must not open a save dialog per file
+				saveAs: false,
+			});
+
+			// The user may have paused, cancelled or removed the item
+			// while chrome.downloads.download() was running.
+			let stateAfterStart: DownloadStatus | null = null;
+			await this.updateItems((current) =>
+				patchItem(current, item.id, DownloadType.Single, (x) => {
+					stateAfterStart = x.status;
+					if (x.status === DownloadStatus.Paused) {
+						// Keep the download, paused, so a resume continues it
+						return {
+							...x,
+							download: {
+								...x.download,
+								url: downloadUrl,
+								browserDownloadId: downloadId,
+							},
+						};
+					}
+
+					if (x.status !== DownloadStatus.Queued) {
+						return x;
+					}
+
+					return {
+						...x,
+						status: DownloadStatus.Downloading,
+						nextRetryAt: undefined,
+						download: {
+							...x.download,
+							url: downloadUrl,
+							browserDownloadId: downloadId,
+						},
+					};
+				})
+			);
+
+			if (stateAfterStart === DownloadStatus.Paused) {
+				await this.pauseBrowserDownloadSafe(downloadId);
+				return false;
+			}
+
+			if (stateAfterStart !== DownloadStatus.Queued) {
+				await this.cancelBrowserDownloadSafe(downloadId);
+				return false;
+			}
+
+			isStarted = true;
+
+			this.startDownloadsProgressPoller();
+			this.pauseIfDuplicateDownload(downloadId, item.id).catch(
+				() => void 0
+			);
+		} catch (_e) {
+			await this.updateItems((current) =>
+				patchItem(current, item.id, DownloadType.Single, (x) =>
+					this.scheduleAutoRetryOrFail(x)
+				)
+			);
+		}
+
+		return isStarted;
 	}
 
 	public async updateProgressForDownloadId(
@@ -1495,7 +1333,7 @@ export class BatchDownloadRunner {
 			(x) =>
 				x.type === DownloadType.Single &&
 				x.status === DownloadStatus.Downloading
-		) as Extract<BatchDownloadItemModel, { type: DownloadType.Single }>[];
+		) as SingleItem[];
 
 		if (active.length === 0) {
 			this.stopDownloadsProgressPoller();
