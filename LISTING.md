@@ -50,6 +50,17 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - 🔔 Notifications (optional) — Asked only when you turn on "notify when a batch finishes". Shows one notification when a batch download ends.
 - 🌐 Access to bandcamp.com and its subdomains — Runs the player features on Bandcamp pages and loads the Bandcamp download pages for batch download. The extension runs on no other site.
 
+Justifications for the Chrome Web Store privacy form (paste them into the form, not into the listing):
+
+- storage: Saves the user's settings (shortcuts, playback options, batch download options), the batch download queue and history, and the list of visited releases. All data stays in the browser. Nothing is sent to any server.
+- downloads: Starts the files of a batch download and reads their progress. The user can see, pause, resume, cancel or delete these files on the Band Play downloads page.
+- alarms: Keeps a long batch download going in the background and retries it later when Bandcamp asks to slow down. The service worker can stop at any time, and the alarm wakes it up.
+- power (Chrome only): Used only by the Keep Awake setting. When the user turns it on, the display stays awake while the extension is playing. The setting is off by default.
+- downloads.shelf (Chrome only): Hides the browser's downloads shelf while a batch download runs, so it does not appear for every file. The shelf is shown again when the batch ends.
+- downloads.ui (Chrome only): Hides the browser's download bubble while a batch download runs, for the same reason. The bubble is shown again when the batch ends.
+- notifications (optional): Asked only when the user turns on "Notify when finished". Shows one notification when a batch download ends.
+- Host access to bandcamp.com and *.bandcamp.com: Runs the playback features on Bandcamp pages: shortcuts, autoplay, speed and pitch, marks for visited releases, the feed player and the batch download controls. For batch download, the extension also loads the Bandcamp download pages of the items the user selected. It does not run on any other site.
+
 🦊 Firefox
 
 - Works in Firefox 128 or newer. Keep Awake is not available in Firefox, so it is hidden there.
