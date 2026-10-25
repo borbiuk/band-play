@@ -12,7 +12,7 @@ paths:
 
 - **Every** entry in `dependencies` and `devDependencies` is an exact version such as `19.3.1`. Never use `^`, `~`, `*`, `latest` or other ranges. `scripts/check-versions.mjs` (`npm run check:versions`) checks `dependencies`, `devDependencies`, `optionalDependencies` and `peerDependencies`.
 - npm aliases are allowed with an exact version: `"typescript7": "npm:typescript@7.0.2"`.
-- `.npmrc` sets `save-exact=true` and `engine-strict=true` (`engines.node` `>=22.13.0`).
+- `.npmrc` sets `save-exact=true` and `engine-strict=true` (`engines.node` `>=24.0.0`).
 - Add or update dependencies only when the task needs it, and say so explicitly; `npm install` asks for confirmation (see `.claude/settings.json`).
 
 ## Updating

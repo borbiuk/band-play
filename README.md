@@ -112,7 +112,7 @@ Band Play works in Firefox 128 or newer, with two differences:
 
 ### Requirements
 
-- Node.js 22.13 or newer (enforced by `engines` and `engine-strict` in `.npmrc`).
+- Node.js 24 or newer (enforced by `engines` and `engine-strict` in `.npmrc`).
 - `jq` and `zip` for `zip.sh` (packaging) and the pre-commit hook.
 
 ### Setup
@@ -218,7 +218,7 @@ Not covered by automated tests: the real feed, collection, wishlist, purchases a
 GitHub Actions workflows in `.github/workflows/`:
 
 - **`build.yml`**: on pushes and pull requests to `master`. A newer push to the same branch cancels the older run.
-    - Job `build` (Node 22, 24 and 26): `npm ci`, `npm audit signatures`, `check:versions`, `format:check`, both builds, `lint`, `lint:firefox` and `test:unit`.
+    - Job `build` (Node 24 and 26): `npm ci`, `npm audit signatures`, `check:versions`, `format:check`, both builds, `lint`, `lint:firefox` and `test:unit`.
     - Job `e2e` (Node 24): installs Playwright's Chromium and runs `npm run test:e2e`; on failure it uploads the artifact `playwright-report-e2e` (kept 14 days).
 - **`markup.yml`** (workflow `bandcamp-markup`): every day at 05:17 UTC and on manual dispatch. It captures fresh snapshots with `npm run test:snapshots`, commits them to `master` when they changed ("Refresh Bandcamp page snapshots"), runs `npm run test:e2e` on them and then `npm run test:live`. On any failure it uploads `playwright-report-markup` and opens one issue labelled `markup-drift` ("Tests fail on the current Bandcamp markup"); later failures are added to it as comments. Close it after fixing the selectors in `src/content` and the tests.
 - **`publish-chrome.yml`** and **`publish-firefox.yml`**: started by hand from the Actions tab, from `master` only, in the `store` environment (configure required reviewers for it in the repository settings). Both run lint, the type check and the unit tests, check that the two manifest versions match and run `npm run zip`. The Chrome workflow uploads and publishes the Chrome package with `chrome-webstore-upload`; the Firefox workflow submits the Firefox package and a source archive (`git archive`) to AMO with `web-ext sign` on the `listed` channel. The store credentials are repository secrets (Chrome: `CHROME_EXTENSION_ID`, `CHROME_CLIENT_ID`, `CHROME_CLIENT_SECRET`, `CHROME_REFRESH_TOKEN`, `CHROME_PUBLISHER_ID`; Firefox: `AMO_JWT_ISSUER`, `AMO_JWT_SECRET`).

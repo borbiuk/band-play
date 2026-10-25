@@ -34,7 +34,7 @@ Details: [extension-architecture.md](.claude/rules/extension-architecture.md) (e
 
 ## Dependency policy
 
-- **Only exact versions** in `package.json` — never `^`, `~` or ranges. `.npmrc` sets `save-exact=true` and `engine-strict=true` (Node >= 22.13.0).
+- **Only exact versions** in `package.json` — never `^`, `~` or ranges. `.npmrc` sets `save-exact=true` and `engine-strict=true` (Node >= 24.0.0).
 - Update with `npm install -E <package>@latest` (add `-D` for dev dependencies), then run `npm run check:versions`. Use `npm run check:outdated` locally to find updates.
 - `typescript7` (alias of TypeScript 7) is the type checker (`npm run typecheck`); `typescript` 6 is kept for `ts-loader` and `typescript-eslint`.
 - Details: [npm-versions.md](.claude/rules/npm-versions.md).
@@ -59,7 +59,7 @@ The Husky pre-commit hook (`.husky/pre-commit`, `set -e`) runs on **every commit
 
 ## CI
 
-- `.github/workflows/build.yml` (push and pull request to `master`): job `build` (Node 22, 24, 26: versions, format check, both builds, lint, `web-ext lint`, unit tests) and job `e2e` (Node 24, Playwright Chromium, `npm run test:e2e`).
+- `.github/workflows/build.yml` (push and pull request to `master`): job `build` (Node 24, 26: versions, format check, both builds, lint, `web-ext lint`, unit tests) and job `e2e` (Node 24, Playwright Chromium, `npm run test:e2e`).
 - `.github/workflows/markup.yml` (daily): refreshes the Bandcamp snapshots, runs e2e and live tests, opens a `markup-drift` issue on failure.
 - `.github/workflows/publish-chrome.yml` and `publish-firefox.yml`: manual store publishing from `master`. Details: [docs-and-ci.md](.claude/rules/docs-and-ci.md).
 

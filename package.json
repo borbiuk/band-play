@@ -10,7 +10,7 @@
 		"url": "https://github.com/borbiuk/band-play"
 	},
 	"engines": {
-		"node": ">=22.13.0"
+		"node": ">=24.0.0"
 	},
 	"scripts": {
 		"watch": "webpack --config webpack/webpack.dev.js --watch",

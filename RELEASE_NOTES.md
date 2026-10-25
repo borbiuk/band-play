@@ -16,6 +16,7 @@ A new look for the popup, the downloads page and the Bandcamp page elements, a n
 
 - New icon, store images and Bandcamp page elements (checkboxes, bar, tab icons); light theme only.
 - An album download is one zip file, so the downloads page shows it as one item.
+- Development needs Node 24 or newer (it was 22.13), and CI builds on Node 24 and 26. This does not affect the extension itself.
 
 ### Removed
 
