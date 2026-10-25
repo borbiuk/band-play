@@ -46,11 +46,15 @@ create_package() {
 	version=$(jq -r '.version' "$build_dir/manifest.json")
 
 	local zip_filename="band-play-build-${browser}_${current_date_time}_${version}.zip"
-	local temp_dir="band-play-build-${browser}"
 
-	# Create a temporary directory (removed again when a later step fails)
-	rm -rf "$temp_dir"
-	mkdir "$temp_dir"
+	# Packages go to artifacts/ (gitignored). The path is absolute, because zip runs in the temporary folder
+	local output_dir
+	output_dir="$(pwd)/artifacts"
+	mkdir -p "$output_dir"
+
+	# Create a temporary folder outside the repository (removed again when a later step fails)
+	local temp_dir
+	temp_dir="$(mktemp -d)"
 	# Expanded now: the local variable is gone when the trap runs
 	trap "rm -rf '${temp_dir}'" EXIT
 
@@ -68,13 +72,13 @@ create_package() {
 
 	# Create a .zip file with the extension files at the archive root
 	# (required by addons.mozilla.org, accepted by Chrome Web Store)
-	(cd "$temp_dir" && zip -r "../$zip_filename" .) || exit 1
+	(cd "$temp_dir" && zip -r "$output_dir/$zip_filename" .) || exit 1
 
 	# Clean up the temporary directory
 	rm -r "$temp_dir"
 	trap - EXIT
 
-	echo "'$zip_filename' was created."
+	echo "'$output_dir/$zip_filename' was created."
 }
 
 ###############################################################

@@ -7,6 +7,8 @@ dist-firefox/
 tmp/
 *.zip
 band-play-build*
+# Packages from zip.sh (the folder is created on demand)
+artifacts/
 
 # JetBrains IDE
 .idea

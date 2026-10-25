@@ -53,7 +53,7 @@ jobs:
               run: npm run lint:firefox
             - name: Rename the package and archive sources for AMO review
               run: |
-                  mv band-play-build-firefox_*.zip firefox.zip
+                  mv artifacts/band-play-build-firefox_*.zip firefox.zip
                   git archive -o source.zip HEAD
             - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               with:
