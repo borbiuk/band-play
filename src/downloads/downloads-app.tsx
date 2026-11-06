@@ -135,9 +135,11 @@ export const DownloadsApp = () => {
 	const listRef = useRef<HTMLUListElement>(null);
 	const [slice, setSlice] = useState({ start: 0, end: WINDOWED_THRESHOLD });
 	const isWindowed = rows.length > WINDOWED_THRESHOLD;
+	// The list is rendered only after the settings and the items load (see the loading state below)
+	const isListShown = config !== null && isLoaded;
 
 	useEffect(() => {
-		if (!isWindowed) {
+		if (!isWindowed || !isListShown) {
 			return undefined;
 		}
 
@@ -180,7 +182,7 @@ export const DownloadsApp = () => {
 				cancelAnimationFrame(frame);
 			}
 		};
-	}, [isWindowed, rows.length]);
+	}, [isWindowed, isListShown, rows.length]);
 
 	const visible = isWindowed ? rows.slice(slice.start, slice.end) : rows;
 	const topSpace = isWindowed ? slice.start * ROW_HEIGHT : 0;
@@ -233,7 +235,7 @@ export const DownloadsApp = () => {
 	return (
 		<div className="min-h-screen font-ui text-[13px] text-ink-900">
 			<header
-				className={`sticky top-0 z-10 border-b border-black/[.08] pb-2.5 pt-3 ${glass}`}
+				className={`sticky top-0 z-10 border-b border-ink-900/[.08] pb-2.5 pt-3 ${glass}`}
 			>
 				<div className="mx-auto max-w-[1080px] px-5">
 					<DownloadsHeader config={config} update={update} />
@@ -290,7 +292,7 @@ export const DownloadsApp = () => {
 				)}
 
 				{hasItems ? (
-					<Card className="bg-white/90">
+					<Card className="bg-surface/90">
 						<ul
 							ref={listRef}
 							aria-label="Downloads"

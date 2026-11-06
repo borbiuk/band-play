@@ -12,7 +12,7 @@ export interface KbdProps {
  */
 export const Kbd = ({ children }: KbdProps) => {
 	return (
-		<kbd className="inline-grid h-6 min-w-6 place-items-center rounded-[7px] border border-b-2 border-line-strong bg-gradient-to-b from-white to-[#f3f8fa] px-1.5 font-ui text-xs font-semibold leading-none text-ink-700">
+		<kbd className="inline-grid h-6 min-w-6 place-items-center rounded-[7px] border border-b-2 border-line-strong bg-gradient-to-b from-surface to-[#f3f8fa] px-1.5 font-ui text-xs font-semibold leading-none text-ink-700 dark:to-[#1a2d34]">
 			{children}
 		</kbd>
 	);

@@ -3,4 +3,4 @@
  * Falls back to an almost opaque white where backdrop-filter is missing.
  */
 export const glass =
-	'bg-white/[.72] backdrop-blur-[18px] backdrop-saturate-150 supports-[not(backdrop-filter:blur(1px))]:bg-white/95';
+	'bg-surface/[.72] backdrop-blur-[18px] backdrop-saturate-150 supports-[not(backdrop-filter:blur(1px))]:bg-surface/95';

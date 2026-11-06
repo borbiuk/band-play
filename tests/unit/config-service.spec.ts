@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { BatchDownloadFormat, ShortcutType } from '@shared/enums';
+import { BatchDownloadFormat, ShortcutType, Theme } from '@shared/enums';
 import { ConfigModel } from '@shared/models';
 import configService from '@shared/services/config-service';
 
@@ -57,6 +57,7 @@ const DEFAULTS: ConfigModel = {
 	batchDownloadNotify: false,
 	batchDownloadOpenPage: true,
 	batchDownloadSkipDownloaded: false,
+	theme: Theme.System,
 };
 
 test.describe('getAll', () => {
@@ -80,6 +81,7 @@ test.describe('getAll', () => {
 			batchDownloadNotify: true,
 			batchDownloadOpenPage: false,
 			batchDownloadSkipDownloaded: true,
+			theme: 'dark',
 		});
 
 		expect(await configService.getAll()).toEqual({
@@ -98,6 +100,7 @@ test.describe('getAll', () => {
 			batchDownloadNotify: true,
 			batchDownloadOpenPage: false,
 			batchDownloadSkipDownloaded: true,
+			theme: Theme.Dark,
 		});
 	});
 
@@ -186,6 +189,11 @@ test.describe('getAll validation', () => {
 			title: 'should keep batchDownloadFormat "mp3-320"',
 			stored: { batchDownloadFormat: 'mp3-320' },
 			expected: { batchDownloadFormat: BatchDownloadFormat.Mp3320 },
+		},
+		{
+			title: 'should use the default theme "system" for an unknown value',
+			stored: { theme: 'sepia' },
+			expected: { theme: Theme.System },
 		},
 		{
 			title: 'should convert autoplay 0 to false',

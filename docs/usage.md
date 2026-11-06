@@ -82,7 +82,7 @@ Pitch preservation is not available on the discover page.
 Click the Band Play icon in the toolbar. The popup has four tabs:
 
 - **Playback**: Autoplay next track, Loop track, Media keys, Keep screen awake (Chrome only) and the seek step.
-- **Page**: Highlight visited, Autoscroll, Feed player, and the visited history with a **Clear** button.
+- **Page**: Highlight visited, Autoscroll, Feed player, the visited history with a **Clear** button, and **Theme** (System, Light or Dark) for the popup and the downloads page. System follows the browser or system setting.
 - **Downloads**: **Open downloads**, the batch download format and concurrency, a notification when a batch finishes, opening the downloads page when a batch starts, and skipping releases you already downloaded in the same format.
 - **Shortcuts**: a search, a switch to turn each shortcut on or off, a pencil to record a new key, and **Reset**.
 

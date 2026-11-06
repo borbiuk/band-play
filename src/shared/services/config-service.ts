@@ -1,4 +1,9 @@
-import { BatchDownloadFormat, KeyCode, ShortcutType } from '@shared/enums';
+import {
+	BatchDownloadFormat,
+	KeyCode,
+	ShortcutType,
+	Theme,
+} from '@shared/enums';
 import { exist, isPlainObject } from '@shared/utils';
 
 import { ConfigModel, ShortcutConfig } from '../models/config-model';
@@ -20,6 +25,7 @@ const CONFIG_KEY_SET = {
 	batchDownloadNotify: true,
 	batchDownloadOpenPage: true,
 	batchDownloadSkipDownloaded: true,
+	theme: true,
 } satisfies Record<keyof ConfigModel, true>;
 
 /** Storage keys of the configuration (storage.local also holds downloads and history). */
@@ -264,6 +270,9 @@ class ConfigService {
 			)
 				? Boolean(config.batchDownloadSkipDownloaded)
 				: false,
+			theme: Object.values(Theme).includes(config.theme)
+				? config.theme
+				: Theme.System,
 		};
 
 		if (config.playbackStep < 1 || config.playbackStep > 120) {

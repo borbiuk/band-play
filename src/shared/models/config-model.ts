@@ -1,4 +1,4 @@
-import { BatchDownloadFormat, ShortcutType } from '@shared/enums';
+import { BatchDownloadFormat, ShortcutType, Theme } from '@shared/enums';
 
 /**
  * Configuration type for keyboard shortcuts.
@@ -57,4 +57,7 @@ export interface ConfigModel {
 
 	/** Leave out releases already downloaded in the same format when a batch starts */
 	batchDownloadSkipDownloaded: boolean;
+
+	/** Color theme of the popup and the downloads page */
+	theme: Theme;
 }

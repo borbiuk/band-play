@@ -1,4 +1,24 @@
-/** Redesign tokens: they match design/tokens.css (see design/style-guide). */
+/**
+ * Redesign tokens: they match design/tokens.css (see design/style-guide).
+ * Every color is `rgb(var(--bp-<name>, <light value>))`: the light value is the fallback, so a page that
+ * defines no variables (the feed player on Bandcamp) stays light. The dark theme sets the variables
+ * in src/shared/styles/theme.scss.
+ */
+const token = (name, hex) => {
+	const value = hex.replace('#', '');
+	const rgb = [0, 2, 4].map((i) => parseInt(value.slice(i, i + 2), 16));
+	return `rgb(var(--bp-${name}, ${rgb.join(' ')}) / <alpha-value>)`;
+};
+
+/** Maps a palette `{ 50: '#...' }` to tokens named `<prefix>-<key>` (`DEFAULT` gives `<prefix>`). */
+const tokens = (prefix, palette) =>
+	Object.fromEntries(
+		Object.entries(palette).map(([key, hex]) => [
+			key,
+			token(key === 'DEFAULT' ? prefix : `${prefix}-${key}`, hex),
+		])
+	);
+
 const aqua = {
 	50: '#f1fafc',
 	100: '#e3f5f9',
@@ -14,42 +34,46 @@ const aqua = {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: ['./src/**/*.{html,js,ts,tsx}'],
+	// `dark:` variants for the few colors that are not tokens (see theme.scss)
+	darkMode: ['selector', '[data-theme="dark"]'],
 	theme: {
 		extend: {
 			colors: {
-				aqua: aqua,
-				coral: {
+				aqua: tokens('aqua', aqua),
+				// Page and card background (white in the light theme)
+				surface: tokens('surface', { DEFAULT: '#ffffff' }),
+				coral: tokens('coral', {
 					100: '#ffe9e2',
 					500: '#ff7a59',
 					600: '#e85f3e',
-				},
-				pink: {
+				}),
+				pink: tokens('pink', {
 					100: '#fde8f0',
 					500: '#e8508a',
 					700: '#be2f6a',
-				},
-				ink: {
+				}),
+				ink: tokens('ink', {
 					900: '#12262e',
 					700: '#2f4650',
 					500: '#5b7078',
 					400: '#8197a0',
-				},
-				line: {
+				}),
+				line: tokens('line', {
 					DEFAULT: '#dceaef',
 					strong: '#c9dce3',
-				},
-				danger: {
+				}),
+				danger: tokens('danger', {
 					DEFAULT: '#c2410c',
 					bg: '#ffe9e2',
-				},
-				warn: {
+				}),
+				warn: tokens('warn', {
 					DEFAULT: '#9a3f14',
 					bg: '#fff0e8',
-				},
-				success: {
+				}),
+				success: tokens('success', {
 					DEFAULT: '#1a7a44',
 					bg: '#e6f6ec',
-				},
+				}),
 			},
 			borderRadius: {
 				ctl: '10px',

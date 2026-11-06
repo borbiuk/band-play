@@ -117,6 +117,37 @@ test('should save the batch download options only when the user changes them', a
 	expect(await storage.get('batchDownloadConcurrency')).toBeUndefined();
 });
 
+test('should follow the system color scheme', async ({ openOptions }) => {
+	const popup = await openOptions();
+	const html = popup.locator('html');
+
+	await popup.emulateMedia({ colorScheme: 'dark' });
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	await popup.emulateMedia({ colorScheme: 'light' });
+	await expect(html).toHaveAttribute('data-theme', 'light');
+});
+
+test('should save the picked theme and apply it over the system scheme', async ({
+	openOptions,
+	storage,
+}) => {
+	const popup = await openOptions();
+	await popup.emulateMedia({ colorScheme: 'light' });
+	const html = popup.locator('html');
+	const theme = popup.getByRole('combobox', { name: 'Theme' });
+	await popup.getByRole('tab', { name: 'Page' }).click();
+	await expect(theme).toHaveValue('system');
+
+	await theme.selectOption('dark');
+
+	await expect.poll(() => storage.get('theme')).toBe('dark');
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	await popup.reload();
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	await popup.getByRole('tab', { name: 'Page' }).click();
+	await expect(theme).toHaveValue('dark');
+});
+
 test('should clear the visited history after a confirmation', async ({
 	openOptions,
 	storage,

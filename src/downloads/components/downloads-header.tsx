@@ -39,7 +39,7 @@ export const DownloadsHeader = ({ config, update }: DownloadsHeaderProps) => {
 				aria-label="Batch settings"
 				className="flex flex-wrap items-center gap-2"
 			>
-				<label className="flex h-9 items-center gap-2 rounded-menu border border-line bg-white/70 pl-3 pr-2.5 text-xs font-semibold text-ink-500">
+				<label className="flex h-9 items-center gap-2 rounded-menu border border-line bg-surface/70 pl-3 pr-2.5 text-xs font-semibold text-ink-500">
 					Format
 					<Select
 						small
@@ -63,7 +63,7 @@ export const DownloadsHeader = ({ config, update }: DownloadsHeaderProps) => {
 						))}
 					</Select>
 				</label>
-				<label className="flex h-9 items-center gap-2 rounded-menu border border-line bg-white/70 pl-3 pr-2.5 text-xs font-semibold text-ink-500">
+				<label className="flex h-9 items-center gap-2 rounded-menu border border-line bg-surface/70 pl-3 pr-2.5 text-xs font-semibold text-ink-500">
 					Parallel
 					<span className="w-[110px]">
 						<Range

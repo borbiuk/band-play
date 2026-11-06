@@ -69,7 +69,7 @@ export const EmptyState = () => {
 				href="https://bandcamp.com/"
 				target="_blank"
 				rel="noreferrer"
-				className="inline-flex h-8 items-center rounded-ctl border border-aqua-700 bg-aqua-700 px-3 text-[13px] font-semibold text-white no-underline hover:border-aqua-800 hover:bg-aqua-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2"
+				className="inline-flex h-8 items-center rounded-ctl border border-aqua-700 bg-aqua-700 px-3 text-[13px] font-semibold text-white no-underline hover:border-aqua-800 hover:bg-aqua-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2 dark:hover:border-aqua-600 dark:hover:bg-aqua-600"
 			>
 				Open Bandcamp
 			</a>

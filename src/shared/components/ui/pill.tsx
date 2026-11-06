@@ -15,7 +15,7 @@ export interface PillProps {
 }
 
 const tones: Record<PillTone, string> = {
-	neutral: 'bg-[#eaf0f3] text-ink-700',
+	neutral: 'bg-[#eaf0f3] text-ink-700 dark:bg-[#22363d]',
 	active: 'bg-aqua-100 text-aqua-800',
 	success: 'bg-success-bg text-success',
 	warn: 'bg-warn-bg text-warn',

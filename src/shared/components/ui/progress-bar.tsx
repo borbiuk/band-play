@@ -55,7 +55,7 @@ export const ProgressBar = ({
 			aria-valuemax={100}
 			aria-valuenow={indeterminate ? undefined : Math.round(done)}
 			className={classNames(
-				'flex overflow-hidden rounded-full bg-[#d9e8ee]',
+				'flex overflow-hidden rounded-full bg-[#d9e8ee] dark:bg-[#253941]',
 				large ? 'h-2' : 'h-1.5'
 			)}
 		>

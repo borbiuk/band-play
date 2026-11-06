@@ -39,7 +39,7 @@ export const Chip = ({
 				'inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2',
 				pressed
 					? 'border-aqua-400 bg-aqua-100 text-aqua-800'
-					: 'border-line-strong bg-white text-ink-700 hover:border-aqua-300 hover:bg-aqua-50'
+					: 'border-line-strong bg-surface text-ink-700 hover:border-aqua-300 hover:bg-aqua-50'
 			)}
 		>
 			{children}

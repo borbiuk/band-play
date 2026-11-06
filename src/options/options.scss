@@ -1,3 +1,5 @@
+@use '../shared/styles/theme';
+
 @tailwind base;
 @tailwind utilities;
 
@@ -5,7 +7,7 @@ html,
 body {
 	margin: 0;
 	padding: 0;
-	background: #fff;
+	background: rgb(var(--bp-page, 255 255 255));
 }
 
 body {
@@ -21,13 +23,13 @@ body {
 	overflow: auto;
 }
 
-/* Plain white popup */
+/* Plain white popup (deep teal in the dark theme) */
 .bp-popup {
-	background: #fff;
+	background: rgb(var(--bp-page, 255 255 255));
 }
 
 /* Thin themed scrollbar for the settings panel */
 .bp-popup main {
 	scrollbar-width: thin;
-	scrollbar-color: #92d4e5 transparent;
+	scrollbar-color: rgb(var(--bp-aqua-300, 146 212 229)) transparent;
 }

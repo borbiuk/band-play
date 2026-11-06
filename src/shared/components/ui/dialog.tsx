@@ -55,7 +55,7 @@ export const Dialog = ({
 		<dialog
 			ref={ref}
 			aria-labelledby={titleId}
-			className="bp-dialog w-[340px] max-w-[calc(100vw-32px)] rounded-dialog border border-line bg-white p-0 text-ink-900 shadow-pop"
+			className="bp-dialog w-[340px] max-w-[calc(100vw-32px)] rounded-dialog border border-line bg-surface p-0 text-ink-900 shadow-pop"
 			onClose={onClose}
 			onClick={(event) => {
 				// The dialog has no padding of its own, so only a click on the backdrop targets it
