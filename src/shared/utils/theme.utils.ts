@@ -10,7 +10,7 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
 const THEME_CACHE_KEY = 'bp_theme';
 
 /** The cached `theme` setting, or `System` when there is none or `localStorage` is not available. */
-const readCachedTheme = (): Theme => {
+export const readCachedTheme = (): Theme => {
 	try {
 		const cached = window.localStorage.getItem(THEME_CACHE_KEY) as Theme;
 		if (Object.values(Theme).includes(cached)) {
