@@ -36,5 +36,5 @@ paths:
 
 ## Checks
 
-- `tests/e2e/downloads-page.spec.ts` seeds `batchDownloadItems` and checks the summary, filters, search, sort, bundles, hints, the clear dialogs, the header settings and windowing. It seeds only states the background leaves alone (completed, failed, paused, a retry far in the future): a running or pending item would make the runner fetch Bandcamp.
+- `tests/e2e/downloads-page.spec.ts` seeds `batchDownloadItems` and checks the summary, filters, search, sort, bundles, hints, the clear dialogs, the header settings, the theme and windowing. It seeds only states the background leaves alone (completed, failed, paused, a retry far in the future): a running or pending item would make the runner fetch Bandcamp.
 - Not automated: live progress and speed (they need real downloads), the Firefox layout. Check a real batch by hand with an account that has purchases.
