@@ -37,7 +37,7 @@ const variants: Record<ButtonVariant, string> = {
 	default:
 		'border-line-strong bg-surface text-ink-900 hover:border-aqua-300 hover:bg-aqua-50',
 	primary:
-		'border-aqua-700 bg-aqua-700 text-white hover:border-aqua-800 hover:bg-aqua-800 dark:hover:border-aqua-600 dark:hover:bg-aqua-600',
+		'border-aqua-700 bg-aqua-700 text-white hover:border-aqua-800 hover:bg-aqua-800 dark:hover:border-[#0b566c] dark:hover:bg-[#0b566c]',
 	ghost: 'border-transparent bg-transparent text-ink-700 hover:bg-aqua-500/10',
 	ghostDanger:
 		'border-transparent bg-transparent text-ink-700 hover:bg-danger-bg hover:text-danger',

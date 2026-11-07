@@ -10,7 +10,7 @@ paths:
 
 ## Layout (`options.tsx`)
 
-- One `Options` component with a glass header (`components/popup-header.tsx`: logo, name, GitHub, Buy Me a Coffee and Chrome Web Store reviews links, then the tabs), a panel in the middle and a glass footer (`components/popup-footer.tsx`). The popup background is plain white; the panel scrolls under the glass bars.
+- One `Options` component with a glass header (`components/popup-header.tsx`: logo, name, GitHub, Buy Me a Coffee and Chrome Web Store reviews links, then the tabs), a panel in the middle and a glass footer (`components/popup-footer.tsx`). The popup background is the page color (white, or deep teal in the dark theme); the panel scrolls under the glass bars.
 - Tabs (`components/tabs.tsx`: text only, underline on the selected tab; `role="tablist"`, arrow keys, Home and End, roving tabindex). Only the selected panel is mounted:
     - **Playback** (`components/panels/playback-tab.tsx`): `autoplay`, `loopTrack`, `mediaKeys`, `keepAwake` (only when `chrome.power` exists; red "Use with care" style) and `playbackStep` (`NumberStepper`: 1 to 120 sec, the buttons move to the next multiple of 5, typing is allowed, the id `playbackStep-number-input`).
     - **Page** (`page-tab.tsx`): `highlightVisited`, `autoscroll`, `showFeedPlayer`, and the visited history: the number of stored entries (`countVisited` over the stored value, read with `useStorageValue`; a release adds several hashes, so it is not a count of releases) and **Clear** with a confirm dialog (`clearVisitedHistory`); Appearance: `theme` (`Select`: System, Light, Dark).
