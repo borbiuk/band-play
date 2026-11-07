@@ -315,6 +315,22 @@ test('should save the batch settings of the header', async ({
 	expect(await storage.get('batchDownloadConcurrency')).toBeUndefined();
 });
 
+test('should apply the stored theme over the system scheme and follow a change', async ({
+	page,
+	extensionId,
+	storage,
+}) => {
+	await page.emulateMedia({ colorScheme: 'dark' });
+	await storage.set({ theme: 'light' });
+	await openDownloads(page, extensionId);
+	const html = page.locator('html');
+
+	await expect(html).toHaveAttribute('data-theme', 'light');
+
+	await storage.set({ theme: 'system' });
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+});
+
 test('should render only a window of a long list and never scroll sideways', async ({
 	page,
 	extensionId,

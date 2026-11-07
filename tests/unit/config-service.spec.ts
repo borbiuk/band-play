@@ -439,12 +439,17 @@ test.describe('watch', () => {
 
 test.describe('exportSettings', () => {
 	test('should export every setting with its default or stored value', async () => {
-		storage.seed({ playbackStep: 30, mediaKeys: false });
+		storage.seed({ playbackStep: 30, mediaKeys: false, theme: 'dark' });
 
 		expect(await configService.exportSettings()).toEqual({
 			format: 'band-play-settings',
 			version: 1,
-			settings: { ...DEFAULTS, playbackStep: 30, mediaKeys: false },
+			settings: {
+				...DEFAULTS,
+				playbackStep: 30,
+				mediaKeys: false,
+				theme: Theme.Dark,
+			},
 		});
 	});
 
@@ -473,13 +478,19 @@ test.describe('importSettings', () => {
 		storage.seed({ bp_visited_v1: ['abc'] });
 
 		await configService.importSettings(
-			file({ ...DEFAULTS, playbackStep: 45, loopTrack: true })
+			file({
+				...DEFAULTS,
+				playbackStep: 45,
+				loopTrack: true,
+				theme: Theme.Light,
+			})
 		);
 
 		expect(await configService.getAll()).toEqual({
 			...DEFAULTS,
 			playbackStep: 45,
 			loopTrack: true,
+			theme: Theme.Light,
 		});
 		expect(storage.dump().bp_visited_v1).toEqual(['abc']);
 	});
@@ -554,6 +565,7 @@ test.describe('resetSettings', () => {
 			playbackStep: 45,
 			mediaKeys: false,
 			disabledShortcuts: [ShortcutType.PlayPause],
+			theme: 'dark',
 			bp_visited_v1: ['abc'],
 		});
 

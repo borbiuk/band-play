@@ -41,6 +41,6 @@
 	*,
 	::before,
 	::after {
-		--tw-ring-offset-color: #142329;
+		--tw-ring-offset-color: rgb(var(--bp-surface));
 	}
 }

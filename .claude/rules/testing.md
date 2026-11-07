@@ -37,7 +37,7 @@ paths:
 
 ## Specs
 
-- `seed.spec.ts` (seed of the Playwright agents), `album-shortcuts.spec.ts` (Space on album and track, seek, speed, pitch, Control combinations left to the page, no Space while typing), `settings-on-page.spec.ts` (stored playback step and combination, a disabled shortcut leaves its key to the page, keys kept on the artist page), `popup-settings.spec.ts` (tabs, only the changed key is written, the playback step, batch options, the theme, clear history, reset all, export, import), `downloads-page.spec.ts` (the downloads page with seeded items), `batch-download-ui.spec.ts` (checkboxes, the bar, the history marks, the wishlist and purchases pages on hand-written pages), `popup-shortcuts.spec.ts` (the change dialog: record, duplicate, browser-reserved, disabled shortcut, use default; the switch, reset all and search).
+- `seed.spec.ts` (seed of the Playwright agents), `album-shortcuts.spec.ts` (Space on album and track, seek, speed, pitch, Control combinations left to the page, no Space while typing), `settings-on-page.spec.ts` (stored playback step and combination, a disabled shortcut leaves its key to the page, keys kept on the artist page), `popup-settings.spec.ts` (tabs, only the changed key is written, the playback step, batch options, the theme, clear history, reset all, export, import), `downloads-page.spec.ts` (the downloads page with seeded items, the theme), `batch-download-ui.spec.ts` (checkboxes, the bar, the history marks, the wishlist and purchases pages on hand-written pages), `popup-shortcuts.spec.ts` (the change dialog: record, duplicate, browser-reserved, disabled shortcut, use default; the switch, reset all and search).
 
 ## Not covered
 
