@@ -75,7 +75,7 @@ export const DownloadsTab = ({ config, update }: TabProps) => {
 			<button
 				type="button"
 				onClick={openDownloads}
-				className="flex w-full cursor-pointer items-center gap-3 rounded-card border border-aqua-200 bg-gradient-to-b from-white to-aqua-50 px-3.5 py-2 text-left shadow-card transition-colors hover:border-aqua-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2"
+				className="flex w-full cursor-pointer items-center gap-3 rounded-card border border-aqua-200 bg-gradient-to-b from-surface to-aqua-50 px-3.5 py-2 text-left shadow-card transition-colors hover:border-aqua-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2"
 			>
 				<span className="grid h-[34px] w-[34px] place-items-center rounded-ctl bg-aqua-700 text-white">
 					<Download size={16} aria-hidden="true" />

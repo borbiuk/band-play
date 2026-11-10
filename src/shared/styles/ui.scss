@@ -21,13 +21,13 @@
 	background: linear-gradient(
 		90deg,
 		#1da0c3 var(--bp-pct),
-		#d3e3e9 var(--bp-pct)
+		rgb(var(--bp-line-strong, 211 227 233)) var(--bp-pct)
 	);
 }
 .bp-range::-moz-range-track {
 	height: 6px;
 	border-radius: 999px;
-	background: #d3e3e9;
+	background: rgb(var(--bp-line-strong, 211 227 233));
 }
 .bp-range::-moz-range-progress {
 	height: 6px;
@@ -41,7 +41,7 @@
 	margin-top: -7px;
 	border-radius: 50%;
 	background: #fff;
-	border: 1px solid #c9dce3;
+	border: 1px solid rgb(var(--bp-line-strong, 201 220 227));
 	box-shadow: 0 1px 4px rgba(18, 38, 46, 0.3);
 }
 .bp-range::-moz-range-thumb {
@@ -49,7 +49,7 @@
 	height: 18px;
 	border-radius: 50%;
 	background: #fff;
-	border: 1px solid #c9dce3;
+	border: 1px solid rgb(var(--bp-line-strong, 201 220 227));
 	box-shadow: 0 1px 4px rgba(18, 38, 46, 0.3);
 }
 .bp-range:focus-visible {
@@ -57,12 +57,12 @@
 }
 .bp-range:focus-visible::-webkit-slider-thumb {
 	box-shadow:
-		0 0 0 2px #fff,
+		0 0 0 2px rgb(var(--bp-surface, 255 255 255)),
 		0 0 0 4px #1da0c3;
 }
 .bp-range:focus-visible::-moz-range-thumb {
 	box-shadow:
-		0 0 0 2px #fff,
+		0 0 0 2px rgb(var(--bp-surface, 255 255 255)),
 		0 0 0 4px #1da0c3;
 }
 
@@ -76,6 +76,11 @@
 	background-repeat: no-repeat;
 	background-position: right 8px center;
 	background-size: 16px;
+}
+
+/* The arrow color is part of the image, so the dark theme needs its own (ink-500 of the dark theme) */
+:root[data-theme='dark'] .bp-select {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2391a6ae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 /* Modal dialog backdrop */

@@ -1,5 +1,6 @@
 import { useConfig } from '@shared/hooks/use-config';
 import { renderErrorOptions } from '@shared/utils/render-error.utils';
+import { initTheme } from '@shared/utils/theme.utils';
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -89,6 +90,9 @@ const Options = () => {
 		</div>
 	);
 };
+
+/** Follow the theme setting */
+initTheme();
 
 /** Root element for React rendering */
 const container = document.getElementById('root');

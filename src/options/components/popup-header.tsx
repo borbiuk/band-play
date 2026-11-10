@@ -41,7 +41,7 @@ export const PopupHeader = ({ children }: PopupHeaderProps) => {
 	const rateUrl = getRateUrl();
 	return (
 		<header
-			className={`absolute inset-x-0 top-0 z-[2] border-b border-black/[.08] px-3.5 pb-2.5 pt-3 ${glass}`}
+			className={`absolute inset-x-0 top-0 z-[2] border-b border-ink-900/[.08] px-3.5 pb-2.5 pt-3 ${glass}`}
 		>
 			<div className="mb-2.5 flex items-center gap-2.5">
 				<img

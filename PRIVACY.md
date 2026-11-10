@@ -19,6 +19,7 @@ All data is stored in the browser on your computer:
 - **Settings and shortcuts** (`chrome.storage.local`): the options of the popup and the keyboard shortcuts.
 - **Visited history** (`chrome.storage.local`): the albums and tracks you open or play, up to 50,000 entries.
 - **Batch download state** (`chrome.storage.local`): the queue and the history of batch downloads, and whether a finished-batch notification is waiting.
+- **Theme copy** (the extension pages' `localStorage`, key `bp_theme`): a copy of the theme setting, so the popup and the downloads page open in the right theme.
 - **File names of a batch download** (`chrome.storage.session`): the names of the files the extension is saving. This storage is kept only while the browser runs.
 
 You can export your settings to a file from the popup. The file is saved where you choose. You can clear the visited history and reset all settings in the popup. Removing the extension removes its stored data.

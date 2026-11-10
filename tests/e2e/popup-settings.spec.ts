@@ -1,8 +1,13 @@
 import { readFileSync } from 'node:fs';
 
+import { Page } from '@playwright/test';
 import { ShortcutType } from '@shared/enums';
 
 import { expect, test } from './fixtures/extension';
+
+/** The copy of the theme setting that `initTheme()` keeps in the extension pages' `localStorage`. */
+const readThemeCopy = (page: Page): Promise<string | null> =>
+	page.evaluate(() => localStorage.getItem('bp_theme'));
 
 test('should write only the setting the user changes and show it again', async ({
 	openOptions,
@@ -117,6 +122,39 @@ test('should save the batch download options only when the user changes them', a
 	expect(await storage.get('batchDownloadConcurrency')).toBeUndefined();
 });
 
+test('should follow the system color scheme', async ({ openOptions }) => {
+	const popup = await openOptions();
+	const html = popup.locator('html');
+
+	await popup.emulateMedia({ colorScheme: 'dark' });
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	await popup.emulateMedia({ colorScheme: 'light' });
+	await expect(html).toHaveAttribute('data-theme', 'light');
+});
+
+test('should save the picked theme and apply it over the system scheme', async ({
+	openOptions,
+	storage,
+}) => {
+	const popup = await openOptions();
+	await popup.emulateMedia({ colorScheme: 'light' });
+	const html = popup.locator('html');
+	const theme = popup.getByRole('combobox', { name: 'Theme' });
+	await popup.getByRole('tab', { name: 'Page' }).click();
+	await expect(theme).toHaveValue('system');
+
+	await theme.selectOption('dark');
+
+	await expect.poll(() => storage.get('theme')).toBe('dark');
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	// The copy in localStorage lets the next load start in the stored theme
+	await expect.poll(() => readThemeCopy(popup)).toBe('dark');
+	await popup.reload();
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+	await popup.getByRole('tab', { name: 'Page' }).click();
+	await expect(theme).toHaveValue('dark');
+});
+
 test('should clear the visited history after a confirmation', async ({
 	openOptions,
 	storage,
@@ -148,9 +186,11 @@ test('should reset all settings but keep the visited history', async ({
 		playbackStep: 45,
 		mediaKeys: false,
 		disabledShortcuts: [ShortcutType.PlayPause],
+		theme: 'dark',
 		bp_visited_v1: ['a'],
 	});
 	const popup = await openOptions();
+	await expect.poll(() => readThemeCopy(popup)).toBe('dark');
 
 	await popup.getByRole('button', { name: 'Reset all' }).click();
 	await popup
@@ -161,7 +201,10 @@ test('should reset all settings but keep the visited history', async ({
 	await expect.poll(() => storage.get('playbackStep')).toBeUndefined();
 	expect(await storage.get('mediaKeys')).toBeUndefined();
 	expect(await storage.get('disabledShortcuts')).toBeUndefined();
+	expect(await storage.get('theme')).toBeUndefined();
 	expect(await storage.get('bp_visited_v1')).toEqual(['a']);
+	// The theme copy follows the reset
+	await expect.poll(() => readThemeCopy(popup)).toBe('system');
 	await expect(
 		popup.getByRole('textbox', { name: 'Playback step in seconds' })
 	).toHaveValue('10');

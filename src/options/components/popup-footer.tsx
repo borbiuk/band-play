@@ -81,7 +81,7 @@ export const PopupFooter = () => {
 
 	return (
 		<footer
-			className={`absolute inset-x-0 bottom-0 z-[2] flex items-center gap-1.5 border-t border-black/[.08] px-3.5 py-2.5 ${glass}`}
+			className={`absolute inset-x-0 bottom-0 z-[2] flex items-center gap-1.5 border-t border-ink-900/[.08] px-3.5 py-2.5 ${glass}`}
 		>
 			<span
 				role={message?.tone === 'error' ? 'alert' : 'status'}

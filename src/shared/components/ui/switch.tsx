@@ -55,9 +55,9 @@ export const Switch = ({
 			disabled={disabled}
 			onChange={handleChange}
 			className={classNames(
-				"relative m-0 h-[22px] w-[38px] shrink-0 cursor-pointer appearance-none rounded-full bg-[#c3d6de] shadow-[inset_0_0_0_1.5px_#7f98a3] transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow-[0_1px_3px_rgba(0,0,0,0.28)] after:transition-transform after:duration-200 after:content-[''] checked:bg-gradient-to-b checked:shadow-none checked:after:translate-x-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+				"relative m-0 h-[22px] w-[38px] shrink-0 cursor-pointer appearance-none rounded-full bg-[#c3d6de] shadow-[inset_0_0_0_1.5px_#7f98a3] transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow-[0_1px_3px_rgba(0,0,0,0.28)] after:transition-transform after:duration-200 after:content-[''] checked:bg-gradient-to-b checked:shadow-none checked:after:translate-x-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#2c444d] dark:shadow-[inset_0_0_0_1.5px_#5d7882]",
 				danger
-					? 'checked:from-coral-500 checked:to-danger'
+					? 'checked:from-coral-500 checked:to-danger dark:checked:to-coral-600'
 					: 'checked:from-[#3db6d8] checked:to-aqua-500'
 			)}
 		/>

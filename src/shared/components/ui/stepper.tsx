@@ -48,7 +48,7 @@ export const Stepper = ({
 		<div
 			role="group"
 			aria-label={ariaLabel}
-			className="inline-flex h-8 items-stretch overflow-hidden rounded-ctl border border-line-strong bg-white focus-within:border-aqua-500 has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-aqua-500 has-[input:focus-visible]:ring-offset-2"
+			className="inline-flex h-8 items-stretch overflow-hidden rounded-ctl border border-line-strong bg-surface focus-within:border-aqua-500 has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-aqua-500 has-[input:focus-visible]:ring-offset-2"
 		>
 			<button
 				type="button"

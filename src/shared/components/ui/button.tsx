@@ -35,15 +35,15 @@ const sizes = {
 
 const variants: Record<ButtonVariant, string> = {
 	default:
-		'border-line-strong bg-white text-ink-900 hover:border-aqua-300 hover:bg-aqua-50',
+		'border-line-strong bg-surface text-ink-900 hover:border-aqua-300 hover:bg-aqua-50',
 	primary:
-		'border-aqua-700 bg-aqua-700 text-white hover:border-aqua-800 hover:bg-aqua-800',
+		'border-aqua-700 bg-aqua-700 text-white hover:border-aqua-800 hover:bg-aqua-800 dark:hover:border-[#0b566c] dark:hover:bg-[#0b566c]',
 	ghost: 'border-transparent bg-transparent text-ink-700 hover:bg-aqua-500/10',
 	ghostDanger:
 		'border-transparent bg-transparent text-ink-700 hover:bg-danger-bg hover:text-danger',
-	danger: 'border-[#ffcdbd] bg-white text-danger hover:border-[#ffb59e] hover:bg-danger-bg',
+	danger: 'border-[#ffcdbd] bg-surface text-danger hover:border-[#ffb59e] hover:bg-danger-bg dark:border-[#6b3424] dark:hover:border-[#8a4430]',
 	dangerSolid:
-		'border-danger bg-danger text-white hover:border-[#9a3412] hover:bg-[#9a3412]',
+		'border-danger bg-danger text-white hover:border-[#9a3412] hover:bg-[#9a3412] dark:border-[#c2410c] dark:bg-[#c2410c]',
 };
 
 /**

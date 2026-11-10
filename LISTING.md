@@ -14,7 +14,7 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - 🧩 Feed player: A small player with cover, title and progress bar on the feed page
 - 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV or AIFF
 - 📋 Downloads page: See the overall progress, speed and time left; filter, search and sort the list; pause, resume, retry, cancel or remove items; set how many files download at the same time (1 to 15)
-- ⚙️ Popup: Four tabs (Playback, Page, Downloads, Shortcuts); turn each shortcut on or off, record a new key, skip releases you already downloaded, get a notification when a batch finishes, import, export or reset your settings
+- ⚙️ Popup: Four tabs (Playback, Page, Downloads, Shortcuts); turn each shortcut on or off, record a new key, skip releases you already downloaded, get a notification when a batch finishes, pick a light or dark theme (or follow the system), import, export or reset your settings
 - 💤 Keep Awake (Chrome): Keeps the display on while you listen
 
 🎹 Default shortcuts

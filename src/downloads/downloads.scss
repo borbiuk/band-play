@@ -1,3 +1,5 @@
+@use '../shared/styles/theme';
+
 @tailwind base;
 @tailwind utilities;
 
@@ -25,4 +27,21 @@ body {
 	background-attachment: fixed;
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
+}
+
+/* Dark theme: the same glow, dimmer, over a deep teal page */
+:root[data-theme='dark'] body {
+	background:
+		radial-gradient(
+			520px 380px at 92% -4%,
+			rgba(29, 160, 195, 0.18),
+			transparent 70%
+		),
+		radial-gradient(
+			480px 420px at -4% 70%,
+			rgba(82, 186, 214, 0.1),
+			transparent 70%
+		),
+		linear-gradient(180deg, #112e38, #0e1a1f 60%);
+	background-attachment: fixed;
 }

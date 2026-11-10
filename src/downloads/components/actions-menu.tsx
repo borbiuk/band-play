@@ -60,7 +60,7 @@ export const ActionsMenu = ({
 			{isOpen && (
 				<div
 					role="menu"
-					className="absolute right-0 top-[calc(100%+6px)] z-20 min-w-[190px] rounded-menu border border-line bg-white p-[5px] shadow-pop"
+					className="absolute right-0 top-[calc(100%+6px)] z-20 min-w-[190px] rounded-menu border border-line bg-surface p-[5px] shadow-pop"
 				>
 					<button
 						ref={firstItem}

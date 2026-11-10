@@ -1,0 +1,46 @@
+/*
+ * Dark theme of the popup and the downloads page.
+ * The Tailwind color tokens are `rgb(var(--bp-<name>, <light value>))` (tailwind.config.js), so the light theme
+ * needs no variables; `initTheme()` sets `data-theme="dark"` on <html> and these values replace the light ones.
+ * Values are RGB channels. Kept constant: aqua-400..700, pink-500, pink-700, coral-500, coral-600
+ * (fills with white text and bars, which read well on both backgrounds).
+ */
+:root[data-theme='dark'] {
+	/* Surfaces */
+	--bp-surface: 20 35 41; /* #142329 */
+	--bp-page: 14 26 31; /* #0e1a1f, the popup and page background */
+
+	/* Text (ink-900 is the main text, the scale is inverted) */
+	--bp-ink-900: 228 238 241; /* #e4eef1 */
+	--bp-ink-700: 188 203 209; /* #bccbd1 */
+	--bp-ink-500: 145 166 174; /* #91a6ae */
+	--bp-ink-400: 108 130 139; /* #6c828b */
+
+	/* Lines */
+	--bp-line: 37 57 65; /* #253941 */
+	--bp-line-strong: 49 75 85; /* #314b55 */
+
+	/* Aqua tints become deep teal; aqua-800 (text on a tint) becomes light */
+	--bp-aqua-50: 17 46 56; /* #112e38 */
+	--bp-aqua-100: 20 60 73; /* #143c49 */
+	--bp-aqua-200: 27 80 96; /* #1b5060 */
+	--bp-aqua-300: 38 112 134; /* #267086 */
+	--bp-aqua-800: 143 214 234; /* #8fd6ea */
+
+	/* Accent and status tints */
+	--bp-pink-100: 61 26 42; /* #3d1a2a */
+	--bp-coral-100: 58 31 23; /* #3a1f17 */
+	--bp-danger: 255 154 122; /* #ff9a7a */
+	--bp-danger-bg: 58 31 23; /* #3a1f17 */
+	--bp-warn: 255 184 140; /* #ffb88c */
+	--bp-warn-bg: 58 36 22; /* #3a2416 */
+	--bp-success: 111 212 154; /* #6fd49a */
+	--bp-success-bg: 20 48 31; /* #14301f */
+
+	/* The gap of `ring-offset-*` focus rings matches the surface instead of white */
+	*,
+	::before,
+	::after {
+		--tw-ring-offset-color: rgb(var(--bp-surface));
+	}
+}

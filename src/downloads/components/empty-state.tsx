@@ -22,7 +22,7 @@ export const EmptyState = () => {
 					width="52"
 					height="52"
 					rx="12"
-					fill="#c4e8f1"
+					className="fill-aqua-200"
 					transform="rotate(-8 40 48)"
 				/>
 				<rect
@@ -31,7 +31,7 @@ export const EmptyState = () => {
 					width="52"
 					height="52"
 					rx="12"
-					fill="#92d4e5"
+					className="fill-aqua-300"
 					transform="rotate(5 80 40)"
 				/>
 				<rect
@@ -69,7 +69,7 @@ export const EmptyState = () => {
 				href="https://bandcamp.com/"
 				target="_blank"
 				rel="noreferrer"
-				className="inline-flex h-8 items-center rounded-ctl border border-aqua-700 bg-aqua-700 px-3 text-[13px] font-semibold text-white no-underline hover:border-aqua-800 hover:bg-aqua-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2"
+				className="inline-flex h-8 items-center rounded-ctl border border-aqua-700 bg-aqua-700 px-3 text-[13px] font-semibold text-white no-underline hover:border-aqua-800 hover:bg-aqua-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-500 focus-visible:ring-offset-2 dark:hover:border-[#0b566c] dark:hover:bg-[#0b566c]"
 			>
 				Open Bandcamp
 			</a>

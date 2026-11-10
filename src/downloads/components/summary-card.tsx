@@ -34,7 +34,7 @@ export const SummaryCard = ({ overall, rate }: SummaryCardProps) => {
 	return (
 		<section
 			aria-label="Overall progress"
-			className="mt-3 rounded-card border border-line bg-white/80 px-3.5 pb-3.5 pt-3 shadow-card"
+			className="mt-3 rounded-card border border-line bg-surface/80 px-3.5 pb-3.5 pt-3 shadow-card"
 		>
 			<div className="mb-2 flex items-baseline justify-between gap-4">
 				<div className="text-[15px] text-ink-700">

@@ -3,9 +3,12 @@ import {
 	Card,
 	CardTitle,
 	ConfirmDialog,
+	Select,
 	SettingRow,
 	SwitchRow,
 } from '@shared/components/ui';
+import { Theme } from '@shared/enums';
+import { themeLabel } from '@shared/enums/theme';
 import { useStorageValue } from '@shared/hooks/use-storage-value';
 import {
 	clearVisitedHistory,
@@ -18,7 +21,7 @@ import React, { useState } from 'react';
 import { TabProps } from './types';
 
 /**
- * Page tab: what the extension does on Bandcamp pages, and the visited history.
+ * Page tab: what the extension does on Bandcamp pages, the visited history and the theme.
  *
  * @param {TabProps} props - The props of component.
  */
@@ -52,7 +55,7 @@ export const PageTab = ({ config, update }: TabProps) => {
 						<span className="font-bold text-ink-900">
 							New release
 						</span>
-						<span className="font-bold text-[#7b1fa2]">
+						<span className="font-bold text-[#7b1fa2] dark:text-[#ce93d8]">
 							Visited release
 						</span>
 					</div>
@@ -87,6 +90,33 @@ export const PageTab = ({ config, update }: TabProps) => {
 							<Trash2 size={15} aria-hidden="true" />
 							Clear
 						</Button>
+					</SettingRow>
+				</Card>
+			</div>
+
+			<div>
+				<CardTitle>Appearance</CardTitle>
+				<Card>
+					<SettingRow
+						asLabel
+						htmlFor="theme"
+						label="Theme"
+						hint="For this popup and the downloads page"
+					>
+						<Select
+							id="theme"
+							className="w-[120px]"
+							value={config.theme}
+							onChange={(event) =>
+								update('theme', event.target.value as Theme)
+							}
+						>
+							{(Object.values(Theme) as Theme[]).map((value) => (
+								<option key={value} value={value}>
+									{themeLabel[value]}
+								</option>
+							))}
+						</Select>
 					</SettingRow>
 				</Card>
 			</div>

@@ -5,3 +5,4 @@ export { BatchDownloadFormat } from './batch-download-format';
 export { MessageCode } from './message-code';
 export { PortName } from './port-name';
 export { ShortcutType } from './shortcut-type';
+export { Theme } from './theme';
