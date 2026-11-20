@@ -331,7 +331,8 @@ test('should render only a window of a long list and never scroll sideways', asy
 		.getByRole('list', { name: 'Downloads' })
 		.getByRole('listitem');
 	await expect(rows).not.toHaveCount(0);
-	expect(await rows.count()).toBeLessThan(80);
+	// The first render shows the initial slice (100 rows); the window narrows right after it
+	await expect.poll(() => rows.count()).toBeLessThan(80);
 
 	const widths = await page.evaluate(() => ({
 		scroll: document.documentElement.scrollWidth,

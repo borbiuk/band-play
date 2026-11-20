@@ -31,8 +31,11 @@ const REQUIRED_MARKUP = {
 	artist: [],
 };
 
+// An honest user agent. Bandcamp serves a "Client Challenge" page (HTTP 200, no player markup) to
+// a user agent that starts with "Mozilla/5.0" but comes without the TLS and header fingerprint of a
+// real browser, such as the one of Node's fetch.
 const USER_AGENT =
-	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36';
+	'band-play-snapshot-bot/1.0 (+https://github.com/borbiuk/band-play)';
 
 /**
  * Removes scripts, script preloads and inline event handlers.

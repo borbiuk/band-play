@@ -135,9 +135,11 @@ export const DownloadsApp = () => {
 	const listRef = useRef<HTMLUListElement>(null);
 	const [slice, setSlice] = useState({ start: 0, end: WINDOWED_THRESHOLD });
 	const isWindowed = rows.length > WINDOWED_THRESHOLD;
+	// The list is not mounted while the page shows its placeholder, so the window waits for it
+	const isReady = config !== null && isLoaded;
 
 	useEffect(() => {
-		if (!isWindowed) {
+		if (!isWindowed || !isReady) {
 			return undefined;
 		}
 
@@ -180,7 +182,7 @@ export const DownloadsApp = () => {
 				cancelAnimationFrame(frame);
 			}
 		};
-	}, [isWindowed, rows.length]);
+	}, [isWindowed, isReady, rows.length]);
 
 	const visible = isWindowed ? rows.slice(slice.start, slice.end) : rows;
 	const topSpace = isWindowed ? slice.start * ROW_HEIGHT : 0;
