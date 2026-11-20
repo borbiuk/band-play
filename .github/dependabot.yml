@@ -25,3 +25,8 @@ updates:
           interval: weekly
       cooldown:
           default-days: 7
+      groups:
+          # All github/codeql-action steps must use the same version, or the CodeQL run fails
+          codeql-action:
+              patterns:
+                  - 'github/codeql-action/*'
