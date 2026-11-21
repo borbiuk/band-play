@@ -11,8 +11,9 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - ▶️ Autoplay and autoscroll: The next track of the album, collection, wishlist, feed or discover list starts by itself, and the page scrolls to it
 - 🔁 Loop track: Repeat the current track
 - 🎨 Highlight visited: Albums and tracks you already opened or played are marked on Bandcamp pages
+- 🏷️ Alternative design (optional): A compact collection and wishlist; covers show whether the item is an album or a track, and the section under each title is hidden
 - 🧩 Feed player: A small player with cover, title and progress bar on the feed page
-- 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV or AIFF
+- 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in the audio format you choose in the popup
 - 📋 Downloads page: See the overall progress, speed and time left; filter, search and sort the list; pause, resume, retry, cancel or remove items; set how many files download at the same time (1 to 15)
 - ⚙️ Popup: Four tabs (Playback, Page, Downloads, Shortcuts); turn each shortcut on or off, record a new key, skip releases you already downloaded, get a notification when a batch finishes, import, export or reset your settings
 - 💤 Keep Awake (Chrome): Keeps the display on while you listen
@@ -49,6 +50,17 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - 🧺 Downloads shelf and Downloads UI (Chrome only) — Hides the browser's download bubble while a batch download runs, so it does not pop up for every file, and shows it again afterwards.
 - 🔔 Notifications (optional) — Asked only when you turn on "notify when a batch finishes". Shows one notification when a batch download ends.
 - 🌐 Access to bandcamp.com and its subdomains — Runs the player features on Bandcamp pages and loads the Bandcamp download pages for batch download. The extension runs on no other site.
+
+Justifications for the Chrome Web Store privacy form (paste them into the form, not into the listing):
+
+- storage: Saves the user's settings (shortcuts, playback options, batch download options), the batch download queue and history, and the list of visited releases. All data stays in the browser. Nothing is sent to any server.
+- downloads: Starts the files of a batch download and reads their progress. The user can see, pause, resume, cancel or delete these files on the Band Play downloads page.
+- alarms: Keeps a long batch download going in the background and retries it later when Bandcamp asks to slow down. The service worker can stop at any time, and the alarm wakes it up.
+- power (Chrome only): Used only by the Keep Awake setting. When the user turns it on, the display stays awake while the extension is playing. The setting is off by default.
+- downloads.shelf (Chrome only): Hides the browser's downloads shelf while a batch download runs, so it does not appear for every file. The shelf is shown again when the batch ends.
+- downloads.ui (Chrome only): Hides the browser's download bubble while a batch download runs, for the same reason. The bubble is shown again when the batch ends.
+- notifications (optional): Asked only when the user turns on "Notify when finished". Shows one notification when a batch download ends.
+- Host access to bandcamp.com and *.bandcamp.com: Runs the playback features on Bandcamp pages: shortcuts, autoplay, speed and pitch, marks for visited releases, the feed player and the batch download controls. For batch download, the extension also loads the Bandcamp download pages of the items the user selected. It does not run on any other site.
 
 🦊 Firefox
 

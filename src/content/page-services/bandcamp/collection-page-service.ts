@@ -2,6 +2,11 @@ import { DONATE_URL, getRateUrl } from '@shared/constants/links';
 import { exist, isWishlistUrl, notExist } from '@shared/utils';
 
 import { BandcampTrackModel } from '../../models/bandcamp-track-model';
+import {
+	applyAlternativeDesign,
+	markCollectionItemTypes,
+	markPlayingCollectionItem,
+} from '../../utils/collection-item-type';
 import { PageService } from '../page-service';
 
 import { BaseBandcampPageService } from './base/base-bandcamp-page-service';
@@ -69,6 +74,10 @@ export class CollectionPageService
 			this.clickShowAllItems();
 			await this.updateVisitedHighlighting();
 		}, 0);
+
+		applyAlternativeDesign(this.config?.alternativeDesign === true);
+		markCollectionItemTypes();
+		markPlayingCollectionItem(this.getNowPlayingTrackId());
 
 		const collectionId = this.isWishlist
 			? 'wishlist-grid'

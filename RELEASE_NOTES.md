@@ -9,6 +9,22 @@ Rules for this file (scripts/tag-releases.sh and scripts/check-docs.mjs read it)
 - A Permissions bullet whenever a permission is added, removed or explained differently.
 -->
 
+## 11.1.0
+
+An optional alternative design for your collection, and a batch download bar that starts as a small logo.
+
+### Added
+
+- **Alternative design** setting (Page tab, off by default). When it is on, each cover in your collection and wishlist shows an **Album** or **Track** label, and the section under each title (favorite track, "appears in", edit links) is hidden, so the cards are shorter. When it is off, the label is not shown.
+
+### Changed
+
+- The batch download bar starts as the Band Play logo only. Point at the logo to see "Batch download", click it to open the bar, and use the minus button to close it. While the bar is closed, the logo shows how many items are selected.
+- The **Downloaded** mark moved to the bottom right corner of the cover. Like the Album or Track label (bottom left corner), it shows only when you point at an item, and on the item that is playing.
+- The batch checkbox has the same size as the drag button of Bandcamp and sits in the same place on the opposite corner of the cover.
+- The checkbox, the Album or Track label and the Downloaded mark are as see-through as the drag button of Bandcamp (about 90% opaque), so the cover shows through a little.
+- Development: tests run with an Allure report and a feature coverage page, published from `master` to GitHub Pages. No other change for users.
+
 ## 11.0.1
 
 A fix for the downloads page when the list is long.

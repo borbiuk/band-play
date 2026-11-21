@@ -9,5 +9,6 @@ Short records of decisions that are not obvious from the code. Each record has a
 | [0003](0003-one-file-per-entry.md)        | Build every entry as one file with a fixed name              | Accepted |
 | [0004](0004-bandcamp-snapshots.md)        | Test on saved Bandcamp pages and check the live markup daily | Accepted |
 | [0005](0005-batch-download-state.md)      | Keep the batch download state in storage and alarms          | Accepted |
+| [0006](0006-allure-reporting.md)          | Publish the test report and feature coverage from master     | Accepted |
 
 A new record gets the next number. Dates come from the commit that made the decision.

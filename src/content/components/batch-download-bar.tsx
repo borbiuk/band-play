@@ -42,10 +42,14 @@ const CheckIcon = () => (
 
 const formats = Object.values(BatchDownloadFormat) as BatchDownloadFormat[];
 
+/** The name of the bar: the tooltip and the accessible name of the logo button. */
+const BAR_TITLE = 'Batch download';
+
 /**
  * The Band Play bar on Bandcamp collection and purchases pages: select all or the new releases, the
- * format of the batch and the Download button. One state at a time: idle, some selected, loading the
- * whole list, and "sent to downloads".
+ * format of the batch and the Download button. It starts as the extension logo only; a click on the
+ * logo opens the bar in place. One state at a time: idle, some selected, loading the whole list, and
+ * "sent to downloads" (these two always show the bar).
  *
  * @param {BatchDownloadBarProps} props - The props of component.
  */
@@ -63,6 +67,8 @@ export const BatchDownloadBar = ({
 	onOpenDownloadsClick,
 }: BatchDownloadBarProps) => {
 	const [isBusy, setIsBusy] = useState(false);
+	// Only the logo until the user opens the bar
+	const [isOpen, setIsOpen] = useState(false);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	// The format picked for the next batch; it falls back to the default after the batch starts
 	const [pickedFormat, setPickedFormat] =
@@ -91,6 +97,37 @@ export const BatchDownloadBar = ({
 		onDownloadClick(pickedFormat ?? undefined);
 		setPickedFormat(null);
 	};
+
+	// A running selection and the "sent" notice must stay visible
+	const isExpanded =
+		isOpen || sentCount !== null || selectionProgress !== null;
+
+	if (!isExpanded) {
+		return (
+			<button
+				type="button"
+				className="bp-launcher"
+				title={BAR_TITLE}
+				aria-label={
+					selectedCount > 0
+						? `${BAR_TITLE}, ${selectedCount} selected`
+						: BAR_TITLE
+				}
+				aria-expanded={false}
+				onClick={() => setIsOpen(true)}
+			>
+				<img
+					src={chrome.runtime.getURL('assets/logo-128.png')}
+					alt=""
+				/>
+				{selectedCount > 0 && (
+					<span className="bp-launcher__count" aria-hidden="true">
+						{selectedCount}
+					</span>
+				)}
+			</button>
+		);
+	}
 
 	let content: React.ReactNode;
 	if (sentCount !== null) {
@@ -165,10 +202,24 @@ export const BatchDownloadBar = ({
 								/>
 							</div>
 							<div className="bp-bar__count">
-								<small>Batch download</small>
+								<small>{BAR_TITLE}</small>
 							</div>
 						</>
 					)}
+					<button
+						type="button"
+						className="bp-btn bp-btn--ghost bp-btn--icon"
+						aria-label="Collapse to the logo"
+						title="Collapse"
+						onClick={() => {
+							setIsMenuOpen(false);
+							setIsOpen(false);
+						}}
+					>
+						<Svg>
+							<path d="M5 12h14" />
+						</Svg>
+					</button>
 				</div>
 				<div className="bp-bar__sep" />
 				<button

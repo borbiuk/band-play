@@ -68,6 +68,12 @@ export const PageTab = ({ config, update }: TabProps) => {
 						checked={config.showFeedPlayer}
 						onChange={(value) => update('showFeedPlayer', value)}
 					/>
+					<SwitchRow
+						label="Alternative design"
+						hint="Album or Track label and compact cards in your collection"
+						checked={config.alternativeDesign}
+						onChange={(value) => update('alternativeDesign', value)}
+					/>
 				</Card>
 			</div>
 

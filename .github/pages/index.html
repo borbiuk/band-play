@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Band Play test reports</title>
+		<style>
+			:root {
+				--bg: #fff;
+				--fg: #1a1a1a;
+				--muted: #666;
+				--link: #0969da;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--bg: #111;
+					--fg: #eee;
+					--muted: #999;
+					--link: #58a6ff;
+				}
+			}
+			body {
+				background: var(--bg);
+				color: var(--fg);
+				font:
+					16px/1.5 system-ui,
+					sans-serif;
+				margin: 0 auto;
+				max-width: 40rem;
+				padding: 1rem;
+			}
+			a {
+				color: var(--link);
+			}
+			.note {
+				color: var(--muted);
+				font-size: 0.875rem;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Band Play test reports</h1>
+		<ul>
+			<li>
+				<a href="report/">Allure report</a>: results and trend of the
+				unit and e2e tests
+			</li>
+			<li>
+				<a href="coverage/">E2E feature coverage</a>: which features
+				have e2e tests
+			</li>
+		</ul>
+		<p class="note">
+			Both reports come from the last run on the master branch. The
+			history files are in <a href="history/history.jsonl">history/</a>.
+		</p>
+	</body>
+</html>

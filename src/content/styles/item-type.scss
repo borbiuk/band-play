@@ -1,0 +1,95 @@
+/*
+ * Band Play: the "alternative design" of the collection and the wishlist (the setting `alternativeDesign`).
+ * It is on while `<html>` has the attribute `data-band-play-alt-design`, set by the collection page service.
+ * Then each cover shows the "Album" / "Track" badge in its bottom left corner (the "Downloaded" badge is in the bottom
+ * right corner; the batch checkbox is top left) and the section under the title is hidden. Without the setting the
+ * badge is never shown.
+ * The badges do not take clicks, so a click on the cover still plays the item.
+ * Both badges are shown only while the pointer is over the item, while it has the keyboard focus
+ * and for the item that plays now (Bandcamp's class `playing`, and the attribute `data-band-play-playing` that the
+ * collection page service sets from the player bar).
+ */
+
+/* The badge uses the cover as its box */
+#collection-grid .collection-item-art-container,
+#wishlist-grid .collection-item-art-container {
+	position: relative;
+}
+
+.band-play-item-type-badge {
+	display: none;
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	z-index: 9;
+	padding: 3px 6px;
+	border-radius: 4px;
+	/* 90% opaque, like Bandcamp's drag button and the other Band Play items on the cover */
+	background: rgba(18, 38, 46, 0.9);
+	color: #fff;
+	font:
+		700 10px/1 'Helvetica Neue',
+		Helvetica,
+		Arial,
+		sans-serif;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	pointer-events: none;
+}
+
+/* The badge exists only in the alternative design */
+html[data-band-play-alt-design] .band-play-item-type-badge {
+	display: block;
+}
+
+/* Darker than the brand aqua, so the white text keeps a 4.5:1 contrast also at 90% opacity over a white cover */
+.band-play-item-type-badge--album {
+	background: rgba(10, 104, 129, 0.9);
+}
+
+/*
+ * Bandcamp gives every card a fixed minimum height (`li.collection-item-container { min-height: 360px }`),
+ * which would keep the empty room of the hidden section. The card takes the height of its content instead.
+ */
+html[data-band-play-alt-design] #collection-grid .collection-item-container,
+html[data-band-play-alt-design] #wishlist-grid .collection-item-container {
+	min-height: 0;
+}
+
+/*
+ * The section under the title (favorite track, "why do you love", "appears in", edit links, Bandcamp's own
+ * download link) is hidden, so a card takes less room. The batch download reads the download link from the
+ * DOM, so it still works.
+ */
+html[data-band-play-alt-design]
+	#collection-grid
+	.collection-item-details-container,
+html[data-band-play-alt-design]
+	#wishlist-grid
+	.collection-item-details-container {
+	display: none;
+}
+
+/* Hidden until the item is hovered, focused or playing (the "Downloaded" badge is only on the collection items) */
+.collection-item-container .band-play-item-type-badge,
+.collection-item-container .band-play-downloaded-badge {
+	opacity: 0;
+	transition: opacity 0.12s;
+}
+.collection-item-container:hover .band-play-item-type-badge,
+.collection-item-container:hover .band-play-downloaded-badge,
+.collection-item-container:focus-within .band-play-item-type-badge,
+.collection-item-container:focus-within .band-play-downloaded-badge,
+.collection-item-container.playing .band-play-item-type-badge,
+.collection-item-container.playing .band-play-downloaded-badge,
+.collection-item-container[data-band-play-playing] .band-play-item-type-badge,
+.collection-item-container[data-band-play-playing] .band-play-downloaded-badge {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.collection-item-container .band-play-item-type-badge,
+	.collection-item-container .band-play-downloaded-badge {
+		transition: none;
+	}
+}
