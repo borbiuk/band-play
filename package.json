@@ -1,6 +1,6 @@
 {
 	"name": "bandcamp-play",
-	"version": "11.0.1",
+	"version": "11.1.0",
 	"description": "Enhanced playback for Bandcamp: autoplay, speed, pitch, hotkeys, history, batch download, and more.",
 	"private": true,
 	"author": "Nazarii Borbiuk",
