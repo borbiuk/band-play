@@ -69,6 +69,8 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	height: 31px;
 	border: 1px solid #a9d6e6;
 	border-radius: 6px;
+	/* As see-through as Bandcamp's drag button: its white fill is about 90% opaque (measured on a real own collection) */
+	background-color: rgba(255, 255, 255, 0.9);
 	box-shadow: none;
 	opacity: 0;
 	pointer-events: none;
@@ -82,6 +84,7 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .collection-item-container .band-play-batch-checkbox:checked {
 	border-color: $bp-aqua;
+	background-color: rgba($bp-aqua, 0.9);
 	box-shadow: none;
 }
 /* A selected card gets an aqua frame */
@@ -105,7 +108,7 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	height: 20px;
 	padding: 0 7px 0 5px;
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.96);
+	background: rgba(255, 255, 255, 0.9);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 	color: $bp-green;
 	font: 700 11px/1 $bp-font;

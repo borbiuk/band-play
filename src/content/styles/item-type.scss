@@ -24,7 +24,8 @@
 	z-index: 9;
 	padding: 3px 6px;
 	border-radius: 4px;
-	background: rgba(18, 38, 46, 0.85);
+	/* 90% opaque, like Bandcamp's drag button and the other Band Play items on the cover */
+	background: rgba(18, 38, 46, 0.9);
 	color: #fff;
 	font:
 		700 10px/1 'Helvetica Neue',
@@ -41,9 +42,9 @@ html[data-band-play-alt-design] .band-play-item-type-badge {
 	display: block;
 }
 
-/* Darker than the brand aqua, so the white text keeps a 4.5:1 contrast */
+/* Darker than the brand aqua, so the white text keeps a 4.5:1 contrast also at 90% opacity over a white cover */
 .band-play-item-type-badge--album {
-	background: #0e7c99;
+	background: rgba(10, 104, 129, 0.9);
 }
 
 /*

@@ -99,6 +99,21 @@ test.describe('item type badge', feature('item-type-badge'), () => {
 		await expect(badge).toHaveCSS('opacity', '0');
 	});
 
+	test('should be as see-through as the drag button of Bandcamp', async ({
+		page,
+	}) => {
+		await openBandcamp(page, SYNTHETIC_PAGES.collection);
+
+		await expect(badgesOf(page, 'Laser Cut')).toHaveCSS(
+			'background-color',
+			'rgba(10, 104, 129, 0.9)'
+		);
+		await expect(badgesOf(page, 'Night Signal')).toHaveCSS(
+			'background-color',
+			'rgba(18, 38, 46, 0.9)'
+		);
+	});
+
 	test('should keep the badge of the item that plays visible without the pointer', async ({
 		page,
 	}) => {

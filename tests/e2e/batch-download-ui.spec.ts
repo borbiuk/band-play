@@ -174,6 +174,28 @@ test.describe('on the collection page', () => {
 	);
 
 	test(
+		'should be as see-through as the drag button of Bandcamp, also when checked',
+		feature('batch-select'),
+		async ({ page }) => {
+			const checkbox = checkboxOf(page, 'Laser Cut');
+
+			// Bandcamp's drag button has a white fill that is about 90% opaque
+			await expect(checkbox).toHaveCSS(
+				'background-color',
+				'rgba(255, 255, 255, 0.9)'
+			);
+
+			// The checkbox takes clicks only while the item is hovered
+			await page.getByText('Laser Cut').hover();
+			await checkbox.check();
+			await expect(checkbox).toHaveCSS(
+				'background-color',
+				'rgba(29, 160, 195, 0.9)'
+			);
+		}
+	);
+
+	test(
 		'should select a range with Shift and everything with Select all',
 		feature('batch-select'),
 		async ({ page }) => {
@@ -297,6 +319,11 @@ test.describe('the downloaded badge on the collection page', () => {
 			const badge = page.getByText('Downloaded', { exact: true });
 
 			await expect(badge).toHaveCSS('opacity', '0');
+			// As see-through as the drag button of Bandcamp
+			await expect(badge).toHaveCSS(
+				'background-color',
+				'rgba(255, 255, 255, 0.9)'
+			);
 			expect(
 				await badge.evaluate((element) => {
 					const cover = element.parentElement.getBoundingClientRect();
