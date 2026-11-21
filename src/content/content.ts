@@ -8,6 +8,7 @@ import { PageServiceWorker } from './services/page-service-worker';
 import { UserInputService } from './services/user-input-service';
 import './styles/visited.scss';
 import './styles/batch-download.scss';
+import './styles/item-type.scss';
 
 /**
  * Main content script entry point.

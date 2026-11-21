@@ -17,3 +17,7 @@ test-results
 playwright-report
 test-results-live
 playwright-report-live
+allure-results
+allure-report
+allure-history
+coverage-report

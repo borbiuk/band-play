@@ -25,6 +25,7 @@ import {
 	PURCHASES_TITLE_SELECTOR,
 	REDOWNLOAD_ITEM_SELECTOR,
 } from '../utils/batch-download-dom';
+import { ITEM_TYPE_BADGE_CLASS } from '../utils/collection-item-type';
 
 const BATCH_OVERLAY_ROOT_ID = 'band-play-batch-overlay-root';
 
@@ -39,12 +40,16 @@ const SENT_NOTICE_MS = 4000;
 /** The wishlist has nothing to download: no checkboxes and no bar there. */
 const isWishlistPage = (): boolean => isWishlistUrl(window.location.href);
 
-/** True when a mutation only adds or removes the checkboxes this service renders. */
+/**
+ * True when a mutation only adds or removes the checkboxes this service renders,
+ * or the album / track badges of the collection page service.
+ */
 const isOwnCheckboxMutation = (record: MutationRecord): boolean =>
 	[...record.addedNodes, ...record.removedNodes].every(
 		(node) =>
 			node instanceof HTMLElement &&
-			node.hasAttribute('data-band-play-batch-checkbox')
+			(node.hasAttribute('data-band-play-batch-checkbox') ||
+				node.classList.contains(ITEM_TYPE_BADGE_CLASS))
 	);
 const CHECKBOX_ATTR = 'data-band-play-batch-id';
 

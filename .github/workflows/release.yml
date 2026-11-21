@@ -35,7 +35,7 @@ jobs:
         permissions:
             # Create the GitHub Release and its assets
             contents: write
-            # Read the build workflow runs of the release commit
+            # Read the build and report workflow runs of the release commit
             actions: read
             # Sign the build provenance of the packages
             id-token: write
@@ -91,6 +91,13 @@ jobs:
                       build_result=$(gh run list --workflow build.yml --commit "$GITHUB_SHA" --json conclusion --jq '.[0].conclusion')
                       if [ "$build_result" != "success" ]; then
                           echo "The build workflow of this commit did not succeed (result: '${build_result:-none}')."
+                          exit 1
+                      fi
+                      # On master the e2e tests run in report.yml (build.yml runs them on pull requests only),
+                      # and a failed test fails that run although the report is still published
+                      report_result=$(gh run list --workflow report.yml --commit "$GITHUB_SHA" --json conclusion --jq '.[0].conclusion')
+                      if [ "$report_result" != "success" ]; then
+                          echo "The report workflow of this commit did not succeed (result: '${report_result:-none}')."
                           exit 1
                       fi
                       if gh release view "$version" > /dev/null 2>&1; then

@@ -65,7 +65,9 @@ jobs:
             - run: npm run lint:unused
 
     # The extension in Playwright's bundled Chromium against Bandcamp page snapshots (no network)
+    # Pull requests only: on master report.yml runs the same tests, then publishes the report
     e2e:
+        if: ${{ github.event_name == 'pull_request' }}
         runs-on: ubuntu-latest
         timeout-minutes: 15
 

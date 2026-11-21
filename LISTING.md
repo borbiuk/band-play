@@ -11,8 +11,9 @@ Power up Bandcamp with keyboard shortcuts, media keys, speed and pitch control, 
 - ▶️ Autoplay and autoscroll: The next track of the album, collection, wishlist, feed or discover list starts by itself, and the page scrolls to it
 - 🔁 Loop track: Repeat the current track
 - 🎨 Highlight visited: Albums and tracks you already opened or played are marked on Bandcamp pages
+- 🏷️ Alternative design (optional): A compact collection and wishlist; covers show whether the item is an album or a track, and the section under each title is hidden
 - 🧩 Feed player: A small player with cover, title and progress bar on the feed page
-- 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV or AIFF
+- 📥 Batch download: Select items on your collection or purchases page (one by one, a range with Shift+click, all, or only the new ones) and download them in the audio format you choose in the popup
 - 📋 Downloads page: See the overall progress, speed and time left; filter, search and sort the list; pause, resume, retry, cancel or remove items; set how many files download at the same time (1 to 15)
 - ⚙️ Popup: Four tabs (Playback, Page, Downloads, Shortcuts); turn each shortcut on or off, record a new key, skip releases you already downloaded, get a notification when a batch finishes, import, export or reset your settings
 - 💤 Keep Awake (Chrome): Keeps the display on while you listen

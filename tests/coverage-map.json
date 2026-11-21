@@ -1,0 +1,229 @@
+{
+	"epics": {
+		"playback": "Playback",
+		"automation": "Automation",
+		"pages": "Page features",
+		"shortcuts": "Keyboard shortcuts",
+		"batch-download": "Batch download",
+		"downloads-page": "Downloads page",
+		"settings": "Settings popup",
+		"infra": "Extension loading"
+	},
+	"features": {
+		"play-pause": {
+			"epic": "playback",
+			"title": "Play and pause with Space"
+		},
+		"next-previous-track": {
+			"epic": "playback",
+			"title": "Play the next and the previous track"
+		},
+		"play-track-by-index": {
+			"epic": "playback",
+			"title": "Play a track by its number (Shift + digit)"
+		},
+		"jump-to-position": {
+			"epic": "playback",
+			"title": "Jump to a position of the track (digit keys)"
+		},
+		"seek": {
+			"epic": "playback",
+			"title": "Seek forward and backward by the seek step"
+		},
+		"speed": {
+			"epic": "playback",
+			"title": "Change and reset the playback speed"
+		},
+		"pitch": {
+			"epic": "playback",
+			"title": "Switch and reset pitch preservation"
+		},
+		"loop-track": {
+			"epic": "playback",
+			"title": "Loop the current track"
+		},
+		"media-keys": {
+			"epic": "playback",
+			"title": "Media keys control the player",
+			"skip": "Not testable in the Chromium e2e suite: hardware media key events cannot be sent to the page"
+		},
+		"autoplay": {
+			"epic": "automation",
+			"title": "Start the next track when one ends"
+		},
+		"autoscroll": {
+			"epic": "automation",
+			"title": "Scroll to the item that started playing"
+		},
+		"keep-awake": {
+			"epic": "automation",
+			"title": "Keep the display awake while the setting is on (Chrome only)",
+			"skip": "Not testable in the Chromium e2e suite: the chrome.power state cannot be observed"
+		},
+		"highlight-visited": {
+			"epic": "pages",
+			"title": "Mark visited albums and tracks"
+		},
+		"item-type-badge": {
+			"epic": "pages",
+			"title": "Mark albums and tracks in the collection and the wishlist"
+		},
+		"alternative-design": {
+			"epic": "pages",
+			"title": "Alternative design of the collection and the wishlist (setting)"
+		},
+		"feed-player": {
+			"epic": "pages",
+			"title": "Feed page player"
+		},
+		"open-in-new-tab": {
+			"epic": "pages",
+			"title": "Open the current item in a new tab"
+		},
+		"wishlist-toggle": {
+			"epic": "pages",
+			"title": "Add or remove the current item from the wishlist"
+		},
+		"page-services": {
+			"epic": "pages",
+			"title": "Pick the page service by URL and leave other pages alone"
+		},
+		"shortcut-dispatch": {
+			"epic": "shortcuts",
+			"title": "Keys act on an exact match only and not while typing"
+		},
+		"shortcut-rebind": {
+			"epic": "shortcuts",
+			"title": "Record and save a new combination"
+		},
+		"shortcut-conflicts": {
+			"epic": "shortcuts",
+			"title": "Refuse a combination that is used or reserved by the browser"
+		},
+		"shortcut-toggle": {
+			"epic": "shortcuts",
+			"title": "Switch a shortcut off and on"
+		},
+		"shortcut-reset": {
+			"epic": "shortcuts",
+			"title": "Reset one or all shortcuts"
+		},
+		"shortcut-search": {
+			"epic": "shortcuts",
+			"title": "Filter the shortcut list"
+		},
+		"batch-bar": {
+			"epic": "batch-download",
+			"title": "Batch bar on collection and purchases pages"
+		},
+		"batch-select": {
+			"epic": "batch-download",
+			"title": "Select releases one by one, by range and all"
+		},
+		"batch-format": {
+			"epic": "batch-download",
+			"title": "Pick the format of a batch"
+		},
+		"batch-send": {
+			"epic": "batch-download",
+			"title": "Send the selected releases to the downloads page"
+		},
+		"batch-history": {
+			"epic": "batch-download",
+			"title": "Mark downloaded releases and select only new ones"
+		},
+		"batch-pages-scope": {
+			"epic": "batch-download",
+			"title": "Batch download on the supported pages only"
+		},
+		"batch-concurrency": {
+			"epic": "batch-download",
+			"title": "Limit how many files download at the same time"
+		},
+		"batch-rate-limit-retry": {
+			"epic": "batch-download",
+			"title": "Retry later after a too many requests answer"
+		},
+		"batch-notify": {
+			"epic": "batch-download",
+			"title": "Notify when a batch finishes"
+		},
+		"batch-skip-downloaded": {
+			"epic": "batch-download",
+			"title": "Skip releases already downloaded in the same format"
+		},
+		"downloads-overview": {
+			"epic": "downloads-page",
+			"title": "Empty state, overall progress and item rows"
+		},
+		"downloads-filter": {
+			"epic": "downloads-page",
+			"title": "Filter by status"
+		},
+		"downloads-search": {
+			"epic": "downloads-page",
+			"title": "Search by title and artist"
+		},
+		"downloads-sort": {
+			"epic": "downloads-page",
+			"title": "Sort the list"
+		},
+		"downloads-bundles": {
+			"epic": "downloads-page",
+			"title": "Fold a bundle into one row"
+		},
+		"downloads-status-messages": {
+			"epic": "downloads-page",
+			"title": "Explain a rate limit, a pause and a verified email warning"
+		},
+		"downloads-controls": {
+			"epic": "downloads-page",
+			"title": "Clear, delete and per item controls with confirmations"
+		},
+		"downloads-header-settings": {
+			"epic": "downloads-page",
+			"title": "Batch settings in the page header"
+		},
+		"downloads-virtual-list": {
+			"epic": "downloads-page",
+			"title": "Render a window of a long list"
+		},
+		"settings-persist": {
+			"epic": "settings",
+			"title": "Save only the changed setting and show it again"
+		},
+		"settings-tabs": {
+			"epic": "settings",
+			"title": "Popup tabs and keyboard navigation"
+		},
+		"settings-playback-step": {
+			"epic": "settings",
+			"title": "Seek step input"
+		},
+		"settings-batch-options": {
+			"epic": "settings",
+			"title": "Batch download options in the popup"
+		},
+		"settings-visited-history": {
+			"epic": "settings",
+			"title": "Clear the visited history"
+		},
+		"settings-reset": {
+			"epic": "settings",
+			"title": "Reset all settings"
+		},
+		"settings-export-import": {
+			"epic": "settings",
+			"title": "Export and import the settings file"
+		},
+		"settings-firefox": {
+			"epic": "settings",
+			"title": "Firefox differences (Keep Awake hidden, import in a tab)",
+			"skip": "Not testable in the Chromium e2e suite: the suite runs in Chromium only"
+		},
+		"extension-loads": {
+			"epic": "infra",
+			"title": "The built extension loads on a Bandcamp page"
+		}
+	}
+}

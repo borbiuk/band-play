@@ -34,6 +34,12 @@ export interface ConfigModel {
 	/** Show the custom feed player on Bandcamp feed pages */
 	showFeedPlayer: boolean;
 
+	/**
+	 * Alternative design of the collection and wishlist pages: each cover shows its Album / Track label
+	 * and the section under the title (favorite track, "appears in", edit links) is hidden.
+	 */
+	alternativeDesign: boolean;
+
 	/** Keyboard shortcuts configuration */
 	shortcuts: ShortcutConfig;
 

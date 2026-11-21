@@ -1,0 +1,130 @@
+name: report
+
+# Test results, the trend and the e2e feature coverage of master, published to GitHub Pages.
+# Pull requests only run the tests (build.yml); nothing is published from them.
+on:
+    push:
+        branches: [master]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# One publish at a time; a run that waits is replaced by a newer one, a running one is not cancelled
+concurrency:
+    group: report-pages
+    cancel-in-progress: false
+
+env:
+    # The run history lives in the published site and is fetched from there before the next report
+    SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
+jobs:
+    report:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        outputs:
+            tests: ${{ steps.tests.outcome }}
+            coverage: ${{ steps.coverage.outcome }}
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - name: Use Node.js 24.22.1
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: 24.22.1
+                  cache: npm
+            - run: npm ci
+            - name: Check the registry signatures of the installed packages
+              run: npm audit signatures
+            - name: Install Playwright Chromium
+              run: npx --no playwright install --with-deps chromium
+            - name: Fetch the history of the previous runs (empty on the first run)
+              run: |
+                  mkdir -p allure-history coverage-history
+                  curl -fsSL "$SITE_URL/history/history.jsonl" -o allure-history/history.jsonl || echo "No Allure history yet"
+                  curl -fsSL "$SITE_URL/history/coverage.jsonl" -o coverage-history/history.jsonl || echo "No coverage history yet"
+            # The failure of the tests is reported by the last job, so the report is still published
+            - name: Run unit and e2e tests with the Allure reporter
+              id: tests
+              continue-on-error: true
+              run: npm run test:allure
+            - name: Generate the Allure report
+              if: ${{ !cancelled() }}
+              run: npm run report:allure
+            - name: Calculate the e2e feature coverage
+              id: coverage
+              if: ${{ !cancelled() }}
+              continue-on-error: true
+              run: npm run report:coverage -- --history coverage-history/history.jsonl
+            - name: Write the job summary
+              if: ${{ !cancelled() }}
+              run: |
+                  {
+                    echo "Published report: $SITE_URL/"
+                    echo
+                    cat coverage-report/coverage.md || true
+                  } >> "$GITHUB_STEP_SUMMARY"
+            - name: Assemble the site
+              if: ${{ !cancelled() }}
+              run: |
+                  mkdir -p site/report site/coverage site/history
+                  cp -R allure-report/. site/report/
+                  cp -R coverage-report/. site/coverage/
+                  cp allure-history/history.jsonl site/history/history.jsonl
+                  cp coverage-history/history.jsonl site/history/coverage.jsonl
+                  cp .github/pages/index.html site/index.html
+            - name: Upload the site
+              if: ${{ !cancelled() }}
+              uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+              with:
+                  path: site
+            - name: Upload the Playwright report
+              if: ${{ !cancelled() && steps.tests.outcome == 'failure' }}
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: playwright-report-master
+                  path: |
+                      playwright-report/
+                      test-results/
+                  retention-days: 14
+
+    # Only master publishes; a manual run from another branch builds the report and stops here
+    deploy:
+        needs: report
+        if: ${{ !cancelled() && needs.report.result == 'success' && github.ref == 'refs/heads/master' }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+    # Master turns red when the tests or the labels failed, even though the report was published
+    result:
+        needs: [report, deploy]
+        if: ${{ !cancelled() }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        steps:
+            - name: Fail when the report job, the tests, the coverage or the deploy failed
+              env:
+                  REPORT: ${{ needs.report.result }}
+                  TESTS: ${{ needs.report.outputs.tests }}
+                  COVERAGE: ${{ needs.report.outputs.coverage }}
+                  DEPLOY: ${{ needs.deploy.result }}
+              run: |
+                  echo "report=$REPORT tests=$TESTS coverage=$COVERAGE deploy=$DEPLOY"
+                  if [ "$REPORT" != "success" ] || [ "$TESTS" = "failure" ] || [ "$COVERAGE" = "failure" ] || [ "$DEPLOY" = "failure" ]; then
+                    exit 1
+                  fi

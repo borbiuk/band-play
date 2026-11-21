@@ -54,13 +54,19 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 .collection-item-container {
 	position: relative;
 }
+/*
+ * On your own collection Bandcamp shows its own drag button (`.drag-thumb`, 31px) in the top right corner of the
+ * cover, 8px from the cover edges. The checkbox mirrors it in the top left corner: the same size and the same 8px.
+ * `box-sizing` is set because Bandcamp makes every input `content-box`, which would add the border to the size.
+ */
 .collection-item-container .band-play-batch-checkbox {
 	position: absolute;
-	left: 16px;
-	top: 16px;
+	left: 8px;
+	top: 8px;
 	z-index: 10;
-	width: 30px;
-	height: 30px;
+	box-sizing: border-box;
+	width: 31px;
+	height: 31px;
 	border: 1px solid #a9d6e6;
 	border-radius: 6px;
 	box-shadow: none;
@@ -84,10 +90,13 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	outline-offset: 2px;
 }
 
-/* "Already downloaded in this format": a badge on the cover, separate from the checkbox */
+/*
+ * "Already downloaded in this format": a badge in the bottom right corner of the cover, separate from the checkbox.
+ * It is shown on hover and for the item that plays: see item-type.scss.
+ */
 .band-play-downloaded-badge {
 	position: absolute;
-	left: 8px;
+	right: 8px;
 	bottom: 8px;
 	z-index: 9;
 	display: inline-flex;
@@ -138,11 +147,68 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 #band-play-batch-overlay-root * {
 	box-sizing: border-box;
 }
+/* The closed bar: only the extension logo, in the place of the bar. A click on it opens the bar. */
+.bp-launcher {
+	position: fixed;
+	right: 20px;
+	bottom: 96px;
+	z-index: 100;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	border: 1px solid $bp-line;
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.94);
+	-webkit-backdrop-filter: blur(12px) saturate(1.4);
+	backdrop-filter: blur(12px) saturate(1.4);
+	box-shadow:
+		0 10px 28px -8px rgba(18, 38, 46, 0.28),
+		0 2px 6px rgba(18, 38, 46, 0.1);
+	cursor: pointer;
+	transition:
+		border-color 0.12s,
+		background-color 0.12s,
+		transform 0.12s;
+}
+.bp-launcher:hover {
+	border-color: $bp-aqua;
+	background: $bp-aqua-50;
+	transform: scale(1.06);
+}
+.bp-launcher:focus-visible {
+	outline: 2px solid $bp-aqua;
+	outline-offset: 2px;
+}
+.bp-launcher img {
+	width: 30px;
+	height: 30px;
+	pointer-events: none;
+}
+/* The number of selected items, so a selection is not lost while the bar is closed */
+.bp-launcher__count {
+	position: absolute;
+	top: -7px;
+	right: -7px;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 5px;
+	border-radius: 999px;
+	background: $bp-aqua-700;
+	color: #fff;
+	font: 700 11px/20px $bp-font;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+	pointer-events: none;
+}
 .bp-bar {
 	position: fixed;
 	right: 20px;
 	bottom: 96px;
 	z-index: 100;
+	transform-origin: bottom right;
+	animation: bp-bar-open 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -160,6 +226,17 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 		0 2px 6px rgba(18, 38, 46, 0.1);
 	font: 13px/1 $bp-font;
 	color: $bp-ink;
+}
+/* The bar grows out of the logo corner */
+@keyframes bp-bar-open {
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.6);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
 }
 .bp-bar__head {
 	display: flex;
@@ -378,8 +455,12 @@ $bp-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.band-play-batch-checkbox {
+	.band-play-batch-checkbox,
+	.bp-launcher {
 		transition: none;
+	}
+	.bp-bar {
+		animation: none;
 	}
 }
 
