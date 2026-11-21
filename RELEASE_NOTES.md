@@ -9,6 +9,18 @@ Rules for this file (scripts/tag-releases.sh and scripts/check-docs.mjs read it)
 - A Permissions bullet whenever a permission is added, removed or explained differently.
 -->
 
+## 11.0.1
+
+A fix for the downloads page when the list is long.
+
+### Changed
+
+- Updated the build and test tools and the `lucide-react` icon library. No other change for users.
+
+### Fixed
+
+- Downloads page: with more than 100 items, the list showed the first 100 rows until you scrolled. It now shows only the rows around the visible part of the page.
+
 ## 11.0.0
 
 A new look for the popup, the downloads page and the Bandcamp page elements, a new icon, and more control over batch download.
