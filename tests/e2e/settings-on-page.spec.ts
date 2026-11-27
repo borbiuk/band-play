@@ -8,84 +8,95 @@ import {
 	recordKeys,
 } from './fixtures/bandcamp';
 import { expect, test } from './fixtures/extension';
+import { feature } from './fixtures/labels';
 
-test('should seek by a playback step over 60 seconds stored in the settings', async ({
-	page,
-	storage,
-}) => {
-	await storage.set({ playbackStep: 90 });
-	await openBandcamp(page, PAGES.album);
-	await addPlayerAudio(page);
+test(
+	'should seek by a playback step over 60 seconds stored in the settings',
+	feature('seek'),
+	async ({ page, storage }) => {
+		await storage.set({ playbackStep: 90 });
+		await openBandcamp(page, PAGES.album);
+		await addPlayerAudio(page);
 
-	await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
 
-	await expect
-		.poll(async () => (await readAudio(page)).currentTime)
-		.toBeCloseTo(90, 3);
-});
+		await expect
+			.poll(async () => (await readAudio(page)).currentTime)
+			.toBeCloseTo(90, 3);
+	}
+);
 
-test('should use a play/pause key combination stored in the settings', async ({
-	page,
-	storage,
-}) => {
-	await storage.set({
-		shortcuts: { [ShortcutType.PlayPause]: JSON.stringify(['KeyK']) },
-	});
-	await openBandcamp(page, PAGES.album);
-	await addPlayerAudio(page);
-	const readKeys = await recordKeys(page);
+test(
+	'should use a play/pause key combination stored in the settings',
+	feature('shortcut-rebind'),
+	async ({ page, storage }) => {
+		await storage.set({
+			shortcuts: { [ShortcutType.PlayPause]: JSON.stringify(['KeyK']) },
+		});
+		await openBandcamp(page, PAGES.album);
+		await addPlayerAudio(page);
+		const readKeys = await recordKeys(page);
 
-	await page.keyboard.press('Space');
-	await page.keyboard.press('KeyK');
+		await page.keyboard.press('Space');
+		await page.keyboard.press('KeyK');
 
-	await expect.poll(async () => (await readAudio(page)).paused).toBe(false);
-	await expect.poll(readKeys).toEqual([
-		{ code: 'Space', defaultPrevented: false },
-		{ code: 'KeyK', defaultPrevented: true },
-	]);
-});
+		await expect
+			.poll(async () => (await readAudio(page)).paused)
+			.toBe(false);
+		await expect.poll(readKeys).toEqual([
+			{ code: 'Space', defaultPrevented: false },
+			{ code: 'KeyK', defaultPrevented: true },
+		]);
+	}
+);
 
-test('should leave the key of a disabled shortcut to the page', async ({
-	page,
-	storage,
-}) => {
-	await storage.set({ disabledShortcuts: [ShortcutType.PlayPause] });
-	await openBandcamp(page, PAGES.album);
-	await addPlayerAudio(page);
-	const readKeys = await recordKeys(page);
+test(
+	'should leave the key of a disabled shortcut to the page',
+	feature('shortcut-toggle'),
+	async ({ page, storage }) => {
+		await storage.set({ disabledShortcuts: [ShortcutType.PlayPause] });
+		await openBandcamp(page, PAGES.album);
+		await addPlayerAudio(page);
+		const readKeys = await recordKeys(page);
 
-	await page.keyboard.press('Space');
+		await page.keyboard.press('Space');
 
-	await expect
-		.poll(readKeys)
-		.toEqual([{ code: 'Space', defaultPrevented: false }]);
-	expect((await readAudio(page)).paused).toBe(true);
-});
+		await expect
+			.poll(readKeys)
+			.toEqual([{ code: 'Space', defaultPrevented: false }]);
+		expect((await readAudio(page)).paused).toBe(true);
+	}
+);
 
-test('should keep the other shortcuts working when one is disabled', async ({
-	page,
-	storage,
-}) => {
-	await storage.set({ disabledShortcuts: [ShortcutType.NextTrack] });
-	await openBandcamp(page, PAGES.album);
-	await addPlayerAudio(page);
+test(
+	'should keep the other shortcuts working when one is disabled',
+	feature('shortcut-toggle'),
+	async ({ page, storage }) => {
+		await storage.set({ disabledShortcuts: [ShortcutType.NextTrack] });
+		await openBandcamp(page, PAGES.album);
+		await addPlayerAudio(page);
 
-	await page.keyboard.press('Space');
+		await page.keyboard.press('Space');
 
-	await expect.poll(async () => (await readAudio(page)).paused).toBe(false);
-});
+		await expect
+			.poll(async () => (await readAudio(page)).paused)
+			.toBe(false);
+	}
+);
 
-test('should leave the arrow keys to a Bandcamp page without a player service', async ({
-	page,
-}) => {
-	await openBandcamp(page, PAGES.artist);
-	const readKeys = await recordKeys(page);
+test(
+	'should leave the arrow keys to a Bandcamp page without a player service',
+	feature('page-services'),
+	async ({ page }) => {
+		await openBandcamp(page, PAGES.artist);
+		const readKeys = await recordKeys(page);
 
-	await page.keyboard.press('ArrowDown');
-	await page.keyboard.press('Space');
+		await page.keyboard.press('ArrowDown');
+		await page.keyboard.press('Space');
 
-	await expect.poll(readKeys).toEqual([
-		{ code: 'ArrowDown', defaultPrevented: false },
-		{ code: 'Space', defaultPrevented: false },
-	]);
-});
+		await expect.poll(readKeys).toEqual([
+			{ code: 'ArrowDown', defaultPrevented: false },
+			{ code: 'Space', defaultPrevented: false },
+		]);
+	}
+);

@@ -25,6 +25,10 @@ export default [
 			'**/playwright-report/**',
 			'**/test-results-live/**',
 			'**/playwright-report-live/**',
+			'**/allure-results/**',
+			'**/allure-report/**',
+			'**/allure-history/**',
+			'**/coverage-report/**',
 			// Temporary folders zip.sh leaves behind when it stops on an error
 			'**/band-play-build*/**',
 			// Design prototypes and the style guide (plain browser pages, not extension code)

@@ -16,30 +16,34 @@ Dependencies are pinned to exact versions (`.npmrc` sets `save-exact=true`). Add
 
 ## npm scripts
 
-| Script                   | Description                                                                                     |
-| ------------------------ | ----------------------------------------------------------------------------------------------- |
-| `npm run watch`          | Development build for Chrome into `dist/`, rebuilt on every change.                             |
-| `npm run build`          | Production build for Chrome into `dist/`.                                                       |
-| `npm run build:firefox`  | Production build for Firefox into `dist-firefox/`.                                              |
-| `npm run analyze`        | Production build with `webpack-bundle-analyzer`, to inspect the bundle sizes.                   |
-| `npm run clean`          | Remove `dist/` and `dist-firefox/`.                                                             |
-| `npm run zip`            | Rebuild both browsers and create `.zip` packages for publishing (runs `zip.sh`).                |
-| `npm run typecheck`      | TypeScript 7 type check of `src/` and `tests/` without emitting files.                          |
-| `npm run lint`           | ESLint for the whole repository, followed by the type check.                                    |
-| `npm run lint:fix`       | ESLint with automatic fixes.                                                                    |
-| `npm run lint:firefox`   | `web-ext lint` for the Firefox build (run `npm run build:firefox` first).                       |
-| `npm run lint:docs`      | markdownlint and `scripts/check-docs.mjs`: relative links and the release headings.             |
-| `npm run lint:unused`    | knip: files, exports and dependencies that nothing uses (`knip.jsonc`).                         |
-| `npm test`               | The `unit` and `e2e` tests (see [Testing](#testing)).                                           |
-| `npm run test:unit`      | Unit tests (no browser, no build).                                                              |
-| `npm run test:e2e`       | End-to-end tests of the extension in Chromium on saved Bandcamp pages (builds `dist/` first).   |
-| `npm run test:live`      | Smoke tests against real bandcamp.com (needs network; builds `dist/` first).                    |
-| `npm run test:snapshots` | Refresh the Bandcamp page snapshots the e2e tests use (needs network).                          |
-| `npm run format`         | Prettier for `.ts`, `.tsx`, `.js`, `.mjs`, `.json`, `.md`, `.yml`, `.scss`, `.css` and `.html`. |
-| `npm run format:check`   | Fail if any of these files is not formatted (run in CI).                                        |
-| `npm run check:versions` | Fail if any dependency in `package.json` is not pinned to an exact version.                     |
-| `npm run check:outdated` | List outdated dependencies (`npm outdated`). For local use, not run in CI.                      |
-| `npm run prepare`        | Installs the Husky Git hooks (runs on `npm install`).                                           |
+| Script                       | Description                                                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `npm run watch`              | Development build for Chrome into `dist/`, rebuilt on every change.                                                 |
+| `npm run build`              | Production build for Chrome into `dist/`.                                                                           |
+| `npm run build:firefox`      | Production build for Firefox into `dist-firefox/`.                                                                  |
+| `npm run analyze`            | Production build with `webpack-bundle-analyzer`, to inspect the bundle sizes.                                       |
+| `npm run clean`              | Remove `dist/` and `dist-firefox/`.                                                                                 |
+| `npm run zip`                | Rebuild both browsers and create `.zip` packages for publishing (runs `zip.sh`).                                    |
+| `npm run typecheck`          | TypeScript 7 type check of `src/` and `tests/` without emitting files.                                              |
+| `npm run lint`               | ESLint for the whole repository, followed by the type check.                                                        |
+| `npm run lint:fix`           | ESLint with automatic fixes.                                                                                        |
+| `npm run lint:firefox`       | `web-ext lint` for the Firefox build (run `npm run build:firefox` first).                                           |
+| `npm run lint:docs`          | markdownlint and `scripts/check-docs.mjs`: relative links and the release headings.                                 |
+| `npm run lint:unused`        | knip: files, exports and dependencies that nothing uses (`knip.jsonc`).                                             |
+| `npm test`                   | The `unit` and `e2e` tests (see [Testing](#testing)).                                                               |
+| `npm run test:unit`          | Unit tests (no browser, no build).                                                                                  |
+| `npm run test:e2e`           | End-to-end tests of the extension in Chromium on saved Bandcamp pages (builds `dist/` first).                       |
+| `npm run test:live`          | Smoke tests against real bandcamp.com (needs network; builds `dist/` first).                                        |
+| `npm run test:allure`        | Unit and e2e tests with the Allure reporter (results in `allure-results/`).                                         |
+| `npm run report:allure`      | Generate the Allure report in `allure-report/` from `allure-results/` (keeps `allure-history/`).                    |
+| `npm run report:allure:open` | Open the generated Allure report in the browser.                                                                    |
+| `npm run report:coverage`    | E2E feature coverage from `allure-results/` into `coverage-report/` (`coverage.md`, `coverage.json`, `index.html`). |
+| `npm run test:snapshots`     | Refresh the Bandcamp page snapshots the e2e tests use (needs network).                                              |
+| `npm run format`             | Prettier for `.ts`, `.tsx`, `.js`, `.mjs`, `.json`, `.md`, `.yml`, `.scss`, `.css` and `.html`.                     |
+| `npm run format:check`       | Fail if any of these files is not formatted (run in CI).                                                            |
+| `npm run check:versions`     | Fail if any dependency in `package.json` is not pinned to an exact version.                                         |
+| `npm run check:outdated`     | List outdated dependencies (`npm outdated`). For local use, not run in CI.                                          |
+| `npm run prepare`            | Installs the Husky Git hooks (runs on `npm install`).                                                               |
 
 ## Build output
 
@@ -96,6 +100,8 @@ The tests use [Playwright](https://playwright.dev) and live in `tests/`. Project
 - **`e2e`** (`npm run test:e2e`, `tests/e2e/`): the built extension (`dist/`) in Playwright's bundled Chromium. Bandcamp pages come from offline snapshots in `tests/e2e/fixtures/pages/` (an album, a track and an artist page) and every other request is blocked, so the tests need no network and no Bandcamp account. They cover the shortcuts on the album and track pages, settings used on the page, the popup (settings and the shortcut recorder) and the downloads page. The batch download checkboxes and bar run on hand-written collection, purchases and wishlist pages in `tests/e2e/fixtures/synthetic/`.
 - **`live`** (`npm run test:live`, `tests/live/`): a short smoke check against real bandcamp.com. It exists only when `BAND_PLAY_LIVE` is set (the script sets it), so a plain `npx playwright test` never reaches the network.
 
+Every e2e test is labelled with the features it checks: `feature('seek')` from `tests/e2e/fixtures/labels.ts`, with ids from `tests/coverage-map.json` (the list of features, with the ones the Chromium suite cannot test marked `skip`). A test without a label fails. `npm run test:allure`, `npm run report:allure` and `npm run report:coverage` build the Allure report and the feature coverage locally; on `master` the [report workflow](#ci) publishes them with the trend.
+
 A setup project (`dist`) runs `npm run build` before `e2e` and `live`; `unit` does not build. First time on a
 machine, install the browser: `npx playwright install chromium`.
 
@@ -112,12 +118,13 @@ GitHub Actions workflows in `.github/workflows/`:
 - **`build.yml`**: on pushes and pull requests to `master`. A newer push to the same branch cancels the older run.
     - Job `build` (Node 24 and 26): `npm ci`, `npm audit signatures`, `check:versions`, `format:check`, both builds, `lint`, `lint:firefox` and `test:unit`.
     - Job `checks` (Node 24): `npm ci`, `npm audit signatures`, `lint:docs` and `lint:unused`.
-    - Job `e2e` (Node 24): installs Playwright's Chromium and runs `npm run test:e2e`; on failure it uploads the artifact `playwright-report-e2e` (kept 14 days).
+    - Job `e2e` (pull requests only, Node 24): installs Playwright's Chromium and runs `npm run test:e2e`; on failure it uploads the artifact `playwright-report-e2e` (kept 14 days).
+- **`report.yml`** (workflow `report`): on pushes to `master` and on manual dispatch, never on pull requests. It runs the unit and e2e tests with the Allure reporter, generates the Allure report and the e2e feature coverage, and publishes them to GitHub Pages at `https://borbiuk.github.io/band-play/` (`report/`, `coverage/`, `history/`). The run history is fetched from the published site before each run, so the trend grows by one point per run on `master`. `master` turns red when the tests fail, although the report is still published. Pages needs the source "GitHub Actions" in the repository settings.
 - **`markup.yml`** (workflow `bandcamp-markup`): every day at 05:17 UTC and on manual dispatch. It captures fresh snapshots with `npm run test:snapshots`, commits them to `master` when they changed ("Refresh Bandcamp page snapshots"), runs `npm run test:e2e` on them and then `npm run test:live`. On any failure it uploads `playwright-report-markup` and opens one issue labelled `markup-drift` ("Tests fail on the current Bandcamp markup"); later failures are added to it as comments. The next passing run closes the open issues. Fix the selectors in `src/content` and the tests first.
 - **`codeql.yml`** (code scanning, JavaScript and TypeScript plus the workflows) and **`scorecard.yml`** (OpenSSF Scorecard): on pushes and pull requests to `master`, and weekly. Results go to the code scanning tab.
 - **`dependency-review.yml`**: on pull requests. Fails on a high or critical vulnerability and on licenses that are not in its allow list.
 - **`pr-title.yml`**: on pull requests. Checks the title with `scripts/check-pr-title.mjs` (upper-case start, at most 72 characters, no period, no `WIP`, `fixup!` or `squash!`). Dependabot pull requests are skipped.
-- **`release.yml`** (workflow `release`): runs when the maintainer pushes a version tag `x.y.z`. A manual run (`gh workflow run release.yml --ref master`) is a dry run unless `dry_run` is turned off. It checks the release guards (the versions match, the tag is on `master`, the build of that commit passed, the changelog has the version, no release exists yet), builds both packages with `npm run zip`, checks their versions and uploads them as the artifact `release-packages`. With `dry_run` turned off (it is on by default) it attests the packages and creates the GitHub Release with `scripts/release-notes.sh`.
+- **`release.yml`** (workflow `release`): runs when the maintainer pushes a version tag `x.y.z`. A manual run (`gh workflow run release.yml --ref master`) is a dry run unless `dry_run` is turned off. It checks the release guards (the versions match, the tag is on `master`, the build and the report workflow of that commit passed, the changelog has the version, no release exists yet), builds both packages with `npm run zip`, checks their versions and uploads them as the artifact `release-packages`. With `dry_run` turned off (it is on by default) it attests the packages and creates the GitHub Release with `scripts/release-notes.sh`.
 
 Actions are pinned to commit SHAs. Dependabot (`.github/dependabot.yml`) opens weekly update pull requests for npm packages and GitHub Actions, with a 7-day cooldown.
 
@@ -138,10 +145,10 @@ Actions are pinned to commit SHAs. Dependabot (`.github/dependabot.yml`) opens w
     - `shared/`: components, enums, models, services (config, messages, visited history, download history) and utils, imported via `@shared/*`.
     - `types/`: ambient type declarations.
 - `webpack/`: webpack configuration for the development, Chrome, Firefox and analyze builds.
-- `tests/`: Playwright tests (`unit/`, `e2e/` with `fixtures/`, `live/`, `setup/`), see [Testing](#testing).
+- `tests/`: Playwright tests (`unit/`, `e2e/` with `fixtures/`, `live/`, `setup/`), `coverage-map.json` (the feature list for the coverage report) and `allure/` (the Allure configuration), see [Testing](#testing).
 - `docs/`: this reference and [usage.md](usage.md).
-- `scripts/`: `check-versions.mjs`, `check-docs.mjs`, `check-pr-title.mjs`, `release-notes.sh` and `tag-releases.sh`.
-- `.github/`: issue and pull request templates, the issue chooser (`ISSUE_TEMPLATE/config.yml`), [CONTRIBUTING.md](../.github/CONTRIBUTING.md), `SUPPORT.md`, `CODEOWNERS`, workflows and Dependabot.
+- `scripts/`: `check-versions.mjs`, `check-docs.mjs`, `check-pr-title.mjs`, `feature-coverage.mjs` (the e2e feature coverage), `release-notes.sh` and `tag-releases.sh`.
+- `.github/`: `pages/index.html` (the start page of the published reports), issue and pull request templates, the issue chooser (`ISSUE_TEMPLATE/config.yml`), [CONTRIBUTING.md](../.github/CONTRIBUTING.md), `SUPPORT.md`, `CODEOWNERS`, workflows and Dependabot.
 - `.husky/`: the pre-commit hook and `set-version.sh`.
 - `zip.sh`: builds both browsers and creates the `.zip` packages in `artifacts/` (gitignored).
 - `knip.jsonc` and `.markdownlint-cli2.jsonc`: the configuration of the unused code check and the docs lint.

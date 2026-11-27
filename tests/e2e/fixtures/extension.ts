@@ -49,6 +49,8 @@ interface ExtensionFixtures {
 	/** Opens the settings page (`options.html`) in a new tab */
 	openOptions: () => Promise<Page>;
 	storage: ExtensionStorage;
+	/** Automatic: fails an e2e test that has no feature of tests/coverage-map.json (see `feature()` in labels.ts) */
+	requireFeatureLabel: void;
 }
 
 /**
@@ -58,6 +60,21 @@ interface ExtensionFixtures {
  */
 export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
 	bandcampRoutes: ['snapshots', { option: true }],
+
+	requireFeatureLabel: [
+		async ({}, use, testInfo) => {
+			const labelled = testInfo.annotations.some(
+				(annotation) => annotation.type === 'allure.label.feature'
+			);
+			if (testInfo.project.name === 'e2e' && !labelled) {
+				throw new Error(
+					'The test has no feature label: add feature(...) from fixtures/labels.ts (features are listed in tests/coverage-map.json)'
+				);
+			}
+			await use();
+		},
+		{ auto: true },
+	],
 
 	extensionId: async ({}, use) => {
 		await use(unpackedExtensionId(DIST_PATH));

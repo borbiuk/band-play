@@ -12,6 +12,7 @@ const CONFIG_KEY_SET = {
 	playbackStep: true,
 	loopTrack: true,
 	showFeedPlayer: true,
+	alternativeDesign: true,
 	shortcuts: true,
 	disabledShortcuts: true,
 	mediaKeys: true,
@@ -239,6 +240,9 @@ class ConfigService {
 			showFeedPlayer: exist(config.showFeedPlayer)
 				? Boolean(config.showFeedPlayer)
 				: true,
+			alternativeDesign: exist(config.alternativeDesign)
+				? Boolean(config.alternativeDesign)
+				: false,
 			shortcuts: this.mergeShortcuts(config.shortcuts),
 			disabledShortcuts: this.toDisabledShortcuts(
 				config.disabledShortcuts

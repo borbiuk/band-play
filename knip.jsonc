@@ -5,6 +5,8 @@
 		"webpack/*.js",
 		"scripts/*.mjs",
 		"tests/setup/dist.setup.ts",
+		// Passed to the Allure CLI with --config (see report:allure)
+		"tests/allure/allurerc.mjs",
 		// Loaded by `@config` in feed-player.scss, which knip does not read
 		"src/content/page-services/bandcamp/feed-player/tailwind.config.js",
 	],
@@ -15,6 +17,8 @@
 		"webpack/**/*.js",
 		"*.{js,mjs,ts}",
 	],
+	// Named only as a string in the reporter list of playwright.config.ts
+	"ignoreDependencies": ["allure-playwright"],
 	"webpack": {
 		// The loaders (ts-loader, css-loader, ...) are named as strings in these files
 		"config": ["webpack/webpack.*.js"],

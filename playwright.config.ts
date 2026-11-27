@@ -9,6 +9,7 @@ import { ExtensionOptions } from './tests/e2e/fixtures/extension';
  * - live: smoke checks against real bandcamp.com. Defined only when BAND_PLAY_LIVE is set (npm run test:live),
  *   so a plain `playwright test` never reaches the network.
  * - dist: builds dist/ before e2e or live run (a setup project, so unit-only runs skip the build).
+ * Allure results are written only when BAND_PLAY_ALLURE is set (npm run test:allure).
  */
 export default defineConfig<ExtensionOptions>({
 	forbidOnly: !!process.env.CI,
@@ -19,9 +20,26 @@ export default defineConfig<ExtensionOptions>({
 	globalTimeout: process.env.CI ? 10 * 60_000 : undefined,
 	// Fixed parallelism in CI, so run times do not depend on the runner's core count
 	workers: process.env.CI ? 2 : undefined,
-	reporter: process.env.CI
-		? [['list'], ['html', { open: 'never' }], ['github']]
-		: [['list'], ['html', { open: 'never' }]],
+	reporter: [
+		['list'],
+		['html', { open: 'never' }],
+		...(process.env.CI ? [['github'] as const] : []),
+		// Only the master report workflow and `npm run test:allure` set BAND_PLAY_ALLURE, so pull requests write no Allure results
+		...(process.env.BAND_PLAY_ALLURE
+			? [
+					[
+						'allure-playwright',
+						{
+							resultsDir: 'allure-results',
+							environmentInfo: {
+								node_version: process.version,
+								os_platform: process.platform,
+							},
+						},
+					] as const,
+				]
+			: []),
+	],
 	use: {
 		trace: 'retain-on-failure',
 	},

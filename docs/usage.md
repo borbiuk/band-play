@@ -21,14 +21,15 @@
 ### Pages
 
 - **Highlight visited** (on by default): albums and tracks you already opened or played are marked on Bandcamp pages. The history is stored in the extension's local storage only (up to 50,000 items) and is shared by all tabs.
+- **Alternative design** (off by default, in the Page tab): a more compact look of the collection and wishlist pages (yours and other fans'). Each cover shows a small **Album** or **Track** badge in its bottom left corner, and the section under the title (favorite track, "appears in", edit links) is hidden, so a card takes less room. The badge appears when you point at an item, and stays on the item that is playing. Without this setting the badge is never shown.
 - **Feed player** (on by default): a small player on the Bandcamp feed page with the cover, the title and a progress bar you can click to seek.
 - **Open in new tab**: open the current item in a new tab, in the background (O) or with focus (Shift+O).
 - **Wishlist**: add the current item to the wishlist or remove it (L).
 
 ### Batch download
 
-- **Where**: on your collection page (items you bought, that have a download link) and on your purchases page; there is nothing to download on the wishlist. Band Play adds a checkbox to each item and a small bar at the bottom right of the page. The checkbox shows when you point at an item, and all of them stay visible while something is selected.
-- **Select**: click checkboxes one by one; Shift+click selects the range from the last clicked checkbox. **Select All** loads the whole list and selects every item (it shows the progress and can be stopped). **Select New** selects only the items you have not downloaded yet in the current format. Releases you already have in that format show a **Downloaded** mark. After **Download** the bar says how many releases were sent to the downloads page.
+- **Where**: on your collection page (items you bought, that have a download link) and on your purchases page; there is nothing to download on the wishlist. Band Play adds a checkbox to each item and, at the bottom right of the page, the Band Play logo. Point at the logo to see the tip "Batch download" and click it: the bar with the buttons opens in place. The minus button in the bar closes it back to the logo; while something is selected, the closed logo shows how many items are selected. The checkbox shows when you point at an item, and all of them stay visible while something is selected.
+- **Select**: click checkboxes one by one; Shift+click selects the range from the last clicked checkbox. **Select All** loads the whole list and selects every item (it shows the progress and can be stopped). **Select New** selects only the items you have not downloaded yet in the current format. Releases you already have in that format show a **Downloaded** mark in the bottom right corner of the cover, next to the Album or Track badge; like that badge, it appears when you point at the item and stays on the item that is playing. After **Download** the bar says how many releases were sent to the downloads page.
 - **Format**: MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV (default) or AIFF. Set the default in the popup, or pick a format for one batch with the arrow next to the **Download** button.
 - **Concurrency**: how many files download at the same time (1 to 15, default 8).
 - **Downloads page**: a download starts a Band Play downloads page in a browser tab. It shows the overall progress, with speed and time left, and every item with its status and progress. You can filter by status (All, Active, Paused, Failed, Done), search, and sort by queue order, title or status. A purchase with several downloads (a bundle) folds into one row. The page has **Pause all** or **Resume all**, **Retry failed**, **Clear completed** and **Clear all** (it asks first), and per item Pause, Resume, Cancel, Retry, Show in folder, Copy Bandcamp link, Delete file from disk (it asks first) and Remove. The popup has an **Open downloads** button.
@@ -82,7 +83,7 @@ Pitch preservation is not available on the discover page.
 Click the Band Play icon in the toolbar. The popup has four tabs:
 
 - **Playback**: Autoplay next track, Loop track, Media keys, Keep screen awake (Chrome only) and the seek step.
-- **Page**: Highlight visited, Autoscroll, Feed player, and the visited history with a **Clear** button.
+- **Page**: Highlight visited, Autoscroll, Feed player, Alternative design, and the visited history with a **Clear** button.
 - **Downloads**: **Open downloads**, the batch download format and concurrency, a notification when a batch finishes, opening the downloads page when a batch starts, and skipping releases you already downloaded in the same format.
 - **Shortcuts**: a search, a switch to turn each shortcut on or off, a pencil to record a new key, and **Reset**.
 
